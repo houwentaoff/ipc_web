@@ -1,0 +1,39 @@
+#ifndef CC
+CC=/home/work/work_ext/ipc/gk7101/customer/juanvision/crosstool/arm-2011.09/bin/arm-none-linux-gnueabi-gcc
+#endif
+
+#ifndef AR
+AR=/home/work/work_ext/ipc/gk7101/customer/juanvision/crosstool/arm-2011.09/bin/arm-none-linux-gnueabi-ar
+#endif
+
+#ifndef RANLIB
+RANLIB=/home/work/work_ext/ipc/gk7101/customer/juanvision/crosstool/arm-2011.09/bin/arm-none-linux-gnueabi-ranlib
+#endif
+
+ECHO=echo
+
+ifndef CFLAGS
+CFLAGS = -O2 -Wall -g
+endif
+
+#path
+CGIC_TOP=/home/work/work_ext/ipc/gk7101/customer/juanvision/ambarella/app/ipcam/web_branch/cgic
+
+CFLAGS += -I$(CGIC_TOP) -L$(CGIC_TOP) -lcgic
+#debug
+CFLAGS += -DDEBUG -DCGICDEBUG
+
+DESTDIR=/web
+
+V=1
+
+Q=@
+E=echo
+ifeq ($(V), 1)
+Q=
+E=true
+endif
+
+%.o:%.c
+	$(Q)$(CC) -c $< -o $@ $(CFLAGS)
+	@$(E) "  CC " $<

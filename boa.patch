@@ -1,0 +1,81 @@
+--- boa-0.94.13/src/compat.h	2002-06-06 13:02:28.000000000 +0800
++++ boa-0.94.13/src/compat.h	2014-10-21 11:19:20.230480117 +0800
+@@ -117,7 +117,7 @@
+ #endif
+ 
+ #ifdef HAVE_TM_GMTOFF
+-#define TIMEZONE_OFFSET(foo) foo##->tm_gmtoff
++#define TIMEZONE_OFFSET(foo) (foo)->tm_gmtoff
+ #else
+ #define TIMEZONE_OFFSET(foo) timezone
+ #endif
+--- boa-0.94.13/boa.conf	2002-03-22 12:33:09.000000000 +0800
++++ boa-0.94.13/boa.conf	2014-08-26 14:28:19.679226460 +0800
+@@ -45,8 +45,8 @@
+ #  User: The name or UID the server should run as.
+ # Group: The group name or GID the server should run as.
+ 
+-User nobody
+-Group nogroup
++User root
++Group root
+ 
+ # ServerAdmin: The email address where server problems should be sent.
+ # Note: this is not currently used, except as an environment variable
+@@ -59,7 +59,7 @@
+ # Set to /dev/null if you don't want errors logged.
+ # If unset, defaults to /dev/stderr
+ 
+-ErrorLog /var/log/boa/error_log
++#ErrorLog /var/log/boa/error_log
+ # Please NOTE: Sending the logs to a pipe ('|'), as shown below,
+ #  is somewhat experimental and might fail under heavy load.
+ # "Usual libc implementations of printf will stall the whole
+@@ -71,7 +71,7 @@
+ # Comment out or set to /dev/null (less effective) to disable 
+ # Access logging.
+ 
+-AccessLog /var/log/boa/access_log
++#AccessLog /var/log/boa/access_log
+ # Please NOTE: Sending the logs to a pipe ('|'), as shown below,
+ #  is somewhat experimental and might fail under heavy load.
+ # "Usual libc implementations of printf will stall the whole
+@@ -108,7 +108,7 @@
+ # DocumentRoot: The root directory of the HTML documents.
+ # Comment out to disable server non user files.
+ 
+-DocumentRoot /var/www
++DocumentRoot /webSvr/www
+ 
+ # UserDir: The name of the directory which is appended onto a user's home
+ # directory if a ~user request is recieved.
+@@ -127,7 +127,7 @@
+ # DirectoryIndex are commented out, accessing a directory will give
+ # an error (though accessing files in the directory are still ok).
+ 
+-DirectoryMaker /usr/lib/boa/boa_indexer
++DirectoryMaker /webSvr/www/cgi-bin/boa_indexer
+ 
+ # DirectoryCache: If DirectoryIndex doesn't exist, and DirectoryMaker
+ # has been commented out, the the on-the-fly indexing of Boa can be used
+@@ -190,5 +190,5 @@
+ # ScriptAlias: Maps a virtual path to a directory for serving scripts
+ # Example: ScriptAlias /htbin/ /www/htbin/
+ 
+-ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/
++ScriptAlias /cgi-bin/ /webSvr/www/cgi-bin/
+ 
+--- boa-0.94.13/src/boa.c	2002-07-23 23:50:29.000000000 +0800
++++ boa-0.94.13/src/boa.c	2014-08-26 14:30:22.308561765 +0800
+@@ -222,9 +222,11 @@
+         /* test for failed-but-return-was-successful setuid
+          * http://www.securityportal.com/list-archive/bugtraq/2000/Jun/0101.html
+          */
++/*
+         if (setuid(0) != -1) {
+             DIE("icky Linux kernel bug!");
+         }
++*/
+     } else {
+         if (server_gid || server_uid) {
+             log_error_time();

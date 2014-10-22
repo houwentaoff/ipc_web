@@ -1,0 +1,25 @@
+Compile
+
+[boa]
+[1] Extract boa-0.94.13.tar.gz to here and patch file 'boa.patch' for it.
+[2] cd boa-0.94.13/src ; ./configure 
+[3] modified Makefile in  boa-0.94.13/src/
+    CC = arm-goke-linux-gnueabi-gcc 
+    CPP = arm-goke-linux-gnueabi-gcc -E
+[4] make
+
+[cgi]
+
+Install
+
+[5] Command 'make install' to install 'boa boa.conf and cgi-bin/ActiveX ...' to rootfs.
+
+Run
+
+[6] After reboot. run /webSrv/boa and then you can use URL 'http://yourtargetip/html/view.html' to view real-time video. eg:'http://192.168.100.47/html/view.html'.Remenber to use IE.
+
+notice:
+
+[1] if you not install activeX cab please download it from 'http://yourtargetip/activeX/GOKEWeb.cab' and install it.run install.bat in cmd.
+[2] please ensure your are the administrator && command 'regsvr32' can be use in your WindowsXP/7.
+
