@@ -6,55 +6,18 @@
 
 <link href="../css/ipc.css" rel="stylesheet" type="text/css" />
 <link href="../css/goke.css" rel="stylesheet" type="text/css" />
-<script type="text/javascript" src="../js/menu.js"></script>
-<script type="text/javascript">
-function FloatMenu(){
-    var animationSpeed=1500;
-    var animationEasing='easeOutQuint';
-    var scrollAmount=$(document).scrollTop();
-    var newPosition=menuPosition+scrollAmount;
-    if($(window).height()<$('#fl_menu').height()+$('#fl_menu .menu').height()){
-        $('#fl_menu').css('top',menuPosition);
-    } else {
-        $('#fl_menu').stop().animate({top: newPosition}, animationSpeed, animationEasing);
-    }
-}
-$(window).load(function(){
-        menuPosition=$('#fl_menu').position().top;
-        FloatMenu();
-        });
-$(window).scroll(function(){ 
-        FloatMenu();
-        });
-$(document).ready(function(){
-        var fadeSpeed=500;
-        $("#fl_menu").hover(function(){
-            $('#fl_menu .label').fadeTo(fadeSpeed, 1);
-            $("#fl_menu .menu").fadeIn(fadeSpeed);
-            },function(){
-            $('#fl_menu .label').fadeTo(fadeSpeed, 0.75);
-            $("#fl_menu .menu").fadeOut(fadeSpeed);
-            });
-        });
-</script>
+<script language="JavaScript" src="../js/cs_AJAXInteraction.js"></script>
+<script language="JavaScript" src="../js/cs_page.js"></script>
+<script language="JavaScript" src="../js/cs_style.js"></script>
+
 <style type="text/css">
 <!--
 .STYLE2 {font-family: "宋体"}
 -->
 </style>
 </head>
+<body onload="OnLoadActiveX('192.168.100.47', 0, 1, 0, 1);" >
 
-<body>
-
-<div class="menu_item" id="fl_menu">
-    <div class="menu">
-        <a href="liveview.html" title="liveview" target="_blank" class="menu_item">liveview</a>
-        <a href="3A.html" title="3A" target="_blank" class="menu_item">3A</a>
-        <a href="vinvout.html" title="vinvout" target="_blank" class="menu_item">vinvout</a>
-        <a href="enc.html" title="enc" target="_blank" class="menu_item">enc</a>
-        <a href="osd.html" title="osd" target="_blank" class="menu_item">osd</a>    
-	</div>
-</div>
 
 
 <table width="95%" height="80" >
@@ -66,34 +29,27 @@ $(document).ready(function(){
 		</td>
     </tr>
 </table>
-<table width="95%" height="600">
+<table width="95%" height="608">
 	<tr>
-    	<td width="180" height="383"></td>
-        <td width="596" height="428" align="left" valign="top"><object classid="CLSID:3BCDAA6A-7306-42FF-B8CF-BE5D3534C1E4"
-                    width="600"
-                    height="428"
-                    id="vlc"
-                    events="True">
-                    <param name="MRL" value="" />
-                    <param name="ShowDisplay" value="True" />
-                    <param name="AutoLoop" value="False" />
-                    <param name="AutoPlay" value="False" />
-                    <param name="Volume" value="50" />
-                    <param name="toolbar" value="true" />
-                    <param name="StartTime" value="0" />
-                    <embed pluginspage="http://www.videolan.org"
-                        type="application/x-vlc-plugin"
-                        version="VideoLAN.VLCPlugin.2"
-                        width="600"
-                        height="428"
-                        toolbar="true"
-                        loop="True"
-                        text="Waiting for video"></embed>
-            </object>
-	  </td>
-            <td width="802" class="clearfix">	<div id="action">		
-		<input class="navigation" id="Play" type="button" value="Play" style=" " onclick="javascript:PlayActiveX()"/>
-		<input class="navigation" id="Stop" type="button" value="Stop"	style="" onclick="javascript:StopActiveX()"/>
+    	<td width="191" height="383">
+		<div class="menu_item" id="fl_menu">
+    <div class="menu" style="none">
+        <a href="liveview.html" title="liveview" target="_blank" class="menu_item">liveview</a>
+        <a href="3A.html" title="3A" target="_blank" class="menu_item">3A</a>
+        <a href="vinvout.html" title="vinvout" target="_blank" class="menu_item">vinvout</a>
+        <a href="enc.html" title="enc" target="_blank" class="menu_item">enc</a>
+        <a href="osd.html" title="osd" target="_blank" class="menu_item">osd</a>	</div>
+</div></td>
+        <td class="activeX" ><object classid="CLSID:3BCDAA6A-7306-42FF-B8CF-BE5D3534C1E4" codebase="http://"+windows.location.host+"/activex/ambaWeb.cab#version=1,0,0,33" width="680" height="480"		align="absmiddle" id="GOKEIPCmrWebPlugIn1">
+          <param name="_Version" value="65536" />
+          <param name="_ExtentX" value="19045" />
+          <param name="_ExtentY" value="11478" />
+          <param name="_StockProps" value="0" />
+          <embed src="65536" width="699" height="544" align="absmiddle" _version="65536" _extentx="19045" _extenty="11478" _stockprops="0"></embed>
+        </object></td>
+            <td width="138" class="clearfix">	<div id="action">
+              <input name="button" type="button" class="navigation" id="Play" style=" " onclick="javascript:PlayActiveX()" value="Play"/>
+              <input class="navigation" id="Stop" type="button" value="Stop"	style="" onclick="javascript:StopActiveX()"/>
 		<input class="navigation" id="Record" type="button" value="Start Record" style="" onclick="javascript:Record()"/>
 	</div>
 	<form action="" method="post" name="form1" class="STYLE3" id="form1">
