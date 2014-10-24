@@ -3,96 +3,54 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
 <title>liveview</title>
-
-
-<style type="text/css">
-<!--
-.STYLE2 {font-family: "宋体"}
-body{
-	font-family:Arial, Helvetica, sans-serif;
-    min-width:800px;
-    min-height:800px;
-    width:100%;
-    height:100%;
-	background:#42413c;
-	margin:0;
-	padding:0;
-	color:#000;
-}
-.container{
-	width:auto;
-    height:auto;
-	margin:auto;
-	background-color:#CCCCCC;
-}
-.header{
-	height:auto;
-	width:auto;
-	padding:5px;
-	background-color:#6699ff;
-}
-.content{
-	min-height:400px;
-    min-width:800px;
-	width:auto;
-    white-space:nowrap;
-	padding:5px;
-	background-color:#ff9900;
-}
-.footer{
-	width:auto;
-	height:50px;
-	padding:5px;
-	background-color:#6699ff;
-    clear:both;
-}
-
-.leftnav{
-	float: left;
-/*left:标记元素靠左，右边无文字绕排；
-right:标记元素靠右，左边无文字绕排； */
-	width: 200px;
-	height:250px;
-	background: #EADCAE;
-	padding-bottom: 10px;
-}
-
-.table{
-display:table;
-}
-.row
-{
-display:table-row;
-}
-.row header{
-width:100px;
-}
-
-.col
-{
-display:table-cell;
-border:1px solid blue;
-width:auto;
-height:100px;
-padding:1em;
-
-}
-.col menu{
-width:100px;
-height:500px;
-
-}
-
--->
-</style>
+<link href="../css/goke_1.css" rel="stylesheet" type="text/css" />
+<script language="JavaScript" src="../js/cs_AJAXInteraction.js"></script>
+<script language="JavaScript" src="../js/cs_page.js"></script>
+<script language="JavaScript" src="../js/cs_style.js"></script>
 </head>
-<body>
+<body onload="OnLoadActiveX('192.168.100.47', 0, 1, 0, 1);" >
 <div class="container">
-	<div class=<div class="container">
-	<div class="header">toubu</div>
-	<div class="leftnav">nav</div>
-	<div class="content">zhu ti </div>
-	<div class="footer">wei bu </div>
+	<div class="header">
+	 <div class="logo">
+	 	<p><img src="../img/goke.png" name="banner" id="banner" /></p>
+	 </div>
+	 <div class="title">
+	 	<p align="center" >网络 摄 像 机 产 品 演 示</p>
+     	<p align="center">IPC Product demonstration</p>
+	 </div>
+    </div>
+	<div class="leftnav">
+			<div class="menu_item" id="fl_menu">
+    <div class="menu" style="none">
+        <a href="liveview.html" title="liveview" target="_blank" class="menu_item">liveview</a>
+        <a href="3A.html" title="3A" target="_blank" class="menu_item">3A</a>
+        <a href="vinvout.html" title="vinvout" target="_blank" class="menu_item">vinvout</a>
+        <a href="enc.html" title="enc" target="_blank" class="menu_item">enc</a>
+        <a href="osd.html" title="osd" target="_blank" class="menu_item">osd</a>	</div>
+	</div>
+	</div>
+	<div class="content">
+	  <div class="activeX" >
+	    <object classid="CLSID:3BCDAA6A-7306-42FF-B8CF-BE5D3534C1E4" codebase="http://"+window.location.host+"/activex/ambaWeb.cab#version=1,0,0,33" width="680" height="329"		align="absmiddle" id="GOKEIPCmrWebPlugIn1">
+          <param name="_Version" value="65536" />
+          <param name="_ExtentX" value="19045" />
+          <param name="_ExtentY" value="11478" />
+          <param name="_StockProps" value="0" />
+          <embed src="65536" width="680" height="329" align="absmiddle" _version="65536" _extentx="19045" _extenty="11478" _stockprops="0"></embed>
+        </object>
+	  </div>
+  	  <div class="wrap rounded">
+            <h1>box</h1>
+            <p> Lorem </p>
+	        <br />
+   </div>
+  </div>
+	<div class="footer">
+		<div >
+            <p >公司地址：长沙市长星路389号 联系电话：0731-88218855 官方网站:www.gokemicro.com </p>
+            <p>国科微电子有限公司 版权所有</p>
+    	</div>
+	</div>
 </div>
 </body>
 </html>
