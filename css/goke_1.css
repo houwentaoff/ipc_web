@@ -6,7 +6,6 @@
 /**	Version :		0.1													**
 /**																		**
 /*************************************************************************/
-.STYLE2 {font-family: "宋体"}
 body{
 	font-family:Arial, Helvetica, sans-serif;
 	width:1.3761e+006;
@@ -20,7 +19,7 @@ body{
 .container{
 	width:auto;
     height:auto;
-	margin:auto;
+//	margin:auto;
 	background-color:#CCCCCC;
 }
 .header{
@@ -29,38 +28,39 @@ body{
 	padding:5px;
 	background-color:#FFFFFF;
 	clear:right;
+//    display:inline;
 }
 .leftnav{
 	float: left;
 /*left:标记元素靠左，右边无文字绕排；
 right:标记元素靠右，左边无文字绕排； */
-	height:auto;
-	min-height:400px;
+//	height:auto;
+	min-height:500px;
 	background: #EADCAE;
 	padding-bottom: 10px;
 	width:161px;
     background:#ffffff;
     position:relative;
-    z-index:2;
+//    z-index:2;
 }
 
 .leftnav:hover{
     width:161px;
-    background-color:#d90030;
+/*    background-color:#d90030;*/
     float:left;
-    position:relative;
-    z-index:4;
+//   position:relative;
+//    z-index:4;
 }
 
 .content{
-	margin: 0 200px 0 200px;
-	min-height:500px;
-    min-width:800px;
-	width:auto;
-    white-space:nowrap;
+//	margin: 0 200px 0 200px;
+	height:500px;
+    width:800px;
+//	width:auto;
+//    white-space:nowrap;
 	background-color:#ff9900;
-	overflow:hidden;
-	padding: 15px 20px 5px;	
+    padding: 0 0 10px 0;
+//	overflow:hidden;
 }
 
 #fl_menu{
@@ -101,14 +101,11 @@ right:标记元素靠右，左边无文字绕排； */
     color:#fff;
 }
 .activeX{
-	display:inline;
+	display:inline;/*不能去. chrome 中为block*/
 	width:400px;
 	height:480px;
-	float:none;
-	margin-top: 0px;
 	margin-right: 200px;
-	margin-bottom: 0;
-	margin-left: 200;
+	margin-left: 200px;
 }
 .wrap{
 	position:relative;
@@ -116,12 +113,13 @@ right:标记元素靠右，左边无文字绕排； */
 	height:310px;
 	padding:1em;
 	background:#666666;
-	overflow:hidden;
+//	overflow:hidden;
 	float: right;
 	margin-top: 20px;
 	margin-right: auto;
 	margin-bottom: 20px;
 	margin-left: auto;
+    white-space:nowrap;
 }
 
 .wrap:before {
@@ -167,18 +165,16 @@ right:标记元素靠右，左边无文字绕排； */
 	background-color:#FFFFFF;
     clear:both;
 	text-align:center;
+    padding:35px;
 }
 
 
 .header .logo{
 	float:left;
-	display:inline;
 	width:116px;
 	height:45;
-	white-space: nowrap;
-
+    margin:0px 0px 50px 0px;
 }
 .header .title{
-	white-space:nowrap;
 	margin-right: 10px;
 }
