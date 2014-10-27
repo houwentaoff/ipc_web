@@ -17,8 +17,9 @@ body{
 	display: inline;
 }
 .container{
-	width:auto;
-    height:auto;
+	width:1338px;
+    height:716px;
+	position:absolute;
 //	margin:auto;
 	background-color:#CCCCCC;
 }
@@ -31,7 +32,10 @@ body{
 //    display:inline;
 }
 .leftnav{
-	float: left;
+	float: none;
+
+
+
 /*left:标记元素靠左，右边无文字绕排；
 right:标记元素靠右，左边无文字绕排； */
 //	height:auto;
@@ -39,37 +43,62 @@ right:标记元素靠右，左边无文字绕排； */
 	background: #EADCAE;
 	padding-bottom: 10px;
 	width:161px;
-    background:#ffffff;
-    position:relative;
+	background:#ffffff;
+	position:absolute;
+
+
+
 //    z-index:2;
+	left: 6px;
+	top: 91px;
+	height: 485px;
 }
 
 .leftnav:hover{
-    width:161px;
-/*    background-color:#d90030;*/
+	width:161px;
+	/*    background-color:#d90030;*/
     float:left;
+
 //   position:relative;
 //    z-index:4;
+	position: absolute;
 }
 
 .content{
 //	margin: 0 200px 0 200px;
-	height:500px;
-    width:800px;
+	height:499px;
+	width:1231px;
+
+
+
 //	width:auto;
-//    white-space:nowrap;
+	white-space:normal;
 	background-color:#ff9900;
-    padding: 0 0 10px 0;
+	position:absolute;
+
+
+
+
 //	overflow:hidden;
+	padding-top: 0;
+	padding-right: 0;
+	padding-bottom: 10px;
+	padding-left: 0;
+	margin-top: 0;
+	margin-right: 0;
+	margin-bottom: 0;
+	margin-left: 161px;
+	left: -67px;
+	top: 99px;
 }
 
 #fl_menu{
 	position:absolute;
-	top:64px;
-	left:37px;
+	top:30px;
+	left:1px;
 	z-index:9999;
 	width:116px;
-	height:427px;
+	height:460px;
 	float: left;
 	overflow:hidden;
 }
@@ -102,10 +131,46 @@ right:标记元素靠右，左边无文字绕排； */
 }
 .activeX{
 	display:inline;/*不能去. chrome 中为block*/
-	width:400px;
-	height:480px;
-	margin-right: 200px;
-	margin-left: 200px;
+	width:800px;
+	height:500px;
+	margin-right: 0px;
+	margin-left: 0px;
+	position:absolute;
+	left: 10px;
+	top: 7px;
+}
+.content .right{
+	float: left;
+	border:solid #ff9900 10px;
+
+
+/*left:标记元素靠左，右边无文字绕排；
+right:标记元素靠右，左边无文字绕排； */
+//	height:auto;
+	min-height:500px;
+	background: #ffffff;
+	padding-bottom: 10px;
+	width:267px;
+	background:#ffffff;
+	position:absolute;
+
+
+
+//    z-index:2;
+	left: 844px;
+	top: 3px;
+	height: 466px;
+}
+.label{
+	top:0;
+	left:0;
+	padding:0 3px 3px 0;
+	background-color:#FF6633;
+}
+.action{
+	position:absolute;
+	height: 353px;
+	width: 259px;
 }
 .wrap{
 	position:relative;
@@ -159,13 +224,16 @@ right:标记元素靠右，左边无文字绕排； */
 
 
 .footer{
-	width:auto;
+	width:1264px;
 	height:50px;
-	padding:5px;
+	padding:35px;
 	background-color:#FFFFFF;
-    clear:both;
+	clear:both;
 	text-align:center;
-    padding:35px;
+	padding:35px;
+	position: absolute;
+	left: 3px;
+	top: 588px;
 }
 
 
