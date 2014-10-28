@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC  "-//W3C//DTD HTML 4.0 Transitional//EN""-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<title>liveview</title>
+
+<link href="../css/ipc.css" rel="stylesheet" type="text/css" />
+<link href="../css/goke.css" rel="stylesheet" type="text/css" />
+<script language="JavaScript" src="../js/cs_AJAXInteraction.js"></script>
+<script language="JavaScript" src="../js/cs_page.js"></script>
+<script language="JavaScript" src="../js/cs_style.js"></script>
+
+<style type="text/css">
+<!--
+.STYLE2 {font-family: "宋体"}
+-->
+</style>
+</head>
+<body onload="OnLoadActiveX('192.168.100.47', 0, 1, 0, 1);" >
+
+
+
+<table width="95%" height="80" >
+    <tr>
+        <td width="120"><img src="../img/goke.png" alt="" name="banner" width="116" height="45" id="banner" /></td>
+        <td nowrap>
+			<p align="center" class="title">网络 摄 像 机 产 品 演 示</p>
+      		<p align="center">IPC Product demonstration</p>
+		</td>
+    </tr>
+</table>
+<table width="95%" height="608">
+	<tr>
+    	<td width="191" height="383">
+		<div class="menu_item" id="fl_menu">
+    <div class="menu" style="none">
+        <a href="liveview.html" title="liveview" target="_blank" class="menu_item">liveview</a>
+        <a href="3A.html" title="3A" target="_blank" class="menu_item">3A</a>
+        <a href="vinvout.html" title="vinvout" target="_blank" class="menu_item">vinvout</a>
+        <a href="enc.html" title="enc" target="_blank" class="menu_item">enc</a>
+        <a href="osd.html" title="osd" target="_blank" class="menu_item">osd</a>	</div>
+</div></td>
+        <td class="activeX" ><object classid="CLSID:3BCDAA6A-7306-42FF-B8CF-BE5D3534C1E4" codebase="http://"+windows.location.host+"/activex/ambaWeb.cab#version=1,0,0,33" width="680" height="480"		align="absmiddle" id="GOKEIPCmrWebPlugIn1">
+          <param name="_Version" value="65536" />
+          <param name="_ExtentX" value="19045" />
+          <param name="_ExtentY" value="11478" />
+          <param name="_StockProps" value="0" />
+          <embed src="65536" width="699" height="544" align="absmiddle" _version="65536" _extentx="19045" _extenty="11478" _stockprops="0"></embed>
+        </object></td>
+            <td width="138" class="clearfix">	<div id="action">
+              <input name="button" type="button" class="navigation" id="Play" style=" " onclick="javascript:PlayActiveX()" value="Play"/>
+              <input class="navigation" id="Stop" type="button" value="Stop"	style="" onclick="javascript:StopActiveX()"/>
+		<input class="navigation" id="Record" type="button" value="Start Record" style="" onclick="javascript:Record()"/>
+	</div>
+	<form action="" method="post" name="form1" class="STYLE3" id="form1">
+                    <div align="center" class="STYLE4">
+                        display &nbsp;&nbsp;  &nbsp;  &nbsp;  &nbsp; 
+                        <select name="select" size="1">
+                            <option>test1</option>
+                            <option>test2</option>
+                        </select>
+                        <br />
+                        <br />
+                        <br />
+                        display &nbsp;&nbsp;  &nbsp;  &nbsp;  &nbsp;
+                        <select name="select2" size="1">
+                            <option>test1</option>
+                            <option>test2</option>
+                        </select>
+                        <br />
+                        <br />
+                        <br />
+                        display &nbsp;&nbsp;  &nbsp;  &nbsp;  &nbsp;
+                        <select name="select3" size="1">
+                            <option>test1</option>
+                            <option>test2</option>
+                        </select>
+                    </div>
+      </form>          </td>
+  </tr>
+</table>
+</tr>
+</table>
+<table width="95%" height="80">
+<tr>
+    <td nowrap>
+	<div align="center">
+            <p>公司地址：长沙市长星路389号 联系电话：0731-88218855 官方网站:www.gokemicro.com </p>
+            <p>国科微电子有限公司 版权所有</p>
+    </div>
+	</td>
+</tr>
+</table>
+</body>
+</html>

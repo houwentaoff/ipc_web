@@ -1,0 +1,18 @@
+K 18
+svn:global-ignores
+V 5
+test
+
+K 10
+svn:ignore
+V 69
+*.git
+cgic.html
+css
+index.html
+js
+license.txt
+readme.txt
+support.txt
+
+END
