@@ -33,6 +33,7 @@
      pm_page,
      osd_page,
      sys_page,
+     vivo_page,
 
  };
 
@@ -49,6 +50,7 @@ static GK_ErrorCode_e switchPage ()
         "pm_page",
         "osd_page",
         "sys_page",
+        "vivo_page"
     };
     int page_index;
 
@@ -60,10 +62,10 @@ static GK_ErrorCode_e switchPage ()
     }
     page_value = page_index;	
 //	browser = getenv("HTTP_USER_AGENT");
-    fprintf(cgiOut, head_html, page_inf[page_index], "test page");
+//    fprintf(cgiOut, head_html, page_inf[page_index], "test page");
     PRINT_DBG ("page_index[%d]\nhead_html[%s]\nfun[0x%x]", page_index, head_html, (unsigned int)(page_list[page_value]));
     (page_list[page_value])();
-    fprintf(cgiOut, "</body>%s", foot_html);
+ //   fprintf(cgiOut, "</body>%s", foot_html);
 
     FUN_OUT();
 

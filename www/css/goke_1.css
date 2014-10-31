@@ -36,7 +36,7 @@ body{
 	height:auto;
 	width:auto;
 	padding:5px;
-	background-color:#FFFFFF;
+	background-color:#f2f2f2;
 	clear:right;
 //    display:inline;
 }
@@ -82,7 +82,7 @@ right:标记元素靠右，左边无文字绕排； */
 
 //	width:auto;
 	white-space:normal;
-//	background-color:#ff9900;
+	background-color:#f2f2f2;
 	position:absolute;
 
 
@@ -162,7 +162,7 @@ right:标记元素靠右，左边无文字绕排； */
 	width:310px;
 	background:#ffffff;
 	position:absolute;
-
+	background-color:#f2f2f2;
 
 
 //    z-index:2;
@@ -184,7 +184,7 @@ right:标记元素靠右，左边无文字绕排； */
 	width:519px;
 	background:#ffffff;
 	position:absolute;
-
+	background-color:#f2f2f2;
 
 
 //    z-index:2;
@@ -204,7 +204,7 @@ right:标记元素靠右，左边无文字绕排； */
 	background: #ffffff;
 	padding-bottom: 10px;
 	width:534px;
-	background:#ffffff;
+	background-color:#f2f2f2;
 	position:absolute;
 
 
@@ -224,8 +224,8 @@ right:标记元素靠右，左边无文字绕排； */
 	position:absolute;
 	height: 239px;
 	width: 307px;
-	left: 11px;
-	top: 11px;
+	left: 43px;
+	top: 57px;
 }
 .wrap{
 	position:relative;
@@ -281,7 +281,7 @@ right:标记元素靠右，左边无文字绕排； */
 .footer{
 	width:1280px;
 	height:107px;
-	background-color:#FFFFFF;
+	background-color:#f2f2f2;
 	clear:both;
 	text-align:center;
 	padding:35px;
@@ -303,4 +303,49 @@ right:标记元素靠右，左边无文字绕排； */
 }
 .header .title{
 	margin-right: 10px;
+}
+
+#vin_Resolution {
+	position:absolute;
+	left: 39px;
+	top: 96px;
+	width: 101px;
+}
+
+#vin_fps{
+	position:absolute;
+	left: 36px;
+	top: 141px;
+	width: 131px;
+}
+#vout_type{
+	position:absolute;
+}
+#vout_Resolution{
+	position:absolute;
+}
+.content .title{
+	position:absolute;
+	left: 205px;
+	top: -9px;
+	background-color:#f2f2f2;
+	height: 40px;
+	width: 117px;
+}
+.vinvout_submit{
+	position:absolute;
+	left: 496px;
+	top: 388px;
+	width: 262px;
+	height: 24px;
+}
+.vinvout_submit .apply{
+	position:absolute;
+	left: 40px;
+	top: 4px;
+}
+.vinvout_submit .cancel{
+	position:absolute;
+	left: 165px;
+	top: 3px;
 }

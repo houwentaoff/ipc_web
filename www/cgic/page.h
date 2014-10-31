@@ -21,6 +21,7 @@
 #define  __PAGE_H__
 
 #define LABEL_OPTION_LEN 32
+
 typedef struct {
 	unsigned int value;/* usually increase */
 //	char option[LABEL_OPTION_LEN];
@@ -29,7 +30,7 @@ typedef struct {
 
 typedef struct {
 	char *label;/*label name */
-    char *name;/*label 'for name', select id*/
+    char *name;/*label 'for name', select id name*/
     union {
         char *name;
         char *id;
@@ -39,6 +40,19 @@ typedef struct {
 	unsigned int selected;/* selected value*/
 	char *action;
 }select_Label_t;
+
+typedef struct {
+	char *label;/*label value */
+    char *id;/*div id*/
+    union {
+        char *name;
+        char *id;
+    }bind;
+	option_t *options;
+	int option_num;
+	unsigned int selected;/* selected value*/
+	char *action;
+}div_select_t;
 
 typedef enum input_type{
     BUTTON=0,
@@ -53,11 +67,13 @@ typedef struct {
 	char *name;
 	char *exprop;
 }input_t;
+
 extern int   view_page();
 extern int   enc_page();
 extern int   pm_page();
 extern int   osd_page();
 extern int   sys_page();
+extern int   vivo_page();
 
 
 #endif//__PAGE_H__

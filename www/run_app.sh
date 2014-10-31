@@ -5,6 +5,9 @@ if [ -z "$1" ]; then
     exit 
 fi
 
+echo 1024 > /proc/sys/vm/min_free_kbytes
+ulimit -s 4096
+
 cd /;
 init.sh $1
 rtsp_server &

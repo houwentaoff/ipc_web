@@ -5,7 +5,7 @@
 ##
 ## (C) Copyright 2012-2014 by Goke Microelectronics Co.,Ltd
 ##
-## Version: $Id: Makefile 2137 2014-10-28 03:29:57Z houwentao $
+## Version: $Id: Makefile 2203 2014-10-30 02:29:08Z houwentao $
 ##
 ## Mandatory settings:
 ##
@@ -119,6 +119,8 @@ install-program:
 	@for f in `find js/ -name '*.js' |xargs tar czf /tmp/js.tgz && tar -zxvf /tmp/js.tgz -C $(ROOTFS_TOP)/webSvr/www/`; do echo "### --> [$$ROOTFS_TOP/webSvr/www/$$f]"; done;
 	@for f in `find html/ -name '*.html' |xargs tar czf /tmp/html.tgz && tar -zxvf /tmp/html.tgz -C $(ROOTFS_TOP)/webSvr/www/`; do echo "### --> [$$ROOTFS_TOP/webSvr/www/$$f]";done;
 	@for f in `find activeX/ -name '*.cab' |xargs tar czf /tmp/activeX.tgz && tar -zxvf /tmp/activeX.tgz -C $(ROOTFS_TOP)/webSvr/www/`; do echo "### --> [$$ROOTFS_TOP/webSvr/www/$$f]"; done;
+	@for f in `find img/ -name '*.png' |xargs tar czf /tmp/img.tgz && tar -zxvf /tmp/img.tgz -C $(ROOTFS_TOP)/webSvr/www/`; do echo "### --> [$$ROOTFS_TOP/webSvr/www/$$f]"; done;
+	@cp -a favicon.ico $(ROOTFS_TOP)/webSvr/www/ && echo "### --> [$(ROOTFS_TOP)/webSvr/www/favicon.ico]";
 
 install: install-program 
 #install-debug-program install-file

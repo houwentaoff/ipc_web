@@ -25,5 +25,7 @@ extern  const char * const head_html;/*Sean Hou:  */
 extern  const char * const body_html;
 extern  const char * const foot_html;
 extern  const char * const head_footHtml;
+extern  const char * const nav;
+extern  const char * const vivocontent;
 
 #endif

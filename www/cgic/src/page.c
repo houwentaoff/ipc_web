@@ -17,12 +17,39 @@
  *
  * =====================================================================================
  */
-//#include <page.h>
+#include "page.h"
 #include "include.h"
 
-#define MAXSTRLEN 256               /*错误通常由此引起 */
-#define SMALLHTML (6*1024)            /*  */
+#define MAXSTRLEN           (256)               /*错误通常由此引起 */
+#define SMALLHTML           (6*1024)            /*  */
+#define DIV_SELECT_SIZE     (512)            /* tmp, div select size*/
 
+
+static int create_div_select(char * text, div_select_t * div_select)
+{
+    int num = div_select->option_num;
+    char div_string[MAXSTRLEN] = {0};
+    char* option_string_format = "<option value=%d%s>%s</option>\n";
+    char option_string[MAXSTRLEN] = {0};
+    int i = 0;
+
+    sprintf(div_string, "<div id=\"%s\"><label>\"%s\"</label>", div_select->id, div_select->label);
+    for (i = 0; i < num; i++)   {
+        memset(option_string, 0, sizeof(option_string));
+        if (div_select->options[i].value == div_select->selected) {
+            sprintf(option_string, option_string_format, div_select->options[i].value, \
+                    " selected", div_select->options[i].label);
+        } else {
+            sprintf(option_string, option_string_format, div_select->options[i].value, \
+                    " ", div_select->options[i].label);
+        }
+        strncat(text, option_string, strlen(option_string));
+    }
+    char* div_format_end = "</select></div>\n";
+    strncat(text, div_format_end, strlen(div_format_end));
+
+    return (0);
+}
 /**
  * @brief 
  *
@@ -68,6 +95,78 @@ static int create_select_label(char * text, select_Label_t* select_label)
 
 //    FUN_OUT();     
     return (0);
+}
+
+int vivo_page()
+{
+    char *text=NULL;
+    div_select_t select_label[5] =
+    {
+        {
+            .label      = "Resolution :",    
+            .id         = "vin_Resolution",
+            .options    = NULL,
+            .option_num = 3,
+            .selected   = 2,
+            .action     = NULL,
+        },
+        {
+            .id         = "vin_fps",
+            .label      = "Frame Rate (fps) :",    
+            .options    = NULL,
+            .option_num = 3,
+            .selected   = 2,
+            .action     = NULL,
+        },
+        NULL,
+    };
+    char *vin_Resolution[]={"Auto", "1080P", "720P", NULL};
+    char *vin_fps[]={"5", "6", "7", NULL};
+    char **divs[]={vin_Resolution, vin_fps};
+    char div_text[DIV_SELECT_SIZE];
+    int i,j;
+
+    FUN_IN();
+
+    text = (char *)malloc(SMALLHTML);/*6k may much small*/
+    if (!text)
+    {
+        PRINT_ERR("text is null\n");
+        return (GK_MEM_ERROR);
+    }
+
+    j=0;
+    while ((&select_label[j]) != 0){
+        select_label[j].options = (option_t *)malloc(select_label[j].option_num * sizeof(option_t));
+        for (i = 0; i<select_label[j].option_num;i++)
+        {
+            (select_label[j].options+i)->value = i;
+            (select_label[j].options+i)->label = divs[j][i];/*mark*/
+        }        
+        j++;
+    }
+
+    sprintf(text, "%s", head_html);
+    strncat(text, nav, strlen(nav));
+    //get msg from ctrl server
+    //get 分辨率
+    //get fps
+
+    i =0;
+    while (&select_label[i])
+    {
+        if (i == 3)
+        {
+            strncat(div_text, "<br><br>", strlen("<br><br>"));//????
+        }
+        create_div_select(div_text, &select_label[i]);
+        i++;
+    }
+
+    sprintf(text, vivocontent, div_text);
+
+    fprintf(cgiOut, "%s", text);    
+    FUN_OUT();
 }
 
 int   view_page()

@@ -30,6 +30,7 @@
     </div>
     <div class="content">
         <div class="vinvout_right">
+			<div class="title">输出设置</div>
             <div class="action">		
                 <p>
                 <input class="but" id="Play" type="button" value="Play"  onclick="javascript:PlayVideo()"/>
@@ -64,12 +65,31 @@ Encode frame rate (1~30) :</label>
             <br />
         </div>
         <div class="vivout_right2">
+			<div class="title">输入设置</div>
             <div class="action">
                 <p>
                 <input name="button" type="button" class="but" id="button"  onclick="javascript:PlayVideo()" value="Play"/>
                 <input name="button2" type="button" class="but" id="button2"  onclick="javascript:StopVideo()" value="Stop"/>
                 </p>
                 <p>
+				<div id = "vin_Resolution">
+				<label>Resolution </label>
+				<select>
+					<option value="0" >Auto</option>
+					<option value=65528 selected="selected"> 1080P</option>
+					<option value=65524 > 720P</option>
+				</select>
+				</div>
+				
+				<div id = "vin_fps">
+				<label>Frame Rate (fps)</label>
+				<select>
+					<option value="0" >5</option>
+					<option value=65528 selected="selected"> 6</option>
+					<option value=65524 > 10</option>
+				</select>
+			  </div>
+
                 <input name="button2" type="button" class="but" id="button3"  onclick="javascript:Record()" value="Start Record"/>
                 <input name="button2" type="button" class="but" id="button4"  onclick="javascript:FlySet(0, 'ForceIdr')" value="Force Idr"/>
                 </p>
@@ -94,11 +114,13 @@ Encode frame rate (1~30) :</label>
         <label for="ChangeCBRAvgBps">CBR average bitrate(kbps) :</label>
 <input type="text" class="textinput" id="ChangeCBRAvgBps" value="4000" maxlength=5 onkeypress="javascript:NumOnly()" onkeydown="javascript:FlySet(0, 'ChangeCBRAvgBps')" />
 -->
-            </div>
+          </div>
             <br />
         </div>
-        <div class="subscribe">
-        <>
+		<div class="vinvout_submit">
+		    <input name="button" type="button" class="apply" id="button"  onclick="javascript:setCamBasic()" value="确认"/> 
+			&nbsp;<input name="button" type="button" class="cancel" id="button"  onclick="javascript:showPage('csb')" value="取消"/>
+	  </div>
     </div>
     <div class="footer">
         <div >
