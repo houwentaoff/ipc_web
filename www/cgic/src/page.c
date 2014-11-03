@@ -1,29 +1,28 @@
 /*
- * =====================================================================================
- *       Copyright (c), 2013-2020, Goke.
- *       Filename:  page.c
- *
- *    Description:  
- *         Others:
- *   
- *        Version:  1.0
- *        Date:  2014/8/26 18:05:30
- *       Revision:  none
- *       Compiler:  xxx-gcc
- *
- *         Author:  Sean Hou , houwentaoff@gmail.com
- *   Organization:  Goke
- *        History:   Created by housir
- *
- * =====================================================================================
- */
+****************************************************************************
+*
+** \file      page.c
+**
+** \version   $Id$
+**
+** \brief    
+**
+** \attention THIS SAMPLE CODE IS PROVIDED AS IS. GOFORTUNE SEMICONDUCTOR
+**            ACCEPTS NO RESPONSIBILITY OR LIABILITY FOR ANY ERRORS OR 
+**            OMMISSIONS.
+**
+** (C) Copyright 2012-2013 by GOKE MICROELECTRONICS CO.,LTD
+**
+****************************************************************************
+*/
+
 #include "page.h"
 #include "include.h"
 
 #define MAXSTRLEN           (256)               /*错误通常由此引起 */
 #define SMALLHTML           (6*1024)            /*  */
 #define DIV_SELECT_SIZE     (512)            /* tmp, div select size*/
-
+static ParamData vinvout_params[VINVOUT_PARAMS_NUM];
 
 static int create_div_select(char * text, div_select_t * div_select)
 {
@@ -97,6 +96,73 @@ static int create_select_label(char * text, select_Label_t* select_label)
     return (0);
 }
 
+int Ambavivo_page_get_params()
+{
+    	int ret = 0;
+//	char name[NAME_LEN] = {0};
+//	int i;
+//	unsigned int stream_port[] = {STREAM0,STREAM1,STREAM2,STREAM3};
+
+//	ret = (&virtual_PageOps)->process_PostData(currentPage);
+	section_Param section_param;
+
+    FUN_IN();
+//	if (ret < 0) {
+//		fprintf(stdout,"1:set params failed");
+//	} else {
+//		if (ret == 0) {
+//			fprintf(stdout,"0:set params succeeded");
+//		} else {
+//			if (ret == 1) {
+				memset(&section_param, 0, sizeof(section_Param));
+				section_param.sectionName = "VINVOUT";
+				section_param.sectionPort = VINVOUT;
+				section_param.paramData = vinvout_params;
+				section_param.extroInfo = "";
+				section_param.paramDataNum = VINVOUT_PARAMS_NUM;
+//				if ((&virtual_PageOps)->get_section_param(currentPage, &section_param) == -1) {
+//					return -2;
+//				}
+                if (AmbaBase_get_section_param(&section_param)==-1)
+                {
+                    return (-2);
+                }
+                int i=0;
+                while (i< section_param.paramDataNum)
+                {
+                    PRT_DBG("name[%s] param_value[%s] value[%d]\n",
+                            section_param.paramData[i].param_name,
+                            section_param.paramData[i].param_value,
+                            section_param.paramData[i].value);
+                    i++;
+                }
+                /*-----------------------------------------------------------------------------
+                 *  set section_param.data to web
+                 *-----------------------------------------------------------------------------*/
+                
+
+//				for ( i = 0; i < STREAM_NUM; i++ ) {
+//					memset(name, 0, NAME_LEN);
+//					sprintf(name, "STREAM%d", i);
+//					memset(&section_param, 0, sizeof(section_Param));
+//					section_param.sectionName = name;
+//					section_param.sectionPort = stream_port[i];
+//					section_param.paramData = stream_params;
+//					section_param.extroInfo = "";
+//					section_param.paramDataNum = STREAM_NODE_LEN;
+//					if ((&virtual_PageOps)->get_section_param(currentPage, &section_param) == -1) {
+//						return -1;
+//					}
+//				}
+//			} else {
+//				fprintf(stdout,"1:unexpected error %d",ret);
+//			}
+//		}
+//	}
+    FUN_OUT();
+	return ret;
+}
+
 int vivo_page()
 {
     char *text=NULL;
@@ -123,7 +189,7 @@ int vivo_page()
     char *vin_Resolution[]={"Auto", "1080P", "720P", NULL};
     char *vin_fps[]={"5", "6", "7", NULL};
     char **divs[]={vin_Resolution, vin_fps};
-    char div_text[DIV_SELECT_SIZE];
+    char div_text[DIV_SELECT_SIZE]={0};
     int i,j;
 
     FUN_IN();
@@ -131,12 +197,12 @@ int vivo_page()
     text = (char *)malloc(SMALLHTML);/*6k may much small*/
     if (!text)
     {
-        PRINT_ERR("text is null\n");
+        PRT_ERR("text is null\n");
         return (GK_MEM_ERROR);
     }
 
     j=0;
-    while ((&select_label[j]) != 0){
+    while (j<2){
         select_label[j].options = (option_t *)malloc(select_label[j].option_num * sizeof(option_t));
         for (i = 0; i<select_label[j].option_num;i++)
         {
@@ -151,9 +217,10 @@ int vivo_page()
     //get msg from ctrl server
     //get 分辨率
     //get fps
+    Ambavivo_page_get_params();
 
     i =0;
-    while (&select_label[i])
+    while (i<2)/**/
     {
         if (i == 3)
         {
@@ -162,11 +229,16 @@ int vivo_page()
         create_div_select(div_text, &select_label[i]);
         i++;
     }
+    
+    char *pos=text;
+    pos += strlen(text);
 
-    sprintf(text, vivocontent, div_text);
+    sprintf(pos, vivocontent, div_text);
 
     fprintf(cgiOut, "%s", text);    
     FUN_OUT();
+
+    return (0);
 }
 
 int   view_page()
@@ -178,7 +250,7 @@ int   view_page()
     text = (char *)malloc(SMALLHTML);/*6k may much small*/
     if (!text)
     {
-        PRINT_ERR("text is null\n");
+        PRT_ERR("text is null\n");
         return (GK_MEM_ERROR);
     }        
 
@@ -187,7 +259,7 @@ int   view_page()
 
     fprintf(cgiOut, "%s", text);
 
-    PRINT_DBG("size[%d]text[%s]\n",strlen(text), text);
+    PRT_DBG("size[%d]text[%s]\n",strlen(text), text);
    
     free(text);
 
@@ -278,7 +350,7 @@ int   enc_page()
     text = (char *)malloc(SMALLHTML);
     if (!text)
     {
-        PRINT_ERR("text is null\n");
+        PRT_ERR("text is null\n");
         return (GK_MEM_ERROR);
     }    
     select_labeltop.options = (option_t *)malloc(select_labeltop.option_num * sizeof(option_t));
@@ -351,7 +423,7 @@ int   enc_page()
 <input type=\"button\" value=\"Cancel\" onclick = \"javascript:showPage('enc')\"/>";
     strncat(text, button_buf, strlen(button_buf));
     fprintf(cgiOut, "%s", text);
-    PRINT_DBG("size[%d]text[%s]\n",strlen(text), text);
+    PRT_DBG("size[%d]text[%s]\n",strlen(text), text);
     free(text);
 
     FUN_OUT();

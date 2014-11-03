@@ -12,7 +12,7 @@
 #define CGICDEBUGSTART \
     { \
         FILE *dout; \
-        dout = fopen("/tmp/debug", "a"); \
+        dout = fopen("/tmp/cgic_debug", "a"); \
     
 #define CGICDEBUGEND \
         fclose(dout); \

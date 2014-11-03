@@ -1,22 +1,20 @@
 /*
- * =====================================================================================
- *       Copyright (c), 2013-2020, Goke.
- *       Filename:  include.h
- *
- *    Description:  
- *         Others:
- *   
- *        Version:  1.0
- *        Date:  2014/8/26 19:39:42
- *       Revision:  none
- *       Compiler:  xxx-gcc
- *
- *         Author:  Sean Hou , houwentaoff@gmail.com
- *   Organization:  Goke
- *        History:   Created by housir
- *
- * =====================================================================================
- */
+****************************************************************************
+*
+** \file      include.h
+**
+** \version   $Id$
+**
+** \brief     
+**
+** \attention THIS SAMPLE CODE IS PROVIDED AS IS. GOFORTUNE SEMICONDUCTOR
+**            ACCEPTS NO RESPONSIBILITY OR LIABILITY FOR ANY ERRORS OR 
+**            OMMISSIONS.
+**
+** (C) Copyright 2012-2013 by GOKE MICROELECTRONICS CO.,LTD
+**
+****************************************************************************
+*/
 
 #ifndef __INCLUDE_H__
 #define __INCLUDE_H__
@@ -28,29 +26,17 @@
 #include "page.h"
 #include "params.h"
 #include "base.h"
+#include "utils.h"
 
 /* #####   DEBUG MACROS   ########################################################### */
 #define     INOUT_DEBUG                          1  /*1 is open , o is close */
-#define     DEMO_DEBUG                           1  /*1 is open , 0 is close */
-#define     DEMO_ERROR                           1  /*1 is open , 0 is close */
+#define     CGI_DEBUG                            1  /*1 is open , 0 is close */
+#define     CGI_ERROR                            1  /*1 is open , 0 is close */
 
 /* #####   EXPORTED MACROS   ######################################################## */
-#if CGICDEBUG
-#define CGICDEBUGSTART \
-	{ \
-		FILE *dout; \
-		dout = fopen("/tmp/demo_debug", "a"); \
-	
-#define CGICDEBUGEND \
-		fclose(dout); \
-	}
-#else /* CGICDEBUG */
-#define CGICDEBUGSTART
-#define CGICDEBUGEND
-#endif /* CGICDEBUG */
 
-#if DEMO_ERROR
-#define PRINT_ERR(fmt, args...)                                                                     \
+#if CGI_ERROR
+#define PRT_ERR(fmt, args...)                                                                       \
 do                                                                                                  \
 {                                                                                                   \
     FILE *dout;                                                                                     \
@@ -60,20 +46,20 @@ do                                                                              
     fclose(dout);                                                                                   \
 }while(0)/*DEMO_ERROR */
 #else
-#define PRINT_ERR(fmt, args...)
+#define PRT_ERR(fmt, args...)
 #endif/* */
 
-#if DEMO_DEBUG
-#define PRINT_DBG(fmt, args...)           \
+#if CGI_DEBUG
+#define PRT_DBG(fmt, args...)           \
     { \
 		FILE *dout; \
 		dout = fopen("/tmp/demo_debug", "a"); \
-        fprintf(dout, "Sean ===> %s():"fmt"\n", __func__, ##args); \
+        fprintf(dout, "Sean ===> %s():line[%d]:"fmt"\n", __func__, __LINE__, ##args); \
 		fclose(dout); \
 	}
 #else
-#define PRINT_DBG(fmt, args...)
-#endif/* DEMO_DEBUG */
+#define PRT_DBG(fmt, args...)
+#endif/* CGI_DEBUG */
 
 #if INOUT_DEBUG
 #define FUN_IN(fmt, args...) \

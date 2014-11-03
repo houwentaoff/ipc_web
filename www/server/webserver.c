@@ -33,6 +33,7 @@
 #include <assert.h>
 
 #include "webserver.h"
+#include "video.h"
 
 #define INOUT_DEBUG           1  	/*1 is open , o is close */
 #define APP_DEBUG             1     /*1 is open , 0 is close */
@@ -69,7 +70,10 @@ static gk_vout_mode			vout_map;
 static int sockfd = -1;
 static int sockfd2 = -1;
 
+extern CAMCONTROL_Encode_Cmd g_stEncodeInfo[4];
+
 static int set_vinvout_param(char * section_name);
+static int get_vinvout_param(char * section_name);
 
 static Mapping VinVoutMap[] = {
 	{"vin_enable",			&vin_map.enable,				MAP_TO_U32,	0.0,		0,		0.0,		0.0,	},
@@ -84,7 +88,7 @@ static Mapping VinVoutMap[] = {
 	{NULL,			NULL,						-1,	0.0,					0,	0.0,	0.0,		},
 };
 static Section Params[] = {
-	{"VINVOUT",		VinVoutMap,		get_func_null,		set_vinvout_param},
+	{"VINVOUT",		VinVoutMap,		get_vinvout_param,		set_vinvout_param},
 //	{"ENCODE",		EncodeMap,		get_func_null,		set_encode_param},
 //	{"STREAM0",		Stream0,		get_func_null,		set_stream_param},
 //	{"STREAM1",		Stream1,		get_func_null,		set_stream_param},
@@ -118,6 +122,16 @@ int receive_text(u8 *pBuffer, u32 size)
 		PRT_ERR("recv() returns %d.", retv);
 		return -1;
 	}
+	return retv;
+}
+
+static int get_vinvout_param(char * section_name)
+{
+	int streamID = 0, retv = 0;
+    FUN_IN();
+	PRT_DBG("Section [%s] setting:\n", section_name);
+    vin_map.frame_rate = g_stEncodeInfo[0].framerate;
+    FUN_OUT("frame_rate[%d]\n", vin_map.frame_rate);
 	return retv;
 }
 
@@ -325,6 +339,7 @@ static int disconnect_server(void)
 
 static void main_loop(void)
 {
+    FUN_IN();
 	while (1) {
 		if (connect_server() < 0)
 			break;
@@ -339,6 +354,7 @@ static void main_loop(void)
 
 		disconnect_server();
 	}
+    FUN_OUT();
 }
 
 static int start_server(void)
@@ -379,7 +395,7 @@ static int create_server(void)
 		PRT_ERR("start_server");
 		return -1;
 	}
-	PRT_DBG(" [Done] Create encode_server\n");
+	PRT_DBG(" [Done] Create web_server\n");
 	return 0;
 }
 

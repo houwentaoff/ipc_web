@@ -70,7 +70,7 @@ const char * const head_html =  "<head>\
         </div>\
         <div class=\"title\">\
             <h1 align=\"center\">网 络 摄 像 机 产 品 演 示</h1>\
-            <p align=\"cente\">IPC Product demonstration</p>\
+            <p align=\"center\">IPC Product demonstration</p>\
         </div>\
 </div>";
 //common
