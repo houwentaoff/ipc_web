@@ -292,34 +292,37 @@ function add_to_pack(pack, name, value)
 
 function get_page_data(Param)
 {
-    for (var i = 0; i < Param.count; i++) {
-        var obj = $(Param.mem[i][0]);
-        if (obj != undefined) {
-            switch (obj.type) {
-                case "text" :
-                case "select-one" :
-                    Param.mem[i][1] = obj.value;
-                    break;
-                case "radio" :
-                    var radio = document.getElementsByName("n_" + Param.mem[i][0]);
-                    for (var j = 0; j < radio.length; j++) {
-                        if (radio[j].checked) {
-                            Param.mem[i][1] = radio[j].value;
+        for (var i = 0; i < Param.count; i++) {
+        var objtmp = $(Param.mem[i][0]);
+        if (objtmp != undefined){
+           var  obj = objtmp.lastChild;
+            if (obj != undefined) {
+                switch (obj.type) {
+                    case "text" :
+                    case "select-one" :
+                        Param.mem[i][1] = obj.value;
+                        break;
+                    case "radio" :
+                        var radio = document.getElementsByName("n_" + Param.mem[i][0]);
+                        for (var j = 0; j < radio.length; j++) {
+                            if (radio[j].checked) {
+                                Param.mem[i][1] = radio[j].value;
+                            }
                         }
-                    }
-                    break;
-                case "checkbox" :
-                    if (obj.checked) {
-                        Param.mem[i][1] = 1;
-                    } else {
-                        Param.mem[i][1] = 0;
-                    }
-                    break;
-                default :
-                    alert("Unknown obj name : [" + Param.mem[i][0] + "], type is : ["+obj.type+"].\n");
-                    break;
+                        break;
+                    case "checkbox" :
+                        if (obj.checked) {
+                            Param.mem[i][1] = 1;
+                        } else {
+                            Param.mem[i][1] = 0;
+                        }
+                        break;
+                    default :
+                        alert("Unknown obj name : [" + Param.mem[i][0] + "], type is : ["+obj.type+"].\n");
+                        break;
+                }
             }
-        }
+       }
     }
 }
 
@@ -327,7 +330,10 @@ function set_page_data(Param)
 {
     var i;
     for (i = 0; i < Param.count; i++) {
-        var obj = $(Param.mem[i][0]);
+        var objtmp = $(Param.mem[i][0]);
+        if (objtmp != undefined){
+            var obj = objtmp.lastChild;
+        ;
         if (obj != undefined) {
             switch (obj.type) {
                 case "text" :
@@ -356,6 +362,7 @@ function set_page_data(Param)
                     break;
             }
         }
+     }
     }
 }
 

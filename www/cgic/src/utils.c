@@ -188,8 +188,9 @@ int decode_Param (section_Param* section_param, char* recv)
 	int i = 0;
 	int index = 0;
 	int pageFlag = FALSE;
-
+    
 	char* buf = NULL;
+    FUN_IN("recv[%s]\n", recv);
 	for (i = 0; i < section_param->paramDataNum; i++ ) {
 		index = 0;
 		buf = strstr(recv,section_param->paramData[i].param_name);
@@ -208,16 +209,19 @@ int decode_Param (section_Param* section_param, char* recv)
 				buf++;
 
 			}
+            PRT_DBG("param_value[%s]\n", param_value);
 			param_value[index] = '\0';
 			if (param_value[0] != '"') {
 				section_param->paramData[i].value = atoi(param_value);
 			} else {
 				section_param->paramData[i].value = -100;
-				memset(section_param->paramData[i].param_value,0,128);
-				strcat(section_param->paramData[i].param_value,param_value);
+				memset(section_param->paramData[i].param_value, 0, 128);/*128 byte? ->0 ?*/
+				strcat(section_param->paramData[i].param_value, param_value);
 			}
-		}
-	}
+        }
+    }
+
+    FUN_OUT();
 	return 0;
 }
 //AmbaSocket
@@ -338,7 +342,7 @@ int send_get_request (section_Param* section_param, int RequestId, Message Msg)
 
 	if ((ack.result == 0) && ((strlen(ackmsg)) > 0)) {
 		if(ack.info_length == strlen(ackmsg)) {
-			decode_Param(section_param,ackmsg);
+			decode_Param(section_param, ackmsg);
 		} else {
 			LOG_MESSG("recv error");
 		}

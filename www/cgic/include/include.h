@@ -27,6 +27,7 @@
 #include "params.h"
 #include "base.h"
 #include "utils.h"
+#include "map.h"
 
 /* #####   DEBUG MACROS   ########################################################### */
 #define     INOUT_DEBUG                          1  /*1 is open , o is close */
@@ -54,7 +55,7 @@ do                                                                              
     { \
 		FILE *dout; \
 		dout = fopen("/tmp/demo_debug", "a"); \
-        fprintf(dout, "Sean ===> %s():line[%d]:"fmt"\n", __func__, __LINE__, ##args); \
+        fprintf(dout, "===> %s():line[%d]:"fmt"\n", __func__, __LINE__, ##args); \
 		fclose(dout); \
 	}
 #else
@@ -66,7 +67,7 @@ do                                                                              
 	{ \
 		FILE *dout; \
 		dout = fopen("/tmp/demo_debug", "a"); \
-        fprintf(dout, "Sean ===> %s():"fmt"\n", __func__, ##args); \
+        fprintf(dout, "===> %s():"fmt"\n", __func__, ##args); \
 		fclose(dout); \
 	}
 #else /* INOUT_DEBUG */
@@ -78,7 +79,7 @@ do                                                                              
 	{ \
 		FILE *dout; \
 		dout = fopen("/tmp/demo_debug", "a"); \
-        fprintf(dout, "Sean <=== %s():"fmt"\n", __func__, ##args); \
+        fprintf(dout, "<=== %s():"fmt"\n", __func__, ##args); \
 		fclose(dout); \
 	}
 #else /* INOUT_DEBUG */

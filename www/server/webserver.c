@@ -33,7 +33,7 @@
 #include <assert.h>
 
 #include "webserver.h"
-//#include "video.h"
+#include "video.h"
 
 #define INOUT_DEBUG           1  	/*1 is open , o is close */
 #define APP_DEBUG             1     /*1 is open , 0 is close */
@@ -48,7 +48,7 @@
 #endif
 
 #if APP_DEBUG
-#define PRT_DBG(fmt, args...)         printf("%s():"fmt"\n", __func__, ##args)/*  */
+#define PRT_DBG(fmt, args...)         printf("%s():line[%d]"fmt"\n", __func__, __LINE__, ##args)/*  */
 #else
 #define PRT_DBG(fmt, args...)
 #endif
@@ -70,10 +70,10 @@ static gk_vout_mode			vout_map;
 static int sockfd = -1;
 static int sockfd2 = -1;
 
-//extern CAMCONTROL_Encode_Cmd g_stEncodeInfo[4];
+extern CAMCONTROL_Encode_Cmd g_stEncodeInfo[4];
 
 static int set_vinvout_param(char * section_name);
-static int get_vinvout_param(char * section_name);
+static int get_vinvout_param(char * section_name, u32 info);
 
 static Mapping VinVoutMap[] = {
 	{"vin_enable",			&vin_map.enable,				MAP_TO_U32,	0.0,		0,		0.0,		0.0,	},
@@ -101,18 +101,73 @@ static Section Params[] = {
 	{NULL,			NULL,			NULL,				NULL}
 };
 
+
+int output_params(Mapping * Map, char ** pContentOut)
+{
+	char * content = *pContentOut;
+	int	i = 0;
+	u32	unsigned_value;
+	int	signed_value;
+
+	content[0] = '\0';
+	while (NULL != Map[i].TokenName) {
+		sprintf(content, "%s%s", content, Map[i].TokenName);
+		switch (Map[i].Type) {
+		case MAP_TO_U32:
+			unsigned_value = * (u32 *) (Map[i].Address);
+			sprintf(content, "%s = %u\n", content, unsigned_value);
+			break;
+		case MAP_TO_U16:
+			unsigned_value = * (u16 *) (Map[i].Address);
+			sprintf(content, "%s = %u\n", content, unsigned_value);
+			break;
+		case MAP_TO_U8:
+			unsigned_value = * (u8 *) (Map[i].Address);
+			sprintf(content, "%s = %u\n", content, unsigned_value);
+			break;
+		case MAP_TO_S32:
+			signed_value = * (int *) (Map[i].Address);
+			sprintf(content, "%s = %d\n", content, signed_value);
+			break;
+		case MAP_TO_S16:
+			signed_value = * (s16 *) (Map[i].Address);
+			sprintf(content, "%s = %d\n", content, signed_value);
+			break;
+		case MAP_TO_S8:
+			signed_value = * (s8 *) (Map[i].Address);
+			sprintf(content, "%s = %d\n", content, signed_value);
+			break;
+		case MAP_TO_DOUBLE:
+			sprintf(content, "%s = %.2lf\n", content, * (double *) (Map[i].Address));
+			break;
+		case MAP_TO_STRING:
+			sprintf(content, "%s = \"%s\"\n", content, (char *) (Map[i].Address));
+			break;
+		default:
+			sprintf(content, "%s : [%d] unknown value type.\n", content, Map[i].Type);
+			PRT_ERR("== Output Parameters == Unknown value type in the map definition !!!\n");
+			break;
+		}
+		++i;
+	}
+	return 0;
+}
+
 int send_text(u8 *pBuffer, u32 size)
 {
+    FUN_IN("content[%s]\n", pBuffer);
 	int retv = send(sockfd2, pBuffer, size, MSG_NOSIGNAL);
 	if ((u32)retv != size) {
 		PRT_ERR("send() returns %d.", retv);
 		return -1;
 	}
+    FUN_OUT();
 	return 0;
 }
 
 int receive_text(u8 *pBuffer, u32 size)
 {
+    FUN_IN();
 	int retv = recv(sockfd2, pBuffer, size, MSG_WAITALL);
 	if (retv <= 0) {
 		if (retv == 0) {
@@ -122,15 +177,16 @@ int receive_text(u8 *pBuffer, u32 size)
 		PRT_ERR("recv() returns %d.", retv);
 		return -1;
 	}
+    FUN_OUT("content[%s]\n", pBuffer);
 	return retv;
 }
 
-static int get_vinvout_param(char * section_name)
+static int get_vinvout_param(char * section_name, u32 info)
 {
 	int streamID = 0, retv = 0;
     FUN_IN();
 	PRT_DBG("Section [%s] setting:\n", section_name);
-    vin_map.frame_rate = 1122;//g_stEncodeInfo[0].framerate;
+    vin_map.frame_rate = g_stEncodeInfo[0].framerate;
     FUN_OUT("frame_rate[%d]\n", vin_map.frame_rate);
 	return retv;
 }
@@ -229,8 +285,8 @@ static int do_get_param(Request *req)
 	} else {
 		retv = (*section->get)(section->name, req->info);
         //		MARK
-//		retv = mw_output_params(section->map, &content);
-		PRT_DBG("\n%s\n", content);
+		retv = output_params(section->map, &content);
+		PRT_DBG("content[%s]\n", content);
 		ack.result = retv;
 		ack.info = strlen(content);
 		send_text((u8 *)&ack, sizeof(ack));

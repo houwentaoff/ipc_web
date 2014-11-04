@@ -26,13 +26,6 @@
 
 #include <include.h>
 
-typedef struct {
-    char * tokenname;
-    int (*page)();
-    int (*get_param)();
-    int (*set_param)();
-}PageMapping;
-
 PageMapping pagemap[] = {
     {"view_page", view_page, NULL, NULL},
     {"enc_page", enc_page, NULL, NULL},

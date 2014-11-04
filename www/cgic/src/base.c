@@ -58,9 +58,9 @@ const char * const head_html =  "<head>\
 <meta http-equiv=\"Content-Type\" content=\"text/html;charset=UTF-8\">\
 <title>liveview</title>\
 <link href=\"../css/goke_1.css\" rel=\"stylesheet\" type=\"text/css\" />\
-<script language=\"JavaScript\" src=\"../js/cs_AJAXInteraction.js\"></script>\
-<script language=\"JavaScript\" src=\"../js/cs_page.js\"></script>\
-<script language=\"JavaScript\" src=\"../js/cs_style.js\"></script>\
+<script language=\"JavaScript\" src=\"../js/AJAXInteraction.js\"></script>\
+<script language=\"JavaScript\" src=\"../js/page.js\"></script>\
+<script language=\"JavaScript\" src=\"../js/style.js\"></script>\
 </head>\
 <body %s>\
 <div class=\"container\">\
@@ -153,27 +153,6 @@ const char * const vivocontent= "\
                 <input class=\"but\" id=\"Record\" type=\"button\" value=\"Start Record\"  onclick=\"javascript:Record()\"/>\
                 <input class=\"but\" id=\"ForceIdr\" type=\"button\" value=\"Force Idr\"  onclick=\"javascript:FlySet(0, 'ForceIdr')\"/>\
                 </p>\
-                <!--     		<label for=\"ChangeFr\"><br />\
-Encode frame rate (1~30) :</label>\
-<select id=\"ChangeFr\" onkeydown=\"javascript:FlySet(0, 'ChangeFr')\">\
-<option value=8533333 >60</option>\
-<option value=17066667 selected>30</option>\
-<option value=20480000 >25</option>\
-<option value=25600000 >20</option>\
-<option value=34133333 >15</option>\
-<option value=51200000 >10</option>\
-<option value=85333333 >6</option>\
-<option value=102400000 >5</option>\
-<option value=128000000 >4</option>\
-<option value=170666667 >3</option>\
-<option value=256000000 >2</option>\
-<option value=512000000 >1</option>\
-</select>\
-<label for=\"ChangeVBRMinBps\" <?cs if:brcmode==\"CBR\" ?><?cs var:\"style=display:none\"?> <?cs /if ?>></label>\
-        <p>&nbsp;</p>\
-        <label for=\"ChangeCBRAvgBps\">CBR average bitrate(kbps) :</label>\
-<input type=\"text\" class=\"textinput\" id=\"ChangeCBRAvgBps\" value=\"4000\" maxlength=5 onkeypress=\"javascript:NumOnly()\" onkeydown=\"javascript:FlySet(0, 'ChangeCBRAvgBps')\" />\
--->\
             </div>\
             <br />\
         </div>\

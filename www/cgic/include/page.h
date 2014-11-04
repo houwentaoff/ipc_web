@@ -68,6 +68,28 @@ typedef struct {
 	char *exprop;
 }input_t;
 
+typedef enum {
+	VIDEO_OPS_AUTO,
+	VIDEO_OPS_1080P,
+	VIDEO_OPS_720P,
+	VIDEO_OPS_NUM
+}VIDEO_MODE_OPTIONS;
+
+typedef enum {
+	FPS_OPS_AUTO,
+	FPS_OPS_5,
+	FPS_OPS_6,
+	FPS_OPS_10,
+	FPS_OPS_13,
+	FPS_OPS_15,
+	FPS_OPS_25,
+	FPS_OPS_29,
+	FPS_OPS_30,
+	FPS_OPS_59,
+	FPS_OPS_60,
+	FPS_OPS_NUM
+}FPS_OPTIONS;
+
 extern int   view_page();
 extern int   enc_page();
 extern int   pm_page();

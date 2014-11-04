@@ -19,6 +19,14 @@
 #define __MAP__H__
 
 #include <stdio.h>
+#include "basetypes.h"
+
+typedef struct {
+    char * tokenname;
+    int (*page)();
+    int (*get_param)();
+    int (*set_param)();
+}PageMapping;
 
 typedef enum {
 	MAP_TO_U32 = 0,

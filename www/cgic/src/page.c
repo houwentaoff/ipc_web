@@ -24,6 +24,28 @@
 #define DIV_SELECT_SIZE     (512)            /* tmp, div select size*/
 static ParamData vinvout_params[VINVOUT_PARAMS_NUM];
 
+static int vivo_create_params () {
+	memset(vinvout_params, 0, sizeof(ParamData)*VINVOUT_PARAMS_NUM);
+	strcat(vinvout_params[VIN_MODE].param_name, "vin_mode");
+	vinvout_params[VIN_MODE].value = 0;
+
+	strcat(vinvout_params[VIN_FRAMERATE].param_name, "vin_framerate");
+	vinvout_params[VIN_FRAMERATE].value =0;
+
+	strcat(vinvout_params[VIN_MIRROR].param_name, "vin_mirror");
+	vinvout_params[VIN_MIRROR].value = -1;
+
+	strcat(vinvout_params[VIN_BAYER].param_name, "vin_bayer");
+	vinvout_params[VIN_BAYER].value = -1;
+
+	strcat(vinvout_params[VOUT_TYPE].param_name, "vout_type");
+	vinvout_params[VOUT_TYPE].value = VOUT_CVBS;
+
+	strcat(vinvout_params[VOUT_MODE].param_name, "vout_mode");
+	vinvout_params[VOUT_MODE].value = VIDEO_MODE_480I;
+	return 0;
+}
+
 static int create_div_select(char * text, div_select_t * div_select)
 {
     int num = div_select->option_num;
@@ -113,6 +135,7 @@ int Ambavivo_page_get_params()
 	section_Param section_param;
 
     FUN_IN();
+    vivo_create_params();
 //	if (ret < 0) {
 //		fprintf(stdout,"1:set params failed");
 //	} else {
@@ -133,15 +156,7 @@ int Ambavivo_page_get_params()
                 {
                     return (-2);
                 }
-                int i=0;
-                while (i< section_param.paramDataNum)
-                {
-                    PRT_DBG("name[%s] param_value[%s] value[%d]\n",
-                            section_param.paramData[i].param_name,
-                            section_param.paramData[i].param_value,
-                            section_param.paramData[i].value);
-                    i++;
-                }
+
                 /*-----------------------------------------------------------------------------
                  *  set section_param.data to web
                  *-----------------------------------------------------------------------------*/
@@ -176,25 +191,25 @@ int vivo_page()
     {
         {
             .label      = "Resolution :",    
-            .id         = "vin_Resolution",
+            .id         = "vin_mode",
             .options    = NULL,
-            .option_num = 3,
+            .option_num = VIDEO_OPS_NUM,
             .selected   = 2,
             .action     = NULL,
         },
         {
-            .id         = "vin_fps",
+            .id         = "vin_framerate",
             .label      = "Frame Rate (fps) :",    
             .options    = NULL,
-            .option_num = 3,
+            .option_num = FPS_OPS_NUM,
             .selected   = 2,
             .action     = NULL,
         },
         NULL,
     };
-    char *vin_Resolution[]={"Auto", "1080P", "720P", NULL};
-    char *vin_fps[]={"5", "6", "7", NULL};
-    char **divs[]={vin_Resolution, vin_fps};
+    char *vin_mode[]={"Auto", "1080P", "720P", NULL};
+    char *vin_fps[]={"Auto", "5", "6", "10", "13", "15", "25", "29.97", "30", "59.94", "60", NULL};
+    char **divs[]={vin_mode, vin_fps};
     char div_text[DIV_SELECT_SIZE]={0};
     int i,j;
 
@@ -206,7 +221,46 @@ int vivo_page()
         PRT_ERR("text is null\n");
         return (GK_MEM_ERROR);
     }
+#define RESOLUTION  0
+    select_label[RESOLUTION].options = (option_t *)malloc(select_label[RESOLUTION].option_num * sizeof(option_t));
+    memset(select_label[RESOLUTION].options, 0, select_label[RESOLUTION].option_num * sizeof(option_t));
 
+    select_label[RESOLUTION].options[VIDEO_OPS_AUTO].value = VIDEO_MODE_AUTO;
+    select_label[RESOLUTION].options[VIDEO_OPS_AUTO].label = vin_mode[VIDEO_OPS_AUTO];
+    select_label[RESOLUTION].options[VIDEO_OPS_1080P].value = VIDEO_MODE_1080P;
+    select_label[RESOLUTION].options[VIDEO_OPS_1080P].label = vin_mode[VIDEO_OPS_1080P];
+    select_label[RESOLUTION].options[VIDEO_OPS_720P].value = VIDEO_MODE_AUTO;
+    select_label[RESOLUTION].options[VIDEO_OPS_720P].label = vin_mode[VIDEO_OPS_720P];
+
+#define FPS       1
+
+    select_label[FPS].options = (option_t *)malloc(select_label[FPS].option_num * sizeof(option_t));
+    memset(select_label[FPS].options, 0, select_label[FPS].option_num * sizeof(option_t));
+
+    select_label[FPS].options[FPS_OPS_AUTO].value = FPS_AUTO;
+    select_label[FPS].options[FPS_OPS_AUTO].label = vin_fps[FPS_OPS_AUTO];
+    select_label[FPS].options[FPS_OPS_5].value = FPS_5;
+    select_label[FPS].options[FPS_OPS_5].label = vin_fps[FPS_OPS_5];
+    select_label[FPS].options[FPS_OPS_6].value = FPS_6;
+    select_label[FPS].options[FPS_OPS_6].label = vin_fps[FPS_OPS_6];
+    select_label[FPS].options[FPS_OPS_10].value = FPS_10;
+    select_label[FPS].options[FPS_OPS_10].label = vin_fps[FPS_OPS_10];
+    select_label[FPS].options[FPS_OPS_13].value = FPS_13;
+    select_label[FPS].options[FPS_OPS_13].label = vin_fps[FPS_OPS_13];
+    select_label[FPS].options[FPS_OPS_15].value = FPS_15;
+    select_label[FPS].options[FPS_OPS_15].label = vin_fps[FPS_OPS_15];
+    select_label[FPS].options[FPS_OPS_25].value = FPS_25;
+    select_label[FPS].options[FPS_OPS_25].label = vin_fps[FPS_OPS_25];
+    select_label[FPS].options[FPS_OPS_29].value = FPS_29;
+    select_label[FPS].options[FPS_OPS_29].label = vin_fps[FPS_OPS_29];
+    select_label[FPS].options[FPS_OPS_30].value = FPS_30;
+    select_label[FPS].options[FPS_OPS_30].label = vin_fps[FPS_OPS_30];
+    select_label[FPS].options[FPS_OPS_59].value = FPS_59;
+    select_label[FPS].options[FPS_OPS_59].label = vin_fps[FPS_OPS_59];
+    select_label[FPS].options[FPS_OPS_60].value = FPS_60;
+    select_label[FPS].options[FPS_OPS_60].label = vin_fps[FPS_OPS_60];
+
+#if 0
     j=0;
     while (j<2){
         select_label[j].options = (option_t *)malloc(select_label[j].option_num * sizeof(option_t));
@@ -218,13 +272,24 @@ int vivo_page()
         }        
         j++;
     }
-
+#endif
     sprintf(text, "%s", head_html);
     strncat(text, nav, strlen(nav));
     //get msg from ctrl server
     //get 分辨率
     //get fps
     Ambavivo_page_get_params();
+    select_label[FPS].selected = FPS_1/vinvout_params[FPS].value;
+    PRT_DBG("selected[%d]\n", select_label[FPS].selected);
+    i=0;
+    while (i< VINVOUT_PARAMS_NUM)
+    {
+        PRT_DBG("name[%s] param_value[%s] value[%d]\n",
+                vinvout_params[i].param_name,
+                vinvout_params[i].param_value,
+                vinvout_params[i].value);
+        i++;
+    }
 
     i =0;
     while (i<2)/**/
@@ -246,6 +311,8 @@ int vivo_page()
     fprintf(cgiOut, "%s", text);    
     FUN_OUT();
 
+#undef  RESOLUTION
+#undef  FPS
     return (0);
 }
 
