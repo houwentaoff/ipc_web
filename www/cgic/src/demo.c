@@ -26,6 +26,24 @@
 
 #include <include.h>
 
+typedef struct {
+    char * tokenname;
+    int (*page)();
+    int (*get_param)();
+    int (*set_param)();
+}PageMapping;
+
+PageMapping pagemap[] = {
+    {"view_page", view_page, NULL, NULL},
+    {"enc_page", enc_page, NULL, NULL},
+    {"pm_page", pm_page, NULL, NULL},
+    {"osd_page", osd_page, NULL, NULL},
+    {"sys_page", sys_page, NULL, NULL},
+    {"vivo_page", vivo_page, NULL, NULL},
+    {NULL, NULL, NULL, NULL},
+};
+
+#if 0
  int (*page_list[])()={
      NULL,
      view_page,
@@ -36,35 +54,26 @@
      vivo_page,
 
  };
-
+#endif
 
 static unsigned int page_value = ENCPAGE;/*默认的怎么用*/
 
 static GK_ErrorCode_e switchPage ()
 {
 //	char* browser;
-    const char *page_inf[]={
-        "",
-        "view_page",
-        "enc_page",
-        "pm_page",
-        "osd_page",
-        "sys_page",
-        "vivo_page"
-    };
-    int page_index;
+	int page_index;
 
-//	if (cgiFormIntegerBounded("page", &page_index, VIEWPAGE, sizeof(page_list)/sizeof(char *), 0) != cgiFormSuccess)
 	if (cgiFormIntegerBounded("page", &page_index, VIEWPAGE, PAGE_NUM-1, 0) != cgiFormSuccess)
     {
-        PRT_ERR("==>%s:line[%d], page_index[%d]\n", __func__, __LINE__, page_index);
+        PRT_ERR("index[%d]\n", page_index);
         return (GK_CGI_ARGV_ERROR);/*防止绕过密码直接操作,需要通过首页登陆才能进入*/
     }
     page_value = page_index;	
 //	browser = getenv("HTTP_USER_AGENT");
 //    fprintf(cgiOut, head_html, page_inf[page_index], "test page");
-    PRT_DBG ("page_index[%d]\nhead_html[%s]\nfun[0x%x]", page_index, head_html, (unsigned int)(page_list[page_value]));
-    (page_list[page_value])();
+//    PRT_DBG ("page_index[%d]\nhead_html[%s]\nfun[0x%x]", page_index, head_html, (unsigned int)(page_list[page_value]));
+//    (page_list[page_value])();
+    pagemap[page_value].page();
  //   fprintf(cgiOut, "</body>%s", foot_html);
 
     FUN_OUT();

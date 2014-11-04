@@ -113,7 +113,7 @@ int decode_Param (section_Param* section_param, char* recv);
 #define IMAGE_PORT 20002
 
 
-#define HOST "10.0.0.2"
+#define HOST "127.0.0.1"
 #define PORT 20000
 
 

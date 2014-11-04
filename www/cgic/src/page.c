@@ -32,7 +32,13 @@ static int create_div_select(char * text, div_select_t * div_select)
     char option_string[MAXSTRLEN] = {0};
     int i = 0;
 
-    sprintf(div_string, "<div id=\"%s\"><label>\"%s\"</label>", div_select->id, div_select->label);
+    sprintf(div_string, "<div id=\"%s\"><label>\"%s\"</label><select>", div_select->id, div_select->label);
+
+    strcat(div_string, ">\n");
+
+    strncat(text, div_string, strlen(div_string));
+    PRT_DBG("div_string[%s]\n", div_string);
+
     for (i = 0; i < num; i++)   {
         memset(option_string, 0, sizeof(option_string));
         if (div_select->options[i].value == div_select->selected) {
@@ -208,6 +214,7 @@ int vivo_page()
         {
             (select_label[j].options+i)->value = i;
             (select_label[j].options+i)->label = divs[j][i];/*mark*/
+            PRT_DBG("label[%s]\n", divs[j][i]);
         }        
         j++;
     }
@@ -234,6 +241,7 @@ int vivo_page()
     pos += strlen(text);
 
     sprintf(pos, vivocontent, div_text);
+    PRT_DBG("divtext[%s]\n", div_text);
 
     fprintf(cgiOut, "%s", text);    
     FUN_OUT();

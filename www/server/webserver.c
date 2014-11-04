@@ -33,7 +33,7 @@
 #include <assert.h>
 
 #include "webserver.h"
-#include "video.h"
+//#include "video.h"
 
 #define INOUT_DEBUG           1  	/*1 is open , o is close */
 #define APP_DEBUG             1     /*1 is open , 0 is close */
@@ -70,7 +70,7 @@ static gk_vout_mode			vout_map;
 static int sockfd = -1;
 static int sockfd2 = -1;
 
-extern CAMCONTROL_Encode_Cmd g_stEncodeInfo[4];
+//extern CAMCONTROL_Encode_Cmd g_stEncodeInfo[4];
 
 static int set_vinvout_param(char * section_name);
 static int get_vinvout_param(char * section_name);
@@ -130,7 +130,7 @@ static int get_vinvout_param(char * section_name)
 	int streamID = 0, retv = 0;
     FUN_IN();
 	PRT_DBG("Section [%s] setting:\n", section_name);
-    vin_map.frame_rate = g_stEncodeInfo[0].framerate;
+    vin_map.frame_rate = 1122;//g_stEncodeInfo[0].framerate;
     FUN_OUT("frame_rate[%d]\n", vin_map.frame_rate);
 	return retv;
 }

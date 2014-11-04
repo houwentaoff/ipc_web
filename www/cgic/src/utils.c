@@ -12,7 +12,7 @@
 #include <unistd.h>
 
 #include "utils.h"
-
+#include "include.h"
 
 #define ENC_PARAM_LEN 25
 #define STREAM_PARAM_LEN 44
@@ -34,6 +34,8 @@ int AmbaBase_get_section_param (section_Param* section_param)
 	Message msg;
 	AmbaPack pack;
 	pack_init(&pack);
+
+    FUN_IN();
 
 	pack.pack_msg(0, section_param->sectionName, \
 		section_param->extroInfo, &msg);

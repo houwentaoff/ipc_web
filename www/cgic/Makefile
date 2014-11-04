@@ -2,12 +2,9 @@ SUBDIRS=sample src
 
 include lib.rules
 
-#AR=ar
-#RANLIB=ranlib
+LIBS=-L./lib -lcgic
 
-LIBS=-L./ -lcgic
-
-all: libcgic.a cgictest.cgi capture ./sample/login.cgi
+all:lib/libcgic.a 
 		for d in $(SUBDIRS); do [ -d $$d ] && $(MAKE) -C $$d; done
 
 #install: libcgic.a
@@ -15,21 +12,22 @@ all: libcgic.a cgictest.cgi capture ./sample/login.cgi
 #	cp cgic.h /usr/local/include
 #	@echo libcgic.a is in /usr/local/lib. cgic.h is in /usr/local/include.
 
-install: cgictest.cgi
-	cp cgictest.cgi $(DESTDIR)
-libcgic.a: cgic.o cgic.h
-	rm -f libcgic.a
-	$(AR) rc libcgic.a cgic.o
-	$(RANLIB) libcgic.a
+install:
+	make -C src install
+lib/libcgic.a: src/cgic.o
+	rm -f lib/libcgic.a
+	$(AR) rc src/libcgic.a src/cgic.o
+	$(RANLIB) src/libcgic.a
+	@mv src/libcgic.a lib/
 
-cgictest.cgi: cgictest.o libcgic.a
-	$(CC) cgictest.o -o cgictest.cgi ${LIBS}
+#cgictest.cgi: cgictest.o libcgic.a
+#	$(CC) cgictest.o -o cgictest.cgi ${LIBS}
 
-capture: capture.o libcgic.a
-	$(CC) capture.o -o capture ${LIBS}
+#capture: capture.o libcgic.a
+#	$(CC) capture.o -o capture ${LIBS}
 
-sample/login.cgi:libcgic.a sample/login.o
-	$(MAKE) -C sample 
+#sample/login.cgi:libcgic.a sample/login.o
+#	$(MAKE) -C sample 
 
 clean:
 	for d in $(SUBDIRS); do [ -d $$d ] && $(MAKE) -C $$d clean; done
