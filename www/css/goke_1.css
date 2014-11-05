@@ -349,3 +349,11 @@ right:标记元素靠右，左边无文字绕排； */
 	left: 165px;
 	top: 3px;
 }
+
+#status{
+	position:absolute;
+	left: 501px;
+	top: 7px;
+	height: 26px;
+	width: 192px;
+}

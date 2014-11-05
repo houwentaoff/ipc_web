@@ -458,7 +458,7 @@ function setCamBasic()
         }
 
         showStatus("Setting camera basic parameters ....");
-        var url = "/cgi-bin/csb.py";
+        var url = "/cgi-bin/setroute.cgi";
         var ai = new AJAXInteraction(url, display);
         var req_cnt = 0;
         var postData = '';

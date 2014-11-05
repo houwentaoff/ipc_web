@@ -2,14 +2,13 @@ include ../lib.rules
 
 default:all
 
-all:demo.cgi 
-#route.cgi
+all:demo.cgi setroute.cgi
 
 demo.cgi: base.o utils.o page.o demo.o
 	$(CC) $^ -o $@ $(CFLAGS)
 
-#route.cgi: base.o page.o route.o
-#	$(CC) $^ -o $@ $(CFLAGS)
+setroute.cgi: base.o utils.o base_page.o page.o setroute.o
+	$(CC) $^ -o $@ $(CFLAGS)
 
 .PHONY:clean
 clean:
@@ -17,4 +16,4 @@ clean:
 	-$(RM) *.o demo.cgi *.cgi route.cgi
 install:
 	@mkdir -p $(DESTDIR)
-	cp -a *.cgi $(DESTDIR)/www/cgi-bin/
+	cp -a *.cgi $(DESTDIR)

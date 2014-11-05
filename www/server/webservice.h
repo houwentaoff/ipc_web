@@ -1,9 +1,9 @@
 /*
 ****************************************************************************
 *
-** \file      webserver.h
+** \file      webservice.h
 **
-** \version   $Id$
+** \version   $Id: webservice.h 2309 2014-11-05 02:05:55Z houwentao $
 **
 ** \brief     
 **
@@ -15,8 +15,8 @@
 **
 ****************************************************************************
 */
-#ifndef __WEBSERVER_H__
-#define __WEBSERVER_H__
+#ifndef __WEBSERVICE_H__
+#define __WEBSERVICE_H__
 
 
 //#define SERVER_CONFIG_PATH		"/etc/ambaipcam/mediaserver"

@@ -1,22 +1,21 @@
 /*
- * =====================================================================================
- *       Copyright (c), 2013-2020, Goke.
- *       Filename:  demo.c
- *
- *    Description:  ipc web的一个例子
- *         Others:
- *   
- *        Version:  1.0
- *        Date:  2014/8/26 16:45:58
- *       Revision:  none
- *       Compiler:  xxx-gcc
- *
- *         Author:  Sean Hou , houwentaoff@gmail.com
- *   Organization:  Goke
- *        History:   Created by housir
- *
- * =====================================================================================
- */
+****************************************************************************
+*
+** \file      demo.c
+**
+** \version   $Id$
+**
+** \brief     ipc_web example
+**
+** \attention THIS SAMPLE CODE IS PROVIDED AS IS. GOFORTUNE SEMICONDUCTOR
+**            ACCEPTS NO RESPONSIBILITY OR LIABILITY FOR ANY ERRORS OR 
+**            OMMISSIONS.
+**
+** (C) Copyright 2012-2013 by GOKE MICROELECTRONICS CO.,LTD
+**
+****************************************************************************
+*/
+
 #if 0
 #define SERVER_NAME cgiServerName
 #endif

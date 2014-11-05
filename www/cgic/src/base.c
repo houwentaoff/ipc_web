@@ -142,6 +142,7 @@ Encode frame rate (1~30) :</label>\
 //menu2 
 const char * const vivocontent= "\
 <div class=\"content\">\
+    <div id=\"status\">&nbsp; </div>\
         <div class=\"vinvout_right\">\
 			<div class=\"title\">输出设置</div>\
             <div class=\"action\">		\
