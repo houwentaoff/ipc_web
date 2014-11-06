@@ -694,7 +694,7 @@ int send_text(u8 *pBuffer, u32 size)
     }
     else 
     {
-        FUN_IN("content[%s]size[%d]\n", pBuffer, size);
+        FUN_IN("not ACK content[%s]size[%d]\n", pBuffer, size);
     }
 	int retv = send(sockfd2, pBuffer, size, MSG_NOSIGNAL);
 	if ((u32)retv != size) {
@@ -724,7 +724,7 @@ int receive_text(u8 *pBuffer, u32 size)
     }
     else 
     {
-        FUN_OUT("content[%s]size[%d]\n", pBuffer, size);
+        FUN_OUT("not ACK content[%s]size[%d]\n", pBuffer, size);
     }
 	return retv;
 }

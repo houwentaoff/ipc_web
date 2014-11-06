@@ -54,25 +54,27 @@ const char * const onload = "\
 onload=\"OnLoadActiveX(\'192.168.103.47\', 0, 1, 0, 1);\
  ";
 
-const char * const head_html =  "<head>\
-<meta http-equiv=\"Content-Type\" content=\"text/html;charset=UTF-8\">\
-<title>liveview</title>\
-<link href=\"../css/goke_1.css\" rel=\"stylesheet\" type=\"text/css\" />\
-<script language=\"JavaScript\" src=\"../js/AJAXInteraction.js\"></script>\
-<script language=\"JavaScript\" src=\"../js/page.js\"></script>\
-<script language=\"JavaScript\" src=\"../js/style.js\"></script>\
-</head>\
-<body %s>\
-<div class=\"container\">\
-    <div class=\"header\">\
-        <div class=\"logo\">\
-            <img src=\"../img/goke.png\" name=\"banner\" width=\"181\" height=\"78\" id=\"banner\" />\
-        </div>\
-        <div class=\"title\">\
-            <h1 align=\"center\">网 络 摄 像 机 产 品 演 示</h1>\
-            <p align=\"center\">IPC Product demonstration</p>\
-        </div>\
-</div>";
+const char * const head_html =  "<!DOCTYPE HTML PUBLIC  \"-//W3C//DTD HTML 4.0 Transitional//EN\"\"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\
+<html>\
+    <head>\
+        <meta http-equiv=\"Content-Type\" content=\"text/html;charset=UTF-8\">\
+        <title>liveview</title>\
+            <link href=\"../css/goke_1.css\" rel=\"stylesheet\" type=\"text/css\" />\
+            <script language=\"JavaScript\" src=\"../js/AJAXInteraction.js\"></script>\
+            <script language=\"JavaScript\" src=\"../js/page.js\"></script>\
+            <script language=\"JavaScript\" src=\"../js/style.js\"></script>\
+    </head>\
+    <body %s>\
+        <div class=\"container\">\
+            <div class=\"header\">\
+                <div class=\"logo\">\
+                    <img src=\"../img/goke.png\" name=\"banner\" width=\"181\" height=\"78\" id=\"banner\" />\
+                </div>\
+                <div class=\"title\">\
+                    <h1 align=\"center\">网 络 摄 像 机 产 品 演 示</h1>\
+                    <p align=\"center\">IPC Product demonstration</p>\
+                </div>\
+            </div>";
 //common
 const char * const nav="\
 <div class=\"leftnav\">\
@@ -178,14 +180,20 @@ const char * const vivocontent= "\
 			&nbsp;<input name=\"button\" type=\"button\" class=\"cancel\" id=\"button\"  onclick=\"javascript:showPage('csb')\" value=\"取消\"/>\
 	  </div>\
     </div>\
-                                 ";
+ ";
 
 const char * const body_html = "<body %s>";
-const char * const foot_html = "<div id=\"footer\">\n\
-			Copyright &copy 2014 GOKE Inc. All right reserved.\n\
-                </div>\n\
-	</body>\n\
-	</html>";
+const char * const foot_html = "\
+<div class=\"footer\">\
+        <div >\
+            <p>&nbsp;</p>\
+            <p>公司地址：长沙市长星路389号 联系电话：0731-88218855 官方网站:www.gokemicro.com </p>\
+            <p>国科微电子有限公司 版权所有</p>\
+        </div>\
+    </div>\
+</div>\
+</body>\
+</html>";
 
 //3 str need to insert.
 char* const const head_footHtml = "<!DOCTYPE HTML PUBLIC  \"-//W3C//DTD HTML 4.0 Transitional//\

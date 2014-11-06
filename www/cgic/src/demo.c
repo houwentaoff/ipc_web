@@ -66,7 +66,7 @@ static GK_ErrorCode_e switchPage ()
 //    PRT_DBG ("page_index[%d]\nhead_html[%s]\nfun[0x%x]", page_index, head_html, (unsigned int)(page_list[page_value]));
 //    (page_list[page_value])();
     pagemap[page_value].page();
- //   fprintf(cgiOut, "</body>%s", foot_html);
+    fprintf(cgiOut, "%s", foot_html);
 
     FUN_OUT();
 

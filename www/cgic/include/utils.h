@@ -54,14 +54,14 @@ typedef struct
 
 typedef struct
 {
-	unsigned int result;
+	unsigned int result;/*ret of function:请求函数的返回值 */
 	unsigned int info_length;
 }ack_Msg;
 
 typedef struct
 {
-	int req_cnt;
-	char section_Name[MSG_NAME_LEN];
+	int req_cnt;/*count of req :0 is all reqed*/
+	char section_Name[MSG_NAME_LEN];/*IMAGE VIVO ... */
 	char msg[MSG_INFO_LEN];
 }Message;
 

@@ -173,6 +173,7 @@ int pack_msg (int req_cnt, char * sectionName, char * extroInfo, Message * msg)
 	memset(msg->msg,0,sizeof(msg->msg));
 	strcat(msg->section_Name, sectionName);
 	strcat(msg->msg, extroInfo);
+    PRT_DBG("extroInfo[%s]\n", extroInfo);
 
 	return 0;
 }

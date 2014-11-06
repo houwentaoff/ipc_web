@@ -33,12 +33,15 @@ body{
 	;
 }
 .header{
-	height:auto;
-	width:auto;
-	padding:5px;
+	height:111px;
+	width:1282px;
+	padding:0px;
 	background-color:#f2f2f2;
-	clear:right;
+	clear:none;
+	position:absolute;
+
 //    display:inline;
+	float: none;
 }
 .leftnav{
 	float: none;
@@ -75,8 +78,8 @@ right:标记元素靠右，左边无文字绕排； */
 
 .content{
 //	margin: 0 200px 0 200px;
-	height:553px;
-	width:1166px;
+	height:554px;
+	width:1127px;
 
 
 
@@ -97,8 +100,8 @@ right:标记元素靠右，左边无文字绕排； */
 	margin-right: 0;
 	margin-bottom: 0;
 	margin-left: 161px;
-	left: -6px;
-	top: 94px;
+	left: 35px;
+	top: 108px;
 }
 
 #fl_menu{
@@ -188,8 +191,8 @@ right:标记元素靠右，左边无文字绕排； */
 
 
 //    z-index:2;
-	left: 617px;
-	top: 38px;
+	left: 587px;
+	top: 26px;
 	height: 287px;
 }
 .content .vivout_right2{
@@ -210,8 +213,8 @@ right:标记元素靠右，左边无文字绕排； */
 
 
 //    z-index:2;
-	left: 52px;
-	top: 40px;
+	left: 9px;
+	top: 24px;
 	height: 287px;
 }
 .label{
@@ -298,11 +301,16 @@ right:标记元素靠右，左边无文字绕排； */
 .header .logo{
 	float:left;
 	width:116px;
-	height:45;
-    margin:0px 0px 50px 0px;
+	height:88px;
+    margin:0px;
 }
 .header .title{
-	margin-right: 10px;
+	margin-right: 0px;
+	position:absolute;
+	width: 1120px;
+	height: 86px;
+	left: 157px;
+	top: 0px;
 }
 
 #vin_Resolution {
@@ -325,17 +333,18 @@ right:标记元素靠右，左边无文字绕排； */
 	position:absolute;
 }
 .content .title{
-	position:absolute;
+
 	left: 205px;
 	top: -9px;
 	background-color:#f2f2f2;
 	height: 40px;
 	width: 117px;
+	position:absolute;
 }
 .vinvout_submit{
 	position:absolute;
-	left: 496px;
-	top: 388px;
+	left: 457px;
+	top: 391px;
 	width: 262px;
 	height: 24px;
 }
@@ -352,8 +361,8 @@ right:标记元素靠右，左边无文字绕排； */
 
 #status{
 	position:absolute;
-	left: 501px;
-	top: 7px;
-	height: 26px;
-	width: 192px;
+	left: 328px;
+	top: 73px;
+	height: 27px;
+	width: 454px;
 }
