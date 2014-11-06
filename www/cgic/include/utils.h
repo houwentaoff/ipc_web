@@ -110,7 +110,8 @@ int decode_Param (section_Param* section_param, char* recv);
 //Socket Variable
 
 #define ENCODE_PORT 20000
-#define IMAGE_PORT 20002
+//#define IMAGE_PORT 20002
+#define IMAGE_PORT 20000
 
 
 #define HOST "127.0.0.1"

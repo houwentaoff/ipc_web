@@ -25,10 +25,21 @@
 #include <include.h>
 
 int cgiMain() {
+    int ret=-1;
     /* Send the content type, letting the browser know this is HTML */
     cgiHeaderContentType("text/html");
 
-    AmbaCamBasicPage_process_PostData(); 
+    ret = AmbaCamBasicPage_process_PostData(); 
+    if (ret < 0) {
+		fprintf(cgiOut,"1:set params failed");
+	} 
+    else
+    {
+        if (ret == 0) 
+        {
+			fprintf(cgiOut,"0:set params succeeded");
+		}
+    }
 
     return (0);
 }

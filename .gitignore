@@ -1,0 +1,16 @@
+*.o
+*.cgi
+*~
+*svn*
+*.swp
+*.back
+
+*.out
+
+tags
+*.files
+
+
+
+server/
+*lib/

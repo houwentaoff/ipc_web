@@ -615,7 +615,7 @@ static int load_default_params(Mapping * Map)
 	return 0;
 }
 
-static int config_params(Mapping *Map, const char * content)
+static int input_params(Mapping *Map, const char * content)
 {
     FUN_IN();
 	if (NULL == content) {
@@ -688,10 +688,17 @@ int output_params(Mapping * Map, char ** pContentOut)
 
 int send_text(u8 *pBuffer, u32 size)
 {
-    FUN_IN("content[%s]\n", pBuffer);
+    if (size == 8)
+    {
+        FUN_IN("ACK.result[%d]ACK.info[%d]\n", ((Ack *)pBuffer)->result, ((Ack *)pBuffer)->info);
+    }
+    else 
+    {
+        FUN_IN("content[%s]size[%d]\n", pBuffer, size);
+    }
 	int retv = send(sockfd2, pBuffer, size, MSG_NOSIGNAL);
 	if ((u32)retv != size) {
-		PRT_ERR("send() returns %d.", retv);
+		PRT_ERR("send() returns %d.\n", retv);
 		return -1;
 	}
     FUN_OUT();
@@ -710,7 +717,15 @@ int receive_text(u8 *pBuffer, u32 size)
 		PRT_ERR("recv() returns %d.", retv);
 		return -1;
 	}
-    FUN_OUT("content[%s]\n", pBuffer);
+
+    if (size == 8)
+    {
+        FUN_OUT("ACK.result[%d]ACK.info[%d]\n", ((Ack *)pBuffer)->result, ((Ack *)pBuffer)->info);
+    }
+    else 
+    {
+        FUN_OUT("content[%s]size[%d]\n", pBuffer, size);
+    }
 	return retv;
 }
 
@@ -863,8 +878,9 @@ static int do_set_param(Request *req)
          *  1.from cgi to map
          *  2.from map to board
          *-----------------------------------------------------------------------------*/
-		retv = config_params(section->map, content);
+		retv = input_params(section->map, content);
 		retv = (*section->set)(section->name);
+        PRT_DBG("ACK.result[%d] ack.info[%d]\n", ack.result, ack.info);
 		ack.result = ack.info = retv;
 	}
 	retv = send_text((u8 *)&ack, sizeof(ack));

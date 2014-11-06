@@ -147,6 +147,7 @@ int AmbaCamBasicPage_process_PostData ()
 #endif
         PRT_DBG("vin_fps_changed[%d]vv_changed[%d]\n",
                 vin_fps_changed, vv_changed);
+#if 0
         if (vin_fps_changed) 
         {
             memset(&msg, 0, sizeof(Message));
@@ -155,12 +156,15 @@ int AmbaCamBasicPage_process_PostData ()
 
             if ((transfer.send_set_request(REQ_SET_PARAM, IMAGE, msg) < 0)) 
             {
+                PRT_DBG();
                 return -1;
             }
         }
+#endif
         if (vv_changed) {
             if ((transfer.send_set_request(REQ_SET_PARAM, VINVOUT, vv_data)) < 0) 
             {
+                PRT_DBG();
                 return -1;
             }
         }
@@ -168,14 +172,17 @@ int AmbaCamBasicPage_process_PostData ()
         {
             return -1;
         }
+#if 0
         if (vin_fps_changed) 
         {
             strcat(image_data.msg, "slow_shutter = 1");
             if ((transfer.send_set_request(REQ_SET_PARAM, IMAGE, image_data)) < 0) 
             {
+                PRT_DBG();
                 return -1;
             }
         }
+#endif
         PRT_DBG();
         FUN_OUT();
         return 0;
