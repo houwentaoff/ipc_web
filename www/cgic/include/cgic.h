@@ -1,3 +1,22 @@
+/*
+ ****************************************************************************
+ *
+ ** \file      cgic.h
+ **
+ ** \version   $Id$
+ **
+ ** \brief     
+ **
+ ** \attention THIS SAMPLE CODE IS PROVIDED AS IS. GOFORTUNE SEMICONDUCTOR
+ **            ACCEPTS NO RESPONSIBILITY OR LIABILITY FOR ANY ERRORS OR 
+ **            OMMISSIONS.
+ **
+ ** (C) Copyright 2012-2013 by GOKE MICROELECTRONICS CO.,LTD
+ **
+ ****************************************************************************
+ */
+
+
 /* The CGI_C library, by Thomas Boutell, version 2.01. CGI_C is intended
     to be a high-quality API to simplify CGI programming tasks. */
 

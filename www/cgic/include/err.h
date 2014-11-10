@@ -1,22 +1,21 @@
 /*
- * =====================================================================================
- *       Copyright (c), 2013-2020, Goke.
- *       Filename:  err.h
+ ****************************************************************************
  *
- *    Description:  
- *         Others:
- *   
- *        Version:  1.0
- *        Date:  2014/8/26 19:48:31
- *       Revision:  none
- *       Compiler:  xxx-gcc
- *
- *         Author:  Sean Hou , houwentaoff@gmail.com
- *   Organization:  Goke
- *        History:   Created by housir
- *
- * =====================================================================================
+ ** \file      err.h
+ **
+ ** \version   $Id$
+ **
+ ** \brief     
+ **
+ ** \attention THIS SAMPLE CODE IS PROVIDED AS IS. GOFORTUNE SEMICONDUCTOR
+ **            ACCEPTS NO RESPONSIBILITY OR LIABILITY FOR ANY ERRORS OR 
+ **            OMMISSIONS.
+ **
+ ** (C) Copyright 2012-2013 by GOKE MICROELECTRONICS CO.,LTD
+ **
+ ****************************************************************************
  */
+
 #ifndef __ERR_H__
 #define __ERR_H__
 

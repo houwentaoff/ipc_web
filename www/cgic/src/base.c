@@ -1,22 +1,21 @@
 /*
- * =====================================================================================
- *       Copyright (c), 2013-2020, Goke.
- *       Filename:  base.c
+ ****************************************************************************
  *
- *    Description:  
- *         Others:
- *   
- *        Version:  1.0
- *        Date:  2014/8/26 16:35:29
- *       Revision:  none
- *       Compiler:  xxx-gcc
- *
- *         Author:  Sean Hou , houwentaoff@gmail.com
- *   Organization:  Goke
- *        History:   Created by housir
- *
- * =====================================================================================
+ ** \file      base.c
+ **
+ ** \version   $Id$
+ **
+ ** \brief     
+ **
+ ** \attention THIS SAMPLE CODE IS PROVIDED AS IS. GOFORTUNE SEMICONDUCTOR
+ **            ACCEPTS NO RESPONSIBILITY OR LIABILITY FOR ANY ERRORS OR 
+ **            OMMISSIONS.
+ **
+ ** (C) Copyright 2012-2013 by GOKE MICROELECTRONICS CO.,LTD
+ **
+ ****************************************************************************
  */
+
 //#include <base.h>
 #include <stdio.h>
 #include <stdlib.h>

@@ -31,22 +31,9 @@ PageMapping pagemap[] = {
     {"pm_page", pm_page, NULL, NULL},
     {"osd_page", osd_page, NULL, NULL},
     {"sys_page", sys_page, NULL, NULL},
-    {"vivo_page", vivo_page, NULL, NULL},
+    {"vivo_page", vivo_page, vivo_page_get_params, NULL},
     {NULL, NULL, NULL, NULL},
 };
-
-#if 0
- int (*page_list[])()={
-     NULL,
-     view_page,
-     enc_page,
-     pm_page,
-     osd_page,
-     sys_page,
-     vivo_page,
-
- };
-#endif
 
 static unsigned int page_value = ENCPAGE;/*默认的怎么用*/
 
@@ -65,7 +52,7 @@ static GK_ErrorCode_e switchPage ()
 //    fprintf(cgiOut, head_html, page_inf[page_index], "test page");
 //    PRT_DBG ("page_index[%d]\nhead_html[%s]\nfun[0x%x]", page_index, head_html, (unsigned int)(page_list[page_value]));
 //    (page_list[page_value])();
-    pagemap[page_value].page();
+    pagemap[page_value].page(pagemap[page_value].get_param);
     fprintf(cgiOut, "%s", foot_html);
 
     FUN_OUT();

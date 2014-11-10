@@ -1,22 +1,21 @@
 /*
- * =====================================================================================
- *       Copyright (c), 2013-2020, Goke.
- *       Filename:  page.h
+ ****************************************************************************
  *
- *    Description:  
- *         Others:
- *   
- *        Version:  1.0
- *        Date:  2014/8/26 19:34:15
- *       Revision:  none
- *       Compiler:  xxx-gcc
- *
- *         Author:  Sean Hou , houwentaoff@gmail.com
- *   Organization:  Goke
- *        History:   Created by housir
- *
- * =====================================================================================
+ ** \file      page.h
+ **
+ ** \version   $Id$
+ **
+ ** \brief     
+ **
+ ** \attention THIS SAMPLE CODE IS PROVIDED AS IS. GOFORTUNE SEMICONDUCTOR
+ **            ACCEPTS NO RESPONSIBILITY OR LIABILITY FOR ANY ERRORS OR 
+ **            OMMISSIONS.
+ **
+ ** (C) Copyright 2012-2013 by GOKE MICROELECTRONICS CO.,LTD
+ **
+ ****************************************************************************
  */
+
 #ifndef  __PAGE_H__
 #define  __PAGE_H__
 
@@ -95,7 +94,8 @@ extern int   enc_page();
 extern int   pm_page();
 extern int   osd_page();
 extern int   sys_page();
-extern int   vivo_page();
+extern int   vivo_page(int (*callback)());
+extern int   vivo_page_get_params();
 
 
 #endif//__PAGE_H__

@@ -18,7 +18,7 @@
   TOPDIR = ../../../
   SUBDIR = subsystem/web
 
-include $(TOPDIR)/env/make/Makefile.config
+-include $(TOPDIR)/env/make/Makefile.config
 ECHO := echo
 ################################################################################
 # source files
@@ -110,8 +110,8 @@ install-program:
 #	@$(ECHO) "### --> [$(ROOTFS_TOP)/webSvr/`basename $(PROGRAM)`]"
 	@mkdir -p  $(ROOTFS_TOP)/webSvr
 #	@cp -a  $(PROGRAM) $(ROOTFS_TOP)/webSvr/
-	@mkdir -p $(ROOTFS_TOP)/usr/local/bin
-	@cp -a  run_app.sh $(ROOTFS_TOP)/usr/local/bin/
+#	@mkdir -p $(ROOTFS_TOP)/usr/local/bin
+#	@cp -a  run_app.sh $(ROOTFS_TOP)/usr/local/bin/
 	@mkdir -p $(ROOTFS_TOP)/webSvr/www/
 
 	@for f in `find cgi-bin/ -name '*.cgi' |xargs tar czf /tmp/cgi-bin.tgz && tar -zxvf /tmp/cgi-bin.tgz -C $(ROOTFS_TOP)/webSvr/www/`; do echo "### --> [$$ROOTFS_TOP/webSvr/www/$$f]"; done;
@@ -120,7 +120,7 @@ install-program:
 	@for f in `find html/ -name '*.html' |xargs tar czf /tmp/html.tgz && tar -zxvf /tmp/html.tgz -C $(ROOTFS_TOP)/webSvr/www/`; do echo "### --> [$$ROOTFS_TOP/webSvr/www/$$f]";done;
 	@for f in `find activeX/ -name '*.cab' |xargs tar czf /tmp/activeX.tgz && tar -zxvf /tmp/activeX.tgz -C $(ROOTFS_TOP)/webSvr/www/`; do echo "### --> [$$ROOTFS_TOP/webSvr/www/$$f]"; done;
 	@for f in `find img/ -name '*.png' |xargs tar czf /tmp/img.tgz && tar -zxvf /tmp/img.tgz -C $(ROOTFS_TOP)/webSvr/www/`; do echo "### --> [$$ROOTFS_TOP/webSvr/www/$$f]"; done;
-	@cp -a favicon.ico $(ROOTFS_TOP)/webSvr/www/ && echo "### --> [$(ROOTFS_TOP)/webSvr/www/favicon.ico]";
+	-@cp -a favicon.ico $(ROOTFS_TOP)/webSvr/www/ && echo "### --> [$(ROOTFS_TOP)/webSvr/www/favicon.ico]";
 
 install: install-program 
 #install-debug-program install-file

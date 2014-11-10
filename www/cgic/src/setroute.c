@@ -29,7 +29,7 @@ int cgiMain() {
     /* Send the content type, letting the browser know this is HTML */
     cgiHeaderContentType("text/html");
 
-    ret = AmbaCamBasicPage_process_PostData(); 
+    ret = CamBasicPage_process_PostData(); 
     if (ret < 0) {
 		fprintf(cgiOut,"1:set params failed");
 	} 

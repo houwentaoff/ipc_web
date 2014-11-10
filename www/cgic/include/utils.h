@@ -21,7 +21,7 @@
 
 #define TRUE 1
 #define FALSE 0
-//Ambapack
+//pack
 
 #define MSG_NAME_LEN 24
 #define MSG_INFO_LEN 4096
@@ -73,7 +73,7 @@ typedef struct
 	int (*parse_postData)(char, Message*, int);
 	int (*url_decode)(char, char*, int);
 
-}AmbaPack;
+}Pack;
 
 typedef struct
 {
@@ -91,7 +91,7 @@ typedef struct
 	int paramDataNum;
 }section_Param;
 
-int pack_init (AmbaPack* pack);
+int pack_init (Pack* pack);
 
 int pack_req (req_Msg* req, int Id, int info, int infosize);
 
@@ -154,9 +154,9 @@ typedef struct
 	int (*Send_Msg)(int, char*, int);
 	int (*Recv_Msg)(char*, int, int);
 
-}AmbaSocket;
+}Socket;
 
-int socket_init (char* Host, int Port, AmbaSocket* Socket);
+int socket_init (char* Host, int Port, Socket* Socket);
 
 int socket_connect (int Port, char* IP);
 
@@ -166,24 +166,24 @@ int Send_Msg (int sockfd, char* msg, int length);
 
 int Recv_Msg (char* ack, int sockfd, int msg_Length);
 
-// AmbaTransfer
+// Transfer
 
 typedef struct
 {
 	int (*send_get_request) (section_Param*, int, Message);
 	int (*send_set_request) (int, int, Message);
 	int (*send_fly_request) (int, int, int);
-}AmbaTransfer;
+}Transfer;
 
-int transfer_init (AmbaTransfer* transfer);
+int transfer_init (Transfer* transfer);
 
 int send_get_request (section_Param* section_param, int RequestId, Message Msg);
 int send_set_request (int RequestId, int SectionPort, Message Msg);
 
 int send_fly_request (int RequestId, int Info, int data);
 
-int AmbaBase_get_section_param (section_Param* section_param);
-int AmbaBase_set_section_param (section_Param* section_param);
+int Base_get_section_param (section_Param* section_param);
+int Base_set_section_param (section_Param* section_param);
 
 
 #endif

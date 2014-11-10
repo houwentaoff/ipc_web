@@ -1,3 +1,21 @@
+/*
+ ****************************************************************************
+ *
+ ** \file      utils.c
+ **
+ ** \version   $Id$
+ **
+ ** \brief     
+ **
+ ** \attention THIS SAMPLE CODE IS PROVIDED AS IS. GOFORTUNE SEMICONDUCTOR
+ **            ACCEPTS NO RESPONSIBILITY OR LIABILITY FOR ANY ERRORS OR 
+ **            OMMISSIONS.
+ **
+ ** (C) Copyright 2012-2013 by GOKE MICROELECTRONICS CO.,LTD
+ **
+ ****************************************************************************
+ */
+
 #include "include.h"
 
 #include <stdio.h>
@@ -26,13 +44,13 @@
 while(0)
 
 
-int AmbaBase_get_section_param (section_Param* section_param)
+int Base_get_section_param (section_Param* section_param)
 {
-   	AmbaTransfer transfer;
+   	Transfer transfer;
 	int ret = 0;
 	transfer_init(&transfer);
 	Message msg;
-	AmbaPack pack;
+	Pack pack;
 	pack_init(&pack);
 
     FUN_IN();
@@ -45,14 +63,14 @@ int AmbaBase_get_section_param (section_Param* section_param)
 	}
 	return 0;
 }
-int AmbaBase_set_section_param (section_Param* section_param)
+int Base_set_section_param (section_Param* section_param)
 {
 	return 0;
 }
 
-//AmbaPack
+//Pack
 
-int pack_init (AmbaPack* pack)
+int pack_init (Pack* pack)
 {
 	pack->pack_req = pack_req;
 	pack->pack_msg = pack_msg;
@@ -225,9 +243,9 @@ int decode_Param (section_Param* section_param, char* recv)
     FUN_OUT();
 	return 0;
 }
-//AmbaSocket
+//Socket
 
-int socket_init (char* Host, int Port, AmbaSocket* Socket)
+int socket_init (char* Host, int Port, Socket* Socket)
 {
 	memset(Socket->sk_member.host, 0, IP_ADDR_LEN);
 	if (Host == NULL) {
@@ -295,9 +313,9 @@ int Recv_Msg (char* ack, int sockfd, int msg_Length)
 }
 
 
-//AmbaTranfer
+//Tranfer
 
-int transfer_init (AmbaTransfer* transfer)
+int transfer_init (Transfer* transfer)
 {
 	transfer->send_fly_request = send_fly_request;
 	transfer->send_get_request = send_get_request;
@@ -310,11 +328,11 @@ int transfer_init (AmbaTransfer* transfer)
 
 int send_get_request (section_Param* section_param, int RequestId, Message Msg)
 {
-	AmbaSocket conn;
+	Socket conn;
 	conn.sk_member.sockfd  = 0;
 	socket_init(HOST, section_param->sectionPort, &conn);
 	conn.sk_member.sockfd = conn.socket_connect(conn.sk_member.Port, conn.sk_member.host);
-	AmbaPack pack;
+	Pack pack;
 	pack_init(&pack);
 	req_Msg req;
     FUN_IN();
@@ -330,31 +348,33 @@ int send_get_request (section_Param* section_param, int RequestId, Message Msg)
 	memset(&ack,0,sizeof(ack_Msg));
 	conn.Recv_Msg((char*)(&ack),conn.sk_member.sockfd,sizeof(ack_Msg));
 
-	char* ackmsg = NULL;
-	ackmsg = (char *)malloc(MSG_INFO_LEN);
-	if (ackmsg == NULL) {
-		LOG_MESSG("send get request error");
-		return -1;
-	}
-	memset(ackmsg, 0, MSG_INFO_LEN);
-	conn.Recv_Msg(ackmsg,conn.sk_member.sockfd,ack.info_length);
 
-	conn.close_connect(conn.sk_member.sockfd);
+	if (ack.result == 0) {
+        char* ackmsg = NULL;
+        ackmsg = (char *)malloc(MSG_INFO_LEN);
+        if (ackmsg == NULL) {
+            LOG_MESSG("send get request error");
+            return -1;
+        }
+        memset(ackmsg, 0, MSG_INFO_LEN);
+        conn.Recv_Msg(ackmsg,conn.sk_member.sockfd,ack.info_length);
 
-	if ((ack.result == 0) && ((strlen(ackmsg)) > 0)) {
-		if(ack.info_length == strlen(ackmsg)) {
-			decode_Param(section_param, ackmsg);
-		} else {
-			LOG_MESSG("recv error");
-		}
-	} else {
-		free(ackmsg);
-		ackmsg = NULL;
-		return -1;
-	}
-	free(ackmsg);
-	ackmsg = NULL;
+        conn.close_connect(conn.sk_member.sockfd);
 
+        if ((ack.result == 0) && ((strlen(ackmsg)) > 0)) {
+            if(ack.info_length == strlen(ackmsg)) {
+                decode_Param(section_param, ackmsg);
+            } else {
+                LOG_MESSG("recv error");
+            }
+        } else {
+            free(ackmsg);
+            ackmsg = NULL;
+            return -1;
+        }
+        free(ackmsg);
+        ackmsg = NULL;
+    }
     FUN_OUT();
 	return 0;
 }
@@ -362,11 +382,11 @@ int send_get_request (section_Param* section_param, int RequestId, Message Msg)
 
 int send_set_request (int RequestId, int SectionPort, Message Msg)
 {
-	AmbaSocket conn;
+	Socket conn;
 	conn.sk_member.sockfd  = 0;
 	socket_init(HOST, SectionPort, &conn);
 	conn.sk_member.sockfd = conn.socket_connect(conn.sk_member.Port, conn.sk_member.host);
-	AmbaPack pack;
+	Pack pack;
 	pack_init(&pack);
 	req_Msg req;
 
@@ -391,11 +411,11 @@ int send_set_request (int RequestId, int SectionPort, Message Msg)
 
 int send_fly_request (int RequestId, int Info, int data)
 {
-	AmbaSocket conn;
+	Socket conn;
 	conn.sk_member.sockfd  = 0;
 	socket_init(HOST, PORT,&conn);
 	conn.sk_member.sockfd = conn.socket_connect(conn.sk_member.Port, conn.sk_member.host);
-	AmbaPack pack;
+	Pack pack;
 	pack_init(&pack);
 	req_Msg req;
 

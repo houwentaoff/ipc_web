@@ -1,23 +1,20 @@
 /*
- * =====================================================================================
- *       Copyright (c), 2013-2020, Goke.
- *       Filename:  params.h
+ ****************************************************************************
  *
- *    Description:  各个页面可选参数列表
- *         Others:
- *   
- *        Version:  1.0
- *        Date:  2014/8/26 16:17:25
- *       Revision:  none
- *       Compiler:  xxx-gcc
- *
- *         Author:  Sean Hou , houwentaoff@gmail.com
- *   Organization:  Goke
- *        History:   Created by housir
- *
- * =====================================================================================
+ ** \file      params.h
+ **
+ ** \version   $Id$
+ **
+ ** \brief     
+ **
+ ** \attention THIS SAMPLE CODE IS PROVIDED AS IS. GOFORTUNE SEMICONDUCTOR
+ **            ACCEPTS NO RESPONSIBILITY OR LIABILITY FOR ANY ERRORS OR 
+ **            OMMISSIONS.
+ **
+ ** (C) Copyright 2012-2013 by GOKE MICROELECTRONICS CO.,LTD
+ **
+ ****************************************************************************
  */
-
 
 #ifndef __PARAM__H__
 #define __PARAM__H__

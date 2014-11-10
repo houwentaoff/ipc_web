@@ -21,7 +21,7 @@
 
 #define MAXSTRLEN           (256)               /*错误通常由此引起 */
 #define SMALLHTML           (6*1024)            /*  */
-#define DIV_SELECT_SIZE     (512)            /* tmp, div select size*/
+#define DIV_SELECT_SIZE     (2*1024)            /* tmp, div select size*/
 static ParamData vinvout_params[VINVOUT_PARAMS_NUM];
 
 static int vivo_create_params () {
@@ -124,7 +124,7 @@ static int create_select_label(char * text, select_Label_t* select_label)
     return (0);
 }
 
-int Ambavivo_page_get_params()
+int vivo_page_get_params()
 {
     	int ret = 0;
 //	char name[NAME_LEN] = {0};
@@ -152,7 +152,7 @@ int Ambavivo_page_get_params()
 //				if ((&virtual_PageOps)->get_section_param(currentPage, &section_param) == -1) {
 //					return -2;
 //				}
-                if (AmbaBase_get_section_param(&section_param)==-1)
+                if (Base_get_section_param(&section_param)==-1)
                 {
                     return (-2);
                 }
@@ -184,7 +184,7 @@ int Ambavivo_page_get_params()
 	return ret;
 }
 
-int vivo_page()
+int vivo_page(int (*callback)())
 {
     char *text=NULL;
     div_select_t select_label[5] =
@@ -229,7 +229,7 @@ int vivo_page()
     select_label[RESOLUTION].options[VIDEO_OPS_AUTO].label = vin_mode[VIDEO_OPS_AUTO];
     select_label[RESOLUTION].options[VIDEO_OPS_1080P].value = VIDEO_MODE_1080P;
     select_label[RESOLUTION].options[VIDEO_OPS_1080P].label = vin_mode[VIDEO_OPS_1080P];
-    select_label[RESOLUTION].options[VIDEO_OPS_720P].value = VIDEO_MODE_AUTO;
+    select_label[RESOLUTION].options[VIDEO_OPS_720P].value = VIDEO_MODE_720P;
     select_label[RESOLUTION].options[VIDEO_OPS_720P].label = vin_mode[VIDEO_OPS_720P];
 
 #define FPS       1
@@ -278,8 +278,10 @@ int vivo_page()
     //get msg from ctrl server
     //get 分辨率
     //get fps
-    Ambavivo_page_get_params();
-    select_label[FPS].selected = FPS_1/vinvout_params[FPS].value;
+    callback();
+//    vivo_page_get_params();
+    select_label[RESOLUTION].selected = vinvout_params[RESOLUTION].value;
+    select_label[FPS].selected = vinvout_params[FPS].value;
     PRT_DBG("selected[%d]\n", select_label[FPS].selected);
     i=0;
     while (i< VINVOUT_PARAMS_NUM)
@@ -299,9 +301,10 @@ int vivo_page()
             strncat(div_text, "<br><br>", strlen("<br><br>"));//????
         }
         create_div_select(div_text, &select_label[i]);
+        free (select_label[i].options);
         i++;
     }
-    
+
     char *pos=text;
     pos += strlen(text);
 

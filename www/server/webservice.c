@@ -33,7 +33,7 @@
 #include <assert.h>
 
 #include "webservice.h"
-#include "video.h"
+//#include "video.h"
 
 #define INOUT_DEBUG           1  	/*1 is open , o is close */
 #define APP_DEBUG             1     /*1 is open , 0 is close */
@@ -72,7 +72,7 @@ static gk_vout_mode			vout_map;
 static int sockfd = -1;
 static int sockfd2 = -1;
 
-extern CAMCONTROL_Encode_Cmd g_stEncodeInfo[4];
+//extern CAMCONTROL_Encode_Cmd g_stEncodeInfo[4];
 
 static int set_vinvout_param(char * section_name);
 static int get_vinvout_param(char * section_name, u32 info);
@@ -734,7 +734,7 @@ static int get_vinvout_param(char * section_name, u32 info)
 	int streamID = 0, retv = 0;
     FUN_IN();
 	PRT_DBG("Section [%s] setting:\n", section_name);
-    vin_map.frame_rate = g_stEncodeInfo[streamID].framerate;
+    vin_map.frame_rate = 30;//g_stEncodeInfo[streamID].framerate;
     FUN_OUT("frame_rate[%d]\n", vin_map.frame_rate);
 	return retv;
 }
@@ -743,7 +743,8 @@ static int set_vinvout_param(char * section_name)
 {
 	int streamID = 0, retv = 0;
 	FUN_IN("Section [%s] setting:\n", section_name);
-    g_stEncodeInfo[streamID].framerate = vin_map.frame_rate;
+
+//    g_stEncodeInfo[streamID].framerate = vin_map.frame_rate;
     FUN_OUT();
 #if 0 //need to replace
 	if (mw_disable_stream(STREAMS_MASK) < 0) {
@@ -820,7 +821,8 @@ static int do_get_param(Request *req)
 	int retv = 0;
 	Section * section;
 	Ack ack;
-
+    
+    memset(g_buffer, 0, BUFFER_SIZE);
 	// Get section name
 	retv = receive_text(name, req->dataSize);
 	name[req->dataSize] = 0;
@@ -854,7 +856,8 @@ static int do_set_param(Request *req)
 	int retv = 0;
 	Section * section;
 	Ack ack;
-
+    
+    memset(g_buffer, 0, BUFFER_SIZE);
 	retv = receive_text(name, req->dataSize);
 	name[req->dataSize] = 0;
 	PRT_DBG("Section Name is : %s\n", (char *)name);

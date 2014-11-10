@@ -1,13 +1,16 @@
 #ifndef CC
-CC=/home/work/work_ext/ipc/gk7101/customer/juanvision/crosstool/arm-2011.09/bin/arm-none-linux-gnueabi-gcc
+CC:=gcc
+#CC=/home/work/work_ext/ipc/gk7101/customer/juanvision/crosstool/arm-2011.09/bin/arm-none-linux-gnueabi-gcc
 #endif
 
 #ifndef AR
-AR=/home/work/work_ext/ipc/gk7101/customer/juanvision/crosstool/arm-2011.09/bin/arm-none-linux-gnueabi-ar
+AR:=ar
+#AR=/home/work/work_ext/ipc/gk7101/customer/juanvision/crosstool/arm-2011.09/bin/arm-none-linux-gnueabi-ar
 #endif
 
 #ifndef RANLIB
-RANLIB=/home/work/work_ext/ipc/gk7101/customer/juanvision/crosstool/arm-2011.09/bin/arm-none-linux-gnueabi-ranlib
+RANLIB:=ranlib
+#RANLIB=/home/work/work_ext/ipc/gk7101/customer/juanvision/crosstool/arm-2011.09/bin/arm-none-linux-gnueabi-ranlib
 #endif
 
 ECHO=echo
@@ -17,13 +20,14 @@ CFLAGS = -O2 -Wall -g
 endif
 
 #path
-CGIC_TOP=/home/work/work_ext/ipc/gk7101/customer/juanvision/ambarella/app/ipcam/web_branch/cgic
+#CGIC_TOP=/home/work/work_ext/ipc/gk7101/customer/juanvision/ambarella/app/ipcam/web_branch/cgic
+CGIC_TOP=/home/other/ipc/amba_sdk/a5s_linux_sdk/ambarella/app/ipcam/ipc_web/www/cgic
 
-CFLAGS += -I$(CGIC_TOP) -L$(CGIC_TOP) -lcgic
+CFLAGS += -I$(CGIC_TOP)/include -L$(CGIC_TOP)/lib -lcgic
 #debug
 CFLAGS += -DDEBUG -DCGICDEBUG
 
-DESTDIR=/web
+DESTDIR=/webSvr/www/cgi-bin
 
 V=1
 

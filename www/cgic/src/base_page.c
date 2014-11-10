@@ -57,11 +57,11 @@ int get_value (char* text,char* cmp_Text)
 }
 #endif
 
-int AmbaCamBasicPage_process_PostData () 
+int CamBasicPage_process_PostData () 
 {
     int vin_fps_changed = 0;
     int vv_changed = 0;
-    AmbaTransfer transfer;
+    Transfer transfer;
     Message msg;
     transfer_init(&transfer);
 
@@ -100,6 +100,7 @@ int AmbaCamBasicPage_process_PostData ()
                 vv_changed = 1;
                 strncat(vv_data.section_Name, msg.section_Name, strlen(msg.section_Name));
                 strncat(vv_data.msg, msg.msg, strlen(msg.msg));
+                PRT_DBG("vv_data.msg[%s]\n", msg.msg);
             }
             count++;
         }while (count<req_cnt);

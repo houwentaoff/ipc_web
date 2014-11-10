@@ -21,9 +21,11 @@
 #include <stdio.h>
 #include "basetypes.h"
 
+typedef int (*callback)();
+
 typedef struct {
     char * tokenname;
-    int (*page)();
+    int (*page)(callback);
     int (*get_param)();
     int (*set_param)();
 }PageMapping;
