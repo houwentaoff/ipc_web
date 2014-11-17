@@ -31,9 +31,13 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <assert.h>
+#include <sys/types.h>
+#include <sys/ipc.h>
 
+#include <sys/msg.h>
 #include "webservice.h"
-//#include "video.h"
+#include "video.h"
+#include "ctlserver.h"
 
 #define INOUT_DEBUG           1  	/*1 is open , o is close */
 #define APP_DEBUG             1     /*1 is open , 0 is close */
@@ -72,7 +76,8 @@ static gk_vout_mode			vout_map;
 static int sockfd = -1;
 static int sockfd2 = -1;
 
-//extern CAMCONTROL_Encode_Cmd g_stEncodeInfo[4];
+extern CAMCONTROL_Encode_Cmd g_stEncodeInfo[4];
+extern int g_slIPCMsgID;
 
 static int set_vinvout_param(char * section_name);
 static int get_vinvout_param(char * section_name, u32 info);
@@ -102,6 +107,59 @@ static Section Params[] = {
 //	{"LIVE",		LIVEMap,		get_live_param,		set_func_null},
 	{NULL,			NULL,			NULL,				NULL}
 };
+
+int send_fly_request(enum CAMCONTROL_CMDTYPE cmdtype, const unsigned char datalen,unsigned char *pCmdData, unsigned char revdatalen, unsigned char *pRevData)
+{
+	MSG_INFO_t  stMsgUserInfo;
+
+    FUN_IN();
+
+	memset(&stMsgUserInfo, 0, sizeof(stMsgUserInfo));
+	stMsgUserInfo.ulMsgType = MSG_COMM_TYPE;
+	stMsgUserInfo.ucCmdType = cmdtype;
+	stMsgUserInfo.ucDataLen = datalen;
+	if(pCmdData != NULL){
+		memcpy(stMsgUserInfo.ucCmdData, pCmdData, datalen);
+	}
+
+	/*send msg*/
+	if(msgsnd(g_slIPCMsgID ,(void *)&stMsgUserInfo, sizeof(MSG_INFO_t) - 4, 0) == -1){
+		perror("msgsnd failed !\n");
+		if(msgctl(g_slIPCMsgID, IPC_RMID, 0) == -1){
+			perror("msgctl failed !\n");
+		}
+		return -2;
+	}
+
+	/*receive action*/
+	memset(&stMsgUserInfo, 0, sizeof(stMsgUserInfo));    
+	if(msgrcv(g_slIPCMsgID ,(void *)&stMsgUserInfo, sizeof(MSG_INFO_t) - 4, MSGACK_COMM_TYPE, 0) == -1){
+		perror("msgrcv failed !\n");
+		if(msgctl(g_slIPCMsgID, IPC_RMID, 0) == -1){
+			perror("msgctl failed !\n");
+		}
+		return -1;
+	}
+	if(stMsgUserInfo.AckValue != 0){
+//		pthread_mutex_unlock(&g_msgMutex);
+		return -2;
+	}
+
+	if(revdatalen != stMsgUserInfo.ucDataLen){
+		PRT_ERR("AckDataLen:%d,revdatalen:%d\n",stMsgUserInfo.ucDataLen,revdatalen);
+//		pthread_mutex_unlock(&g_msgMutex);
+		return -3;
+	}
+	if(stMsgUserInfo.ucDataLen != 0){
+
+		if(pRevData != NULL){
+			memcpy(pRevData, stMsgUserInfo.ucCmdData, stMsgUserInfo.ucDataLen);
+		}
+
+	}    
+    FUN_OUT();
+    return (0);
+}
 
 static int check_params(Mapping * Map)
 {
@@ -734,18 +792,45 @@ static int get_vinvout_param(char * section_name, u32 info)
 	int streamID = 0, retv = 0;
     FUN_IN();
 	PRT_DBG("Section [%s] setting:\n", section_name);
-    vin_map.frame_rate = 30;//g_stEncodeInfo[streamID].framerate;
-    FUN_OUT("frame_rate[%d]\n", vin_map.frame_rate);
+    
+    /*-----------------------------------------------------------------------------
+     *  remenber to convert frame_rate  [] -> 1-60
+     *-----------------------------------------------------------------------------*/
+    vin_map.frame_rate = 512000000/g_stEncodeInfo[streamID].framerate;
+    vin_map.mode       = 0;//g_stEncodeInfo[streamID].framerate;
+    vout_map.type = 0;//g_stEncodeInfo[streamID].framerate;
+    vout_map.mode = 0;//g_stEncodeInfo[streamID].framerate;
+    FUN_OUT("\
+            vin_frame_rate [%d]\n\
+            vin_mode       [%d]\n\
+            vout_type      [%d]\n\
+            vout_mode      [%d]\n\
+            ", vin_map.frame_rate, vin_map.mode, vout_map.type, vout_map.mode);
 	return retv;
 }
 
 static int set_vinvout_param(char * section_name)
 {
-	int streamID = 0, retv = 0;
-	FUN_IN("Section [%s] setting:\n", section_name);
+	int streamId = 0, retv = 0;
+    CAMCONTROL_Encode_Cmd stEncCmd;
 
-//    g_stEncodeInfo[streamID].framerate = vin_map.frame_rate;
-    FUN_OUT();
+	FUN_IN("Section [%s] setting:\n", section_name);
+    /*-----------------------------------------------------------------------------
+     *  remenber to convert frame_rate  [] -> 1-60
+     *-----------------------------------------------------------------------------*/
+//    g_stEncodeInfo[streamId].framerate = vin_map.frame_rate;
+    PRT_DBG("\n\
+            vin_frame_rate [%d]\n\
+            vin_mode       [%d]\n\
+            vout_type      [%d]\n\
+            vout_mode      [%d]\n\
+            ", vin_map.frame_rate, vin_map.mode, vout_map.type, vout_map.mode);
+
+	memset(&stEncCmd, 0, sizeof(stEncCmd));
+	stEncCmd.streamid = streamId;
+	stEncCmd.framerate = 512000000/vin_map.frame_rate;
+    //set FRAMERATE
+    send_fly_request(MEDIA_SET_FRAMERATE, sizeof(CAMCONTROL_Encode_Cmd), (unsigned char *)&stEncCmd, 0, NULL);
 #if 0 //need to replace
 	if (mw_disable_stream(STREAMS_MASK) < 0) {
 		PRT_ERR("Cannot stop encoding streams!");
@@ -821,7 +906,7 @@ static int do_get_param(Request *req)
 	int retv = 0;
 	Section * section;
 	Ack ack;
-    
+
     memset(g_buffer, 0, BUFFER_SIZE);
 	// Get section name
 	retv = receive_text(name, req->dataSize);
@@ -856,7 +941,7 @@ static int do_set_param(Request *req)
 	int retv = 0;
 	Section * section;
 	Ack ack;
-    
+
     memset(g_buffer, 0, BUFFER_SIZE);
 	retv = receive_text(name, req->dataSize);
 	name[req->dataSize] = 0;

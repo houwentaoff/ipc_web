@@ -900,110 +900,6 @@ function setIQAF()
         }
     }
 }
-function OnLoadActiveX(hostname, stream_id, recvType, statSize, showStat)
-{
-    var browser = browserInfo();
-    if (browser.name != "IE") {
-        if( navigator.appName.indexOf("Microsoft Internet")==-1 )
-        {
-            onVLCPluginReady()
-        }
-        else if( document.readyState == 'complete' )
-        {
-            onVLCPluginReady();
-        }
-        else
-        {
-            /* Explorer loads plugins asynchronously */
-            document.onreadystatechange=function()
-            {
-                if( document.readyState == 'complete' )
-                {
-                    onVLCPluginReady();
-                }
-            }
-        }
-//        if (!getVlcVersion()) doGo("rtsp://192.168.103.47/stream"+(stream_id+1));//Sean
-        if (!getVlcVersion()) doGo("rtsp://" + window.location.host + ":554/stream" + (stream_id+1));
-    }
-    else//IE
-    {
-        if (window.ActiveXObject) {
-            try {
-                var activeX = $("GOKEIPCmrWebPlugIn1");
-                if (activeX.SetRecvType(recvType)) {
-                    activeX.SetHostname(hostname);
-                    activeX.SetStreamId(stream_id);
-                    activeX.SetStatWindowSize(statSize);
-                    activeX.ShowStat(showStat);
-                    if (!activeX.EnableDPTZ()) {
-                        if ($("DPTZ")) {
-                            $("DPTZ").style.display = "none";
-                        }
-                    } else {
-                        activeX.ShowDPTZ(showStat);
-                    }
-                } else {
-                    alert("set wrong client type!");
-                    return;
-                }
-            } catch (e) {
-                alert(e);
-                window.open ('/cgi-bin/help.cgi?topic=live_view','','height=800,width=640,top=0,menubar=no,scrollbars=yes, resizable=yes,status=no');
-                return;
-            }
-        }
-        PlayVideo(stream_id);
-    }
-}
-function getVLC(name)
-{
-    if (window.document[name])
-    {
-        return window.document[name];
-    }
-    if (navigator.appName.indexOf("Microsoft Internet")==-1)
-    {
-        if (document.embeds && document.embeds[name])
-            return document.embeds[name];
-    }
-    else // if (navigator.appName.indexOf("Microsoft Internet")!=-1)
-    {
-        return document.getElementById(name);
-    }
-}
-// VLC Plugin
-function onVLCPluginReady() {
-    //registerVLCEvent("MediaPlayerPlaying", handle_MediaPlayerPlaying);
-}
-/* actions */
-function doGo(targetURL) {
-    var vlc = getVLC("vlc");
-
-    if( vlc )
-    {
-        vlc.playlist.items.clear();//load active,then successed.
-        while( vlc.playlist.items.count > 0 )
-        {
-            // clear() may return before the playlist has actually been cleared
-            // just wait for it to finish its job
-        }
-        var options = [":rtsp-tcp"];
-        var itemId = vlc.playlist.add(targetURL,"",options);//test by Sean
-        //var itemId = vlc.playlist.add("rtsp://" + window.location.host + ":8554/stream1","",options);
-        options = [];
-        if( itemId != -1 )
-        {
-            // play MRL
-            vlc.playlist.playItem(itemId);
-        }
-        else
-        {
-            alert("cannot play at the moment !");
-        }
-        doItemCount();
-    }
-}
 function FlySet(streamId, op)
 {
     try {
@@ -1135,46 +1031,59 @@ function ApplyFlySetting(streamId)
         }
     }
 }
-function PlayVideo()
+function OnLoadActiveX(hostname, stream_id, recvType, statSize, showStat)
 {
-    var browser = browserInfo();
-    if (browser.name != "IE") {
-        var vlc = getVLC("vlc");
-        if( vlc ){
-            if( vlc.playlist.items.count > 0 ){
-                vlc.playlist.play();
-            }
-            else{
-                alert('nothing to play !');
-            }
-        }
-    }
-    else if (window.ActiveXObject) {//not IE
-        try {
-            $("GOKEIPCmrWebPlugIn1").Play();
-        } catch (e) {
-            alert(e);
-        }
-    }
+//	if (window.ActiveXObject) {
+		try {
+			var activeX = $("GOKEIPCmrWebPlugIn1");
+			if (activeX.SetRecvType(recvType)) {
+				activeX.SetHostname(hostname);
+				activeX.SetStreamId(stream_id);
+				activeX.SetStatWindowSize(statSize);
+				activeX.ShowStat(0);
+//				if (!activeX.EnableDPTZ()) {
+//					if ($("DPTZ")) {
+//						$("DPTZ").style.display = "none";
+//					}
+//				} else {
+//					activeX.ShowDPTZ(showStat);
+//				}
+			} else {
+				alert("set wrong client type!");
+				return;
+			}
+		} catch (e) {
+			alert(e);
+			window.open ('/activeX/GOKEWeb.cab','','height=800,width=640,top=0,menubar=no,scrollbars=yes, resizable=yes,status=no');
+			return;
+		}
+//	}
+	PlayActiveX(stream_id);
 }
-function StopVideo()
+
+function PlayActiveX()
 {
-    var browser = browserInfo();
-    if (browser.name != "IE") {
-        var vlc = getVLC("vlc");
-        if( vlc )    vlc.playlist.stop();
-    }
-    else if (window.ActiveXObject) {
-        try {
-            $("GOKEIPCmrWebPlugIn1").Stop();
-        } catch (e) {
-            alert(e);
-        }
-    }
+//	if (window.ActiveXObject) {
+		try {
+			$("GOKEIPCmrWebPlugIn1").Play();
+		} catch (e) {
+			alert(e);
+		}
+//	}
+}
+function StopActiveX()
+{
+//	if (window.ActiveXObject) {
+		try {
+			$("GOKEIPCmrWebPlugIn1").Stop();
+		} catch (e) {
+			alert(e);
+		}
+//	}
 }
 function Record()
 {
-    if (window.ActiveXObject) {
+//	if (window.ActiveXObject) {
         try {
             var obj = $("GOKEIPCmrWebPlugIn1");
             var record_status = obj.GetRecordStatus();
@@ -1189,6 +1098,119 @@ function Record()
         } catch (e) {
             alert(e);
         }
+//	}
+}
+function ShowStat()
+{
+//	if (window.ActiveXObject) {
+		try {
+			var obj = $("GOKEIPCmrWebPlugIn1");
+			var stat = $("Stat");
+			if (stat.value == "Hide Statistics") {
+				if (obj.ShowStat(false)) {
+					stat.value = "Show Statistics";
+				}
+			} else {
+				if (obj.ShowStat(true)) {
+					stat.value = "Hide Statistics";
+				}
+			}
+		} catch (e) {
+			alert(e);
+		}
+//	}
+}
+
+function ShowDPTZ()
+{
+//	if (window.ActiveXObject) {
+		try {
+			var obj = $("GOKEIPCmrWebPlugIn1");
+			var dptz = $("DPTZ");
+			if (dptz.value == "Hide Digital PTZ") {
+				if (obj.ShowDPTZ(false)) {
+					dptz.value = "Show Digital PTZ";
+				}
+			} else {
+				if (obj.ShowDPTZ(true)) {
+					dptz.value = "Hide Digital PTZ";
+				}
+			}
+		} catch (e) {
+			alert(e);
+		}
+//	}
+}
+function get_cookie(Name) {
+    var search = Name + "="
+        var returnvalue = "";
+    if (document.cookie.length > 0) {
+        offset = document.cookie.indexOf(search)
+            if (offset != -1) {
+                offset += search.length
+                    end = document.cookie.indexOf(";", offset);
+                if (end == -1)	end = document.cookie.length;
+                returnvalue=unescape(document.cookie.substring(offset, end))
+            }
+    }
+    return returnvalue;
+}
+/*Sean*/
+function doItemCount()
+{
+    var vlc = getVLC("vlc");
+    if( vlc )
+    {
+        var count = vlc.playlist.items.count;
+        //        document.getElementById("itemCount").value = " Items " + count + " ";
+    }
+}
+function getVLC(name)
+{
+    if (window.document[name])
+    {
+        return window.document[name];
+    }
+    if (navigator.appName.indexOf("Microsoft Internet")==-1)
+    {
+        if (document.embeds && document.embeds[name])
+            return document.embeds[name];
+    }
+    else // if (navigator.appName.indexOf("Microsoft Internet")!=-1)
+    {
+        return document.getElementById(name);
+    }
+}
+// VLC Plugin
+function onVLCPluginReady() {
+    //registerVLCEvent("MediaPlayerPlaying", handle_MediaPlayerPlaying);
+}
+/* actions */
+function doGo(targetURL) {
+    var vlc = getVLC("vlc");
+
+    if( vlc )
+    {
+        vlc.playlist.items.clear();//load active,then successed.
+        while( vlc.playlist.items.count > 0 )
+        {
+            // clear() may return before the playlist has actually been cleared
+            // just wait for it to finish its job
+        }
+        var options = [":rtsp-tcp"];
+        var itemId = vlc.playlist.add(targetURL,"",options);//test by Sean
+        //var itemId = vlc.playlist.add("rtsp://" + window.location.host + ":8554/stream1","",options);
+        options = [];
+        if( itemId != -1 )
+        {
+            // play MRL
+            vlc.playlist.playItem(itemId);
+        }
+        else
+        {
+            alert("cannot play at the moment !");
+        }
+        doItemCount();
     }
 }
 function getVlcVersion() {
@@ -1234,27 +1256,40 @@ function judgeVlc() {
         }
     }
 }
-function get_cookie(Name) {
-    var search = Name + "="
-        var returnvalue = "";
-    if (document.cookie.length > 0) {
-        offset = document.cookie.indexOf(search)
-            if (offset != -1) {
-                offset += search.length
-                    end = document.cookie.indexOf(";", offset);
-                if (end == -1)	end = document.cookie.length;
-                returnvalue=unescape(document.cookie.substring(offset, end))
-            }
-    }
-    return returnvalue;
-}
-/*Sean*/
-function doItemCount()
+function PlayVideo()
 {
-    var vlc = getVLC("vlc");
-    if( vlc )
-    {
-        var count = vlc.playlist.items.count;
-        //        document.getElementById("itemCount").value = " Items " + count + " ";
+    var browser = browserInfo();
+    if (browser.name != "IE") {
+        var vlc = getVLC("vlc");
+        if( vlc ){
+            if( vlc.playlist.items.count > 0 ){
+                vlc.playlist.play();
+            }
+            else{
+                alert('nothing to play !');
+            }
+        }
+    }
+    else if (window.ActiveXObject) {//not IE
+        try {
+            $("GOKEIPCmrWebPlugIn1").Play();
+        } catch (e) {
+            alert(e);
+        }
+    }
+}
+function StopVideo()
+{
+    var browser = browserInfo();
+    if (browser.name != "IE") {
+        var vlc = getVLC("vlc");
+        if( vlc )    vlc.playlist.stop();
+    }
+    else if (window.ActiveXObject) {
+        try {
+            $("GOKEIPCmrWebPlugIn1").Stop();
+        } catch (e) {
+            alert(e);
+        }
     }
 }

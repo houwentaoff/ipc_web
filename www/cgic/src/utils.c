@@ -302,9 +302,12 @@ int Send_Msg (int sockfd, char* msg, int length)
 int Recv_Msg (char* ack, int sockfd, int msg_Length)
 {
 	int  recvbytes;
-
+    if (-1 == msg_Length)
+    {
+        PRT_ERR("msg_Length[%d]\n", msg_Length);
+    }
 	if ((recvbytes = recv(sockfd, ack, msg_Length, 0)) == -1) {
-		//printf("recv errno=%d.", errno);
+		PRT_ERR("msg_Length[%d] recv errno=%d.\n", msg_Length, errno);
 		//perror("recv");
 		return -1;
 	}
@@ -347,7 +350,6 @@ int send_get_request (section_Param* section_param, int RequestId, Message Msg)
 	ack_Msg ack;
 	memset(&ack,0,sizeof(ack_Msg));
 	conn.Recv_Msg((char*)(&ack),conn.sk_member.sockfd,sizeof(ack_Msg));
-
 
 	if (ack.result == 0) {
         char* ackmsg = NULL;

@@ -1,0 +1,23 @@
+<!DOCTYPE HTML PUBLIC  "-//W3C//DTD HTML 4.0 Transitional//EN""-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"><html>    <head>        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">        <title>liveview</title>            <link href="../css/goke_1.css" rel="stylesheet" type="text/css" />            <script language="JavaScript" src="../js/AJAXInteraction.js"></script>            <script language="JavaScript" src="../js/page.js"></script>            <script language="JavaScript" src="../js/style.js"></script>    </head>    <body %s>        <div class="container">            <div class="header">                <div class="logo">                    <img src="../img/goke.png" name="banner" width="181" height="78" id="banner" />                </div>                <div class="title">                    <h1 align="center">网 络 摄 像 机 产 品 演 示</h1>                    <p align="center">IPC Product demonstration</p>                </div>            
+</div>
+<div class="leftnav">        <div class="menu_item" id="fl_menu">            <div class="menu" style="none">                <a href="/cgi-bin/demo.cgi?page="liveview" title="liveview" target="_blank" class="menu_item">liveview</a>                <a href="/cgi-bin/demo.cgi?page="3A" title="3A" target="_blank" class="menu_item">3A</a>                <a href="/cgi-bin/demo.cgi?page="vinvout" title="vinvout" target="_blank" class="menu_item">vinvout</a>                <a href="enc.html" title="enc" target="_blank" class="menu_item">enc</a>                <a href="osd.html" title="osd" target="_blank" class="menu_item">osd</a>            </div>        </div></div><div class="content">    <div id="status"></div>        
+  <div class="vinvout_right">			<div class="title">输出设置</div>            <div class="action">		                <p>                <input class="but" id="Play" type="button" value="Play"  onclick="javascript:PlayVideo()"/>                <input class="but" id="Stop" type="button" value="Stop"  onclick="javascript:StopVideo()"/>                </p>                <p>                <input class="but" id="Record" type="button" value="Start Record"  onclick="javascript:Record()"/>                <input class="but" id="ForceIdr" type="button" value="Force Idr"  onclick="javascript:FlySet(0, 'ForceIdr')"/>                </p>            </div>            <br />        </div>        <div class="vivout_right2">			<div class="title">输入设置</div>            <div class="action">                <p>                <input name="button" type="button" class="but" id="button"  onclick="javascript:PlayVideo()" value="Play"/>                <input name="button2" type="button" class="but" id="button2"  onclick="javascript:StopVideo()" value="Stop"/>                </p>                <p><div id="vin_mode"><label>"Resolution :"</label><select>>
+<option value=0 >Auto</option>
+<option value=65528 >1080P</option>
+<option value=0 >720P</option>
+</select></div>
+<div id="vin_framerate"><label>"Frame Rate (fps) :"</label><select>>
+<option value=0 >Auto</option>
+<option value=102400000 >5</option>
+<option value=85333333 >6</option>
+<option value=51200000 >10</option>
+<option value=39384615 >13</option>
+<option value=34133333 >15</option>
+<option value=20480000 >25</option>
+<option value=17083750 >29.97</option>
+<option value=17066666 selected>30</option>
+<option value=8541875 >59.94</option>
+<option value=8533333 >60</option>
+</select></div>
+                <input name="button2" type="button" class="but" id="button3"  onclick="javascript:Record()" value="Start Record"/>                <input name="button2" type="button" class="but" id="button4"  onclick="javascript:FlySet(0, 'ForceIdr')" value="Force Idr"/>                </p>          </div>            <br />        </div>		<div class="vinvout_submit">		    
+                  <input name="button" type="button" class="apply" id="button"  onclick="javascript:setCamBasic()" value="确认"/> 			&nbsp;<input name="button" type="button" class="cancel" id="button"  onclick="javascript:showPage('csb')" value="取消"/>	  </div>    </div> <div class="footer">        <div >            <p>&nbsp;</p>            <p>公司地址：长沙市长星路389号 联系电话：0731-88218855 官方网站:www.gokemicro.com </p>            <p>国科微电子有限公司 版权所有</p>        </div>    </div></div></body></html>

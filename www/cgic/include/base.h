@@ -19,12 +19,14 @@
 #ifndef __BASE_H__
 #define __BASE_H__
 
+extern  const char * const onload;
 extern  const char * const video_html;
-extern  const char * const head_html;/*Sean Hou:  */
+extern  const char * const head_html;
 extern  const char * const body_html;
 extern  const char * const foot_html;
 extern  const char * const head_footHtml;
 extern  const char * const nav;
 extern  const char * const vivocontent;
+extern  const char * const liveviewcontent;
 
 #endif

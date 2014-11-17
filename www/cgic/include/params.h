@@ -30,7 +30,7 @@
 */
 
 typedef enum {
-	VIEWPAGE = 1,		//liveView Page
+	VIEWPAGE = 0,		//liveView Page
 	ENCPAGE,		//Encode Page
 	PMPAGE,		//Privacy Mask Page
 	OSDPAGE,		//OSD Page
@@ -309,4 +309,34 @@ typedef enum {
 	VINVOUT_PARAMS_NUM
 }VINVOUT_PARAMS;
 
+typedef enum{
+    STREAM_ID0 = 0,
+    STREAM_ID1,
+    STREAM_ID2,
+    STREAM_ID3,
+    STREAM_ID_NUM,
+}STREAM_ID;
+//PAGE 3A
+typedef enum {
+	PREFERENCE = 0,
+	DN_MODE,
+	EXPOSURE_MODE,
+	BACKLIGHT_COMP,
+	DC_IRIS,
+	DC_IRIS_DUTY,
+	LOCAL_EXPOSURE,
+	MCTF_STRENGTH,
+	SHUTTER_MIN,
+	SHUTTER_MAX,
+	MAX_GAIN,
+	AE_TARGET_RATIO,
+	VIN_FPS,
+	SATURATION,
+	BRIGHTNESS,
+	HUE,
+	CONTRAST,
+	SHARPNESS,
+	WBC,
+	IMG_PARAMS_NUM
+}IMG_PARAMS;
 #endif//__PARAM__H__

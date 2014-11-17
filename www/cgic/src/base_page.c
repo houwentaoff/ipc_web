@@ -68,7 +68,6 @@ int CamBasicPage_process_PostData ()
     Message image_data;
     Message vv_data;
 
-    int i=0;
     char sec_name[SHORTLEN];
     char data_name[SHORTLEN];
     int req_cnt=-1 ;

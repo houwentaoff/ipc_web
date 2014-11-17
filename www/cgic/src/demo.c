@@ -27,8 +27,8 @@
 
 PageMapping pagemap[] = {
     {"view_page", view_page, NULL, NULL},
-    {"enc_page", enc_page, NULL, NULL},
-    {"pm_page", pm_page, NULL, NULL},
+    {"enc_page", enc_page, enc_page_get_params, NULL},
+    {"pm_page",  _3a_page, _3a_page_get_params, NULL},
     {"osd_page", osd_page, NULL, NULL},
     {"sys_page", sys_page, NULL, NULL},
     {"vivo_page", vivo_page, vivo_page_get_params, NULL},
@@ -41,6 +41,8 @@ static GK_ErrorCode_e switchPage ()
 {
 //	char* browser;
 	int page_index;
+
+    FUN_IN();
 
 	if (cgiFormIntegerBounded("page", &page_index, VIEWPAGE, PAGE_NUM-1, 0) != cgiFormSuccess)
     {

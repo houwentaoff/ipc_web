@@ -16,7 +16,7 @@
  ****************************************************************************
  */
 
-//#include <base.h>
+#include <base.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -49,15 +49,13 @@ const char* const video_html = "<div id=\"video\">\n \
 		</object>\n\
 	</div>\n";
 #endif
-const char * const onload = "\
-onload=\"OnLoadActiveX(\'192.168.103.47\', 0, 1, 0, 1);\
- ";
+const char * const onload = "onload=\"javascript:OnLoadActiveX(window.location.host, %d, 1, 0, 1);\"";
 
 const char * const head_html =  "<!DOCTYPE HTML PUBLIC  \"-//W3C//DTD HTML 4.0 Transitional//EN\"\"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\
 <html>\
     <head>\
         <meta http-equiv=\"Content-Type\" content=\"text/html;charset=UTF-8\">\
-        <title>liveview</title>\
+        <title>%s</title>\
             <link href=\"../css/goke_1.css\" rel=\"stylesheet\" type=\"text/css\" />\
             <script language=\"JavaScript\" src=\"../js/AJAXInteraction.js\"></script>\
             <script language=\"JavaScript\" src=\"../js/page.js\"></script>\
@@ -75,6 +73,7 @@ const char * const head_html =  "<!DOCTYPE HTML PUBLIC  \"-//W3C//DTD HTML 4.0 T
                 </div>\
             </div>";
 //common
+#if 0
 const char * const nav="\
 <div class=\"leftnav\">\
         <div class=\"menu_item\" id=\"fl_menu\">\
@@ -87,6 +86,20 @@ const char * const nav="\
             </div>\
         </div>\
 </div>";
+#else
+const char * const nav="\
+<div class=\"leftnav\">\
+        <div class=\"menu_item\" id=\"fl_menu\">\
+            <div class=\"menu\" style=\"none\">\
+                <a href=\"/cgi-bin/demo.cgi?page=0&stream=0\" title=\"liveview\" class=\"menu_item\">liveview</a>\
+                <a href=\"/cgi-bin/demo.cgi?page=1\" title=\"3A\"  class=\"menu_item\">3A</a>\
+                <a href=\"/cgi-bin/demo.cgi?page=5\" title=\"vinvout\" class=\"menu_item\">vinvout</a>\
+                <a href=\"enc.html\" title=\"enc\"  class=\"menu_item\">enc</a>\
+                <a href=\"osd.html\" title=\"osd\"  class=\"menu_item\">osd</a>\
+            </div>\
+        </div>\
+</div>";
+#endif
 const char * const activeX="\
 <div class=\"activeX\" >\
     <object classid=\"CLSID:3BCDAA6A-7306-42FF-B8CF-BE5D3534C1E4\" codebase=\"http://\"+window.location.host+\"/activex/ambaWeb.cab#version=1,0,0,33\" width=\"800\" height=\"541\"		align=\"left\" id=\"GOKEIPCmrWebPlugIn1\">\
@@ -103,42 +116,35 @@ const char * const activeX="\
 //menu 1
 const char * const liveviewcontent="\
 <div class=\"content\">\
-%s\
-        <div class=\"right\">\
-            <div class=\"action\">\
+			<div class=\"stream_selector\">\
+				<a href=\"/cgi-bin/demo.cgi?page=0&stream=0\">Main</a>\
+				<a href=\"/cgi-bin/demo.cgi?page=0&stream=1\">Second</a>\
+				<a href=\"/cgi-bin/demo.cgi?page=0&stream=2\">Third</a>\
+				<a href=\"/cgi-bin/demo.cgi?page=0&stream=3\">Fourth</a>\
+			</div>\
+        <div class=\"activeX\" >\
+            <object classid=\"CLSID:3BCDAA6A-7306-42FF-B8CF-BE5D3534C1E4\" codebase=\"http://\"+window.location.host+\"/activex/ambaWeb.cab#version=1,0,0,33\" width=\"800\" height=\"541\"		align=\"left\" id=\"GOKEIPCmrWebPlugIn1\">\
+                <param name=\"_Version\" value=\"65536\" />\
+                <param name=\"_ExtentX\" value=\"19045\" />\
+                <param name=\"_ExtentY\" value=\"11478\" />\
+                <param name=\"_StockProps\" value=\"0\" />\
+                <embed src=\"65536\" width=\"800\" height=\"541\" align=\"left\" _version=\"65536\" _extentx=\"19045\" _extenty=\"11478\" _stockprops=\"0\"></embed>\
+            </object>\
+        </div> \
+        <div class=\"viewright\">\
+            <div class=\"action\">	\
                 <p>\
-                <input class=\"but\" id=\"Play\" type=\"button\" value=\"Play\"  onclick=\"javascript:PlayVideo()\"/>\
-                <input class=\"but\" id=\"Stop\" type=\"button\" value=\"Stop\"  onclick=\"javascript:StopVideo()\"/>\
+                <input class=\"but\" id=\"Play\" type=\"button\" value=\"Play\"  onclick=\"javascript:PlayActiveX()\"/>\
+                <input class=\"but\" id=\"Stop\" type=\"button\" value=\"Stop\"  onclick=\"javascript:StopActiveX()\"/>\
                 </p>\
                 <p>\
                 <input class=\"but\" id=\"Record\" type=\"button\" value=\"Start Record\"  onclick=\"javascript:Record()\"/>\
                 <input class=\"but\" id=\"ForceIdr\" type=\"button\" value=\"Force Idr\"  onclick=\"javascript:FlySet(0, 'ForceIdr')\"/>\
                 </p>\
-                <!--     		<label for=\"ChangeFr\"><br />\
-Encode frame rate (1~30) :</label>\
-<select id=\"ChangeFr\" onkeydown=\"javascript:FlySet(0, 'ChangeFr')\">\
-<option value=8533333 >60</option>\
-<option value=17066667 selected>30</option>\
-<option value=20480000 >25</option>\
-<option value=25600000 >20</option>\
-<option value=34133333 >15</option>\
-<option value=51200000 >10</option>\
-<option value=85333333 >6</option>\
-<option value=102400000 >5</option>\
-<option value=128000000 >4</option>\
-<option value=170666667 >3</option>\
-<option value=256000000 >2</option>\
-<option value=512000000 >1</option>\
-</select>\
-<label for=\"ChangeVBRMinBps\" <?cs if:brcmode==\"CBR\" ?><?cs var:\"style=display:none\"?> <?cs /if ?>></label>\
-        <p>&nbsp;</p>\
-        <label for=\"ChangeCBRAvgBps\">CBR average bitrate(kbps) :</label>\
-<input type=\"text\" class=\"textinput\" id=\"ChangeCBRAvgBps\" value=\"4000\" maxlength=5 onkeypress=\"javascript:NumOnly()\" onkeydown=\"javascript:FlySet(0, 'ChangeCBRAvgBps')\" />\
--->\
           </div>\
             <br />\
       </div>\
-    </div>\
+  </div>\
 ";
 //menu2 
 const char * const vivocontent= "\
@@ -147,32 +153,14 @@ const char * const vivocontent= "\
         <div class=\"vinvout_right\">\
 			<div class=\"title\">输出设置</div>\
             <div class=\"action\">		\
-                <p>\
-                <input class=\"but\" id=\"Play\" type=\"button\" value=\"Play\"  onclick=\"javascript:PlayVideo()\"/>\
-                <input class=\"but\" id=\"Stop\" type=\"button\" value=\"Stop\"  onclick=\"javascript:StopVideo()\"/>\
-                </p>\
-                <p>\
-                <input class=\"but\" id=\"Record\" type=\"button\" value=\"Start Record\"  onclick=\"javascript:Record()\"/>\
-                <input class=\"but\" id=\"ForceIdr\" type=\"button\" value=\"Force Idr\"  onclick=\"javascript:FlySet(0, 'ForceIdr')\"/>\
-                </p>\
+%s\
             </div>\
-            <br />\
         </div>\
         <div class=\"vivout_right2\">\
 			<div class=\"title\">输入设置</div>\
             <div class=\"action\">\
-                <p>\
-                <input name=\"button\" type=\"button\" class=\"but\" id=\"button\"  onclick=\"javascript:PlayVideo()\" value=\"Play\"/>\
-                <input name=\"button2\" type=\"button\" class=\"but\" id=\"button2\"  onclick=\"javascript:StopVideo()\" value=\"Stop\"/>\
-                </p>\
-                <p>\
 %s\
-\
-                <input name=\"button2\" type=\"button\" class=\"but\" id=\"button3\"  onclick=\"javascript:Record()\" value=\"Start Record\"/>\
-                <input name=\"button2\" type=\"button\" class=\"but\" id=\"button4\"  onclick=\"javascript:FlySet(0, 'ForceIdr')\" value=\"Force Idr\"/>\
-                </p>\
-          </div>\
-            <br />\
+            </div>\
         </div>\
 		<div class=\"vinvout_submit\">\
 		    <input name=\"button\" type=\"button\" class=\"apply\" id=\"button\"  onclick=\"javascript:setCamBasic()\" value=\"确认\"/> \
@@ -180,7 +168,9 @@ const char * const vivocontent= "\
 	  </div>\
     </div>\
  ";
-
+const char * const enccontent= "\
+                                
+";
 const char * const body_html = "<body %s>";
 const char * const foot_html = "\
 <div class=\"footer\">\
@@ -195,7 +185,7 @@ const char * const foot_html = "\
 </html>";
 
 //3 str need to insert.
-char* const const head_footHtml = "<!DOCTYPE HTML PUBLIC  \"-//W3C//DTD HTML 4.0 Transitional//\
+const char*  const head_footHtml = "<!DOCTYPE HTML PUBLIC  \"-//W3C//DTD HTML 4.0 Transitional//\
 EN\"\"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\n\
 	<html>\n\
 	<head>\n\

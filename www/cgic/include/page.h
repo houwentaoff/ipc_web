@@ -41,6 +41,15 @@ typedef struct {
 }select_Label_t;
 
 typedef struct {
+    char* id;
+//	char* label;
+//	char* name;
+	int value;
+	int maxlen;
+	char* ro;
+}div_input_t;
+
+typedef struct {
 	char *label;/*label value */
     char *id;/*div id*/
     union {
@@ -89,9 +98,99 @@ typedef enum {
 	FPS_OPS_NUM
 }FPS_OPTIONS;
 
-extern int   view_page();
-extern int   enc_page();
+typedef enum {
+	VOUT_TYPE_OFF,
+	VOUT_TYPE_CVBS,
+	VOUT_TYPE_HDMI,
+	VOUT_TYPE_NUM
+}VOUT_TYPE_OPTIONS;
+
+typedef enum {
+	VOUT_VIDEO_480P,
+	VOUT_VIDEO_576P,
+	VOUT_VIDEO_720P,
+	VOUT_VIDEO_1080I,
+	VOUT_VIDEO_1080P30,
+	VOUT_VIDEO_OPS_NUM
+}VOUT_VIDEO_OPTIONS;
+
+//ENC
+typedef enum {
+	ENC_TYPE,
+	ENC_FPS,
+	ENC_DPTZ,
+    ENC_RESOLUTION,
+	ENC_FLIP_ROTATE,
+	ENC_NUM,
+//	WIDTH,
+//	HEIGHT
+}ENC_PARAMS_TYPE;
+
+typedef enum {
+	OFF,
+	H_264,
+	MJPEG,
+	TYPE_LEN
+}TYPE_OPTIONS;
+
+typedef enum {
+	ENC_FPS_60,
+	ENC_FPS_30,
+	ENC_FPS_25,
+	ENC_FPS_20,
+	ENC_FPS_15,
+	ENC_FPS_10,
+	ENC_FPS_6,
+	ENC_FPS_5,
+	ENC_FPS_4,
+	ENC_FPS_3,
+	ENC_FPS_2,
+	ENC_FPS_1,
+	ENC_FPS_LIST_LEN
+}ENC_FPS_LIST;
+
+typedef enum {
+	DPTZ_DISABLE,
+	DPTZ_ENABLE,
+	DPTZ_LEN
+}DPTZ_OPTIONS;
+
+typedef enum {
+	RES_OPS_1920x1080,
+	RES_OPS_1440x1080,
+	RES_OPS_1280x1024,
+	RES_OPS_1280x960,
+	RES_OPS_1280x720,
+	RES_OPS_800x600,
+	RES_OPS_720x576,
+	RES_OPS_720x480,
+	RES_OPS_640x480,
+	RES_OPS_352x288,
+	RES_OPS_352x240,
+	RES_OPS_320x240,
+	RES_OPS_176x144,
+	RES_OPS_176x120,
+	RES_OPS_160x120,
+	RES_OPTIONS_LEN
+}RES_OPTIONS;
+
+typedef enum {
+	FR_OPS_NORMAL,
+	FR_OPS_HFLIP,
+	FR_OPS_VFLIP,
+	FR_OPS_ROTATE_90,
+	FR_OPS_ROTATE_180,
+	FR_OPS_ROTATE_270,
+	FR_OPTIONS_LEN
+}FR_OPTIONS;
+
+
+extern int   view_page(int (*callback)());
+extern int   enc_page(int (*callback)());
+extern int   enc_page_get_params();
 extern int   pm_page();
+extern int   _3a_page(int (*callback)());
+extern int   _3a_page_get_params();
 extern int   osd_page();
 extern int   sys_page();
 extern int   vivo_page(int (*callback)());

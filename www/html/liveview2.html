@@ -12,11 +12,11 @@
 <div class="container">
     <div class="header">
         <div class="logo">
-            <img src="../img/goke.png" name="banner" width="181" height="78" id="banner" />                </div>
+            <img src="../img/goke.png" name="banner" width="157" height="78" id="banner" />                </div>
         <div class="title">
             <h1 align="center">网 络 摄 像 机 产 品 演 示</h1>
             <p align="center">IPC Product demonstration</p>
-        </div>
+      </div>
     </div>
     <div class="leftnav">
         <div class="menu_item" id="fl_menu">
@@ -29,6 +29,12 @@
         </div>
     </div>
     <div class="content">
+			<div class="stream_selector">
+				<a href="/cgi-bin/view.cgi?page=0">Main</a>
+				<a href="/cgi-bin/view.cgi?page=1">Second</a>
+				<a href="/cgi-bin/view.cgi?page=2">Third</a>
+				<a href="/cgi-bin/view.cgi?page=3">Fourth</a>	  		
+			</div>
         <div class="activeX" >
             <object classid="CLSID:3BCDAA6A-7306-42FF-B8CF-BE5D3534C1E4" codebase="http://"+window.location.host+"/activex/ambaWeb.cab#version=1,0,0,33" width="800" height="541"		align="left" id="GOKEIPCmrWebPlugIn1">
                 <param name="_Version" value="65536" />
@@ -38,7 +44,7 @@
                 <embed src="65536" width="800" height="541" align="left" _version="65536" _extentx="19045" _extenty="11478" _stockprops="0"></embed>
             </object>
         </div> 
-        <div class="right">
+        <div class="viewright">
             <div class="action">		
                 <p>
                 <input class="but" id="Play" type="button" value="Play"  onclick="javascript:PlayVideo()"/>
@@ -72,7 +78,7 @@ Encode frame rate (1~30) :</label>
           </div>
             <br />
       </div>
-    </div>
+  </div>
     <div class="footer">
         <div >
             <p>&nbsp;</p>

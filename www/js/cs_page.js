@@ -1,17 +1,17 @@
 /////////////////////////////////////////////////////////////////////
 //
-// CVerpage.js
+// cs_page.js
 //
 /////////History:
-//	2010/02/28 - [Yi Zhu] Created this file
-//	2010/06/01 - [Jian Tang] Added ImageParam struct
+//	2014/08/26 - [Sean Hou] Created this file
+//	2014/09/01 - [Sean Hou] Added ImageParam struct
 //
-// Copyright (C) 2007 - 2010, Ambarella, Inc.
+// Copyright (C) 2012 - 2030, GOKE, Inc.
 //
 // All rights reserved. No Part of this file may be reproduced, stored
 // in a retrieval system, or transmitted, in any form, or by any means,
 // electronic, mechanical, photocopying, recording, or otherwise,
-// without the prior consent of Ambarella, Inc.
+// without the prior consent of GOKE, Inc.
 //
 /////////////////////////////////////////////////////////////////////
 
