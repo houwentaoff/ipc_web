@@ -3,12 +3,12 @@
 *
 ** \file      webservice.c
 **
-** \version   $Id: webservice.c 2313 2014-11-05 09:49:02Z houwentao $
+** \version   $Id: webservice.c 2414 2014-11-19 03:04:40Z houwentao $
 **
-** \brief     
+** \brief
 **
 ** \attention THIS SAMPLE CODE IS PROVIDED AS IS. GOFORTUNE SEMICONDUCTOR
-**            ACCEPTS NO RESPONSIBILITY OR LIABILITY FOR ANY ERRORS OR 
+**            ACCEPTS NO RESPONSIBILITY OR LIABILITY FOR ANY ERRORS OR
 **            OMMISSIONS.
 **
 ** (C) Copyright 2012-2013 by GOKE MICROELECTRONICS CO.,LTD
@@ -73,6 +73,8 @@ do                                                                              
 static u8						g_buffer[BUFFER_SIZE];
 static gk_vin_mode			vin_map;
 static gk_vout_mode			vout_map;
+static gk_encode_stream     stream_map[ENCODE_STREAM_NUM];
+
 static int sockfd = -1;
 static int sockfd2 = -1;
 
@@ -81,6 +83,8 @@ extern int g_slIPCMsgID;
 
 static int set_vinvout_param(char * section_name);
 static int get_vinvout_param(char * section_name, u32 info);
+static int get_stream_param(char * section_name, u32 info);
+static int set_stream_param(char * section_name);
 
 static Mapping VinVoutMap[] = {
 	{"vin_enable",			&vin_map.enable,				MAP_TO_U32,	0.0,		0,		0.0,		0.0,	},
@@ -94,13 +98,75 @@ static Mapping VinVoutMap[] = {
 
 	{NULL,			NULL,						-1,	0.0,					0,	0.0,	0.0,		},
 };
+
+
+static Mapping Stream0[] = {
+	{"s0_h264_id",			&stream_map[0].h264Conf.streamId,				MAP_TO_U32,     0.0,		0,		0.0,		0.0,	},
+//	{"s0_M",				&stream_map[0].h264.M,					MAP_TO_U8,	    1.0,		0,		0.0,		0.0,	},
+//	{"s0_N",				&stream_map[0].h264.N,					MAP_TO_U8,	    30.0,		0,		0.0,		0.0,	},
+//	{"s0_idr_interval",		&stream_map[0].h264.idr_interval,		MAP_TO_U8,	    1.0,		0,		0.0,		0.0,	},
+//	{"s0_gop_model",		&stream_map[0].h264.gop_model,			MAP_TO_U8,	    0.0,		0,		0.0,		0.0,	},
+//	{"s0_profile",			&stream_map[0].h264.profile,			MAP_TO_U8,	    0.0,		0,		0.0,		0.0,	},
+//	{"s0_brc",				&stream_map[0].h264.brc_mode,	        MAP_TO_U8,	    0.0,		0,		0.0,		0.0,	},
+	{"s0_cbr_avg_bps",		&stream_map[0].h264Conf.cbrAvgBps,		MAP_TO_U32,	    0.0,		0,		0.0,		0.0,	},
+//	{"s0_vbr_min_bps",		&stream_map[0].h264.vbr_min_bps,		MAP_TO_U32,	    0.0,		0,		0.0,		0.0,	},
+//	{"s0_vbr_max_bps",		&stream_map[0].h264.vbr_max_bps,		MAP_TO_U32,	    0.0,		0,		0.0,		0.0,	},
+//	{"s0_quality",			&stream_map[0].mjpeg.quality,			MAP_TO_U8,	    88.0,	    0,		0.0,		0.0,	},
+	{NULL,			        NULL,						            -1,	            0.0,		0,	    0.0,	    0.0,	},
+};
+
+static Mapping Stream1[] = {
+	{"s1_h264_id",			&stream_map[1].h264Conf.streamId,				MAP_TO_U32,	    1.0,		0,		0.0,		0.0,	},
+//	{"s1_M",				&stream_map[1].h264.M,					MAP_TO_U8,	    1.0,		0,		0.0,		0.0,	},
+//	{"s1_N",				&stream_map[1].h264.N,					MAP_TO_U8,	    30.0,		0,		0.0,		0.0,	},
+//	{"s1_idr_interval",		&stream_map[1].h264.idr_interval,		MAP_TO_U8,	    1.0,		0,		0.0,		0.0,	},
+//	{"s1_gop_model",		&stream_map[1].h264.gop_model,			MAP_TO_U8,	    0.0,		0,		0.0,		0.0,	},
+//	{"s1_profile",			&stream_map[1].h264.profile,			MAP_TO_U8,	    0.0,		0,		0.0,		0.0,	},
+//	{"s1_brc",				&stream_map[1].h264.brc_mode,	        MAP_TO_U8,	    0.0,		0,		0.0,		0.0,	},
+	{"s1_cbr_avg_bps",		&stream_map[1].h264Conf.cbrAvgBps,		MAP_TO_U32,	    0.0,		0,		0.0,		0.0,	},
+//	{"s1_vbr_min_bps",		&stream_map[1].h264.vbr_min_bps,		MAP_TO_U32,	    0.0,		0,		0.0,		0.0,	},
+//	{"s1_vbr_max_bps",		&stream_map[1].h264.vbr_max_bps,		MAP_TO_U32,	    0.0,		0,		0.0,		0.0,	},
+//	{"s1_quality",			&stream_map[1].mjpeg.quality,			MAP_TO_U8,	    88.0,	    0,		0.0,		0.0,	},
+	{NULL,			        NULL,						            -1,	            0.0,		0,	    0.0,	    0.0,	},
+};
+
+static Mapping Stream2[] = {
+	{"s2_h264_id",			&stream_map[2].h264Conf.streamId,				MAP_TO_U32,	    2.0,		0,		0.0,		0.0,	},
+//	{"s2_M",				&stream_map[2].h264.M,					MAP_TO_U8,	    1.0,		0,		0.0,		0.0,	},
+//	{"s2_N",				&stream_map[2].h264.N,					MAP_TO_U8,	    30.0,		0,		0.0,		0.0,	},
+//	{"s2_idr_interval",		&stream_map[2].h264.idr_interval,		MAP_TO_U8,	    1.0,		0,		0.0,		0.0,	},
+//	{"s2_gop_model",		&stream_map[2].h264.gop_model,			MAP_TO_U8,	    0.0,		0,		0.0,		0.0,	},
+//	{"s2_profile",			&stream_map[2].h264.profile,			MAP_TO_U8,	    0.0,		0,		0.0,		0.0,	},
+//	{"s2_brc",				&stream_map[2].h264.brc_mode,	        MAP_TO_U8,	    0.0,		0,		0.0,		0.0,	},
+	{"s2_cbr_avg_bps",		&stream_map[2].h264Conf.cbrAvgBps,		MAP_TO_U32,	    0.0,		0,		0.0,		0.0,	},
+//	{"s2_vbr_min_bps",		&stream_map[2].h264.vbr_min_bps,		MAP_TO_U32,	    0.0,		0,		0.0,		0.0,	},
+//	{"s2_vbr_max_bps",		&stream_map[2].h264.vbr_max_bps,		MAP_TO_U32,	    0.0,		0,		0.0,		0.0,	},
+//	{"s2_quality",			&stream_map[2].mjpeg.quality,			MAP_TO_U8,	    88.0,	    0,		0.0,		0.0,	},
+	{NULL,			        NULL,						            -1,	            0.0,	    0,	    0.0,        0.0,    },
+};
+
+static Mapping Stream3[] = {
+	{"s3_h264_id",			&stream_map[3].h264Conf.streamId,				MAP_TO_U32,	    3.0,		0,		0.0,		0.0,	},
+//	{"s3_M",				&stream_map[3].h264.M,					MAP_TO_U8,	    1.0,		0,		0.0,		0.0,	},
+//	{"s3_N",				&stream_map[3].h264.N,					MAP_TO_U8,	    30.0,		0,		0.0,		0.0,	},
+//	{"s3_idr_interval",		&stream_map[3].h264.idr_interval,		MAP_TO_U8,	    1.0,		0,		0.0,		0.0,	},
+//	{"s3_gop_model",		&stream_map[3].h264.gop_model,			MAP_TO_U8,	    0.0,		0,		0.0,		0.0,	},
+//	{"s3_profile",			&stream_map[3].h264.profile,			MAP_TO_U8,	    0.0,		0,		0.0,		0.0,	},
+//	{"s3_brc",				&stream_map[3].h264.brc_mode,	        MAP_TO_U8,	    0.0,		0,		0.0,		0.0,	},
+	{"s3_cbr_avg_bps",		&stream_map[3].h264Conf.cbrAvgBps,		MAP_TO_U32,	    0.0,		0,		0.0,		0.0,	},
+//	{"s3_vbr_min_bps",		&stream_map[3].h264.vbr_min_bps,		MAP_TO_U32,	    0.0,		0,		0.0,		0.0,	},
+//	{"s3_vbr_max_bps",		&stream_map[3].h264.vbr_max_bps,		MAP_TO_U32,	    0.0,		0,		0.0,		0.0,	},
+//	{"s3_quality",			&stream_map[3].mjpeg.quality,			MAP_TO_U8,	    88.0,	    0,		0.0,		0.0,	},
+	{NULL,			        NULL,						            -1,	            0.0,	    0,	    0.0,	    0.0,    },
+};
+
 static Section Params[] = {
 	{"VINVOUT",		VinVoutMap,		get_vinvout_param,		set_vinvout_param},
 //	{"ENCODE",		EncodeMap,		get_func_null,		set_encode_param},
-//	{"STREAM0",		Stream0,		get_func_null,		set_stream_param},
-//	{"STREAM1",		Stream1,		get_func_null,		set_stream_param},
-//	{"STREAM2",		Stream2,		get_func_null,		set_stream_param},
-//	{"STREAM3",		Stream3,		get_func_null,		set_stream_param},
+	{"STREAM0",		Stream0,		get_stream_param,		set_stream_param},
+	{"STREAM1",		Stream1,		get_stream_param,		set_stream_param},
+	{"STREAM2",		Stream2,		get_func_null,		set_stream_param},
+	{"STREAM3",		Stream3,		get_func_null,		set_stream_param},
 //	{"PRIMASK",		PMMap,			get_func_null,		set_pm_param},
 //	{"OSD",			OSDMap,			get_func_null,		set_osd_param},
 //	{"DPTZ",		DPTZMap,		get_dptz_param,		set_dptz_param},
@@ -132,7 +198,7 @@ int send_fly_request(enum CAMCONTROL_CMDTYPE cmdtype, const unsigned char datale
 	}
 
 	/*receive action*/
-	memset(&stMsgUserInfo, 0, sizeof(stMsgUserInfo));    
+	memset(&stMsgUserInfo, 0, sizeof(stMsgUserInfo));
 	if(msgrcv(g_slIPCMsgID ,(void *)&stMsgUserInfo, sizeof(MSG_INFO_t) - 4, MSGACK_COMM_TYPE, 0) == -1){
 		perror("msgrcv failed !\n");
 		if(msgctl(g_slIPCMsgID, IPC_RMID, 0) == -1){
@@ -156,7 +222,7 @@ int send_fly_request(enum CAMCONTROL_CMDTYPE cmdtype, const unsigned char datale
 			memcpy(pRevData, stMsgUserInfo.ucCmdData, stMsgUserInfo.ucDataLen);
 		}
 
-	}    
+	}
     FUN_OUT();
     return (0);
 }
@@ -423,7 +489,7 @@ static int check_params(Mapping * Map)
     FUN_OUT();
 
 	return 0;
-}            
+}
 
 static int update_params(Mapping * Map)
 {
@@ -503,7 +569,7 @@ static int parse_name_to_map_index(Mapping * Map, char * s)
 	while (NULL != Map[i].TokenName) {
 		if (0 == strcmp(Map[i].TokenName, s))
 			return i;
-		else 
+		else
 			++i;
 	}
 
@@ -520,12 +586,12 @@ static void parse_content(Mapping * Map, char * buf, int bufsize)
 	double	DoubleContent;
 	char		msg[256];
 	int i;
-    
+
     FUN_IN("buf[%s]bufsize[%d]vin_map.frame_rate[%d]\n", buf, bufsize, vin_map.frame_rate);
 	// Stage one: Generate an argc/argv-type list in items[], without comments and whitespace.
 	// This is context insensitive and could be done most easily with lex(1).
 	item = parse_items(items, buf, bufsize);
-    
+
     for (i=0;i<=item;i++)
     {
         PRT_DBG("item[%d]items [%d][%s]\n", item, i, items[i]);
@@ -750,7 +816,7 @@ int send_text(u8 *pBuffer, u32 size)
     {
         FUN_IN("ACK.result[%d]ACK.info[%d]\n", ((Ack *)pBuffer)->result, ((Ack *)pBuffer)->info);
     }
-    else 
+    else
     {
         FUN_IN("not ACK content[%s]size[%d]\n", pBuffer, size);
     }
@@ -780,7 +846,7 @@ int receive_text(u8 *pBuffer, u32 size)
     {
         FUN_OUT("ACK.result[%d]ACK.info[%d]\n", ((Ack *)pBuffer)->result, ((Ack *)pBuffer)->info);
     }
-    else 
+    else
     {
         FUN_OUT("not ACK content[%s]size[%d]\n", pBuffer, size);
     }
@@ -792,7 +858,7 @@ static int get_vinvout_param(char * section_name, u32 info)
 	int streamID = 0, retv = 0;
     FUN_IN();
 	PRT_DBG("Section [%s] setting:\n", section_name);
-    
+
     /*-----------------------------------------------------------------------------
      *  remenber to convert frame_rate  [] -> 1-60
      *-----------------------------------------------------------------------------*/
@@ -885,6 +951,45 @@ static int set_vinvout_param(char * section_name)
 	return retv;
 }
 
+static int get_stream_param(char *section_name, u32 info)
+{
+	int streamId = 0, retv = 0;
+    FUN_IN();
+	PRT_DBG("Section [%s] setting:\n", section_name);
+
+    streamId = atoi(&section_name[6]);
+    stream_map[streamId].h264Conf.cbrAvgBps = 
+    g_stEncodeInfo[streamId].bitrate*1000;
+    FUN_OUT("cbrAvgBps [%d]\n", stream_map[streamId].h264Conf.cbrAvgBps);
+
+	return retv;
+}
+
+static int set_stream_param(char *section_name)
+{
+    int streamId = 0, retv = 0;
+    CAMCONTROL_Encode_Cmd stEncCmd;
+
+	FUN_IN("Section [%s] setting:\n", section_name);
+
+    streamId = atoi(&section_name[6]);
+    FUN_OUT("cbrAvgBps [%d]\n", stream_map[streamId].h264Conf.cbrAvgBps);
+
+	memset(&stEncCmd, 0, sizeof(stEncCmd));
+	stEncCmd.streamid = (u32)streamId;
+	stEncCmd.bitrate = stream_map[streamId].h264Conf.cbrAvgBps;
+
+    retv = send_fly_request(MEDIA_SET_BITRATE, sizeof(CAMCONTROL_Encode_Cmd), (unsigned char *)&stEncCmd, 0, NULL);
+    if(retv != 0)
+    {
+        PRT_ERR("send_fly_request(): error!\n");
+    }
+
+	return retv;
+}
+
+
+
 static Section * find_section(char * name)
 {
 	int i = 0;
@@ -974,6 +1079,48 @@ static int do_set_param(Request *req)
 	retv = send_text((u8 *)&ack, sizeof(ack));
 	return retv;
 }
+static int do_change_br(Request *req)
+{
+	int retv = 0, stream_id = 0;
+	Ack ack;
+    char buf[BUFFER_SIZE]="\0";
+    
+    FUN_IN("req.id[%d]req.info[%d]req.dataSize[%d]\n", req->id, req->info, req->dataSize);
+    
+    stream_id = (req->info >> STREAM_ID_OFFSET);
+    stream_map[stream_id].h264Conf.cbrAvgBps = (req->info & ~(0xf << 
+    STREAM_ID_OFFSET))/1000;
+    
+    sprintf(buf, "STREAM%d", stream_id);
+    PRT_DBG("before set_stream_param\n");
+    set_stream_param(buf);
+    PRT_DBG("after set_stream_param\n");
+
+#if 0
+	mw_bitrate_range br;
+	stream = (req->info >> STREAM_ID_OFFSET);
+	br.id = (1 << stream);
+	br.min_bps = req->info & ~(0x3 << STREAM_ID_OFFSET);
+	br.max_bps = req->dataSize;
+	retv = mw_change_br(&br);
+	APP_INFO("[do_change_br] stream %d, bitrate range [%d, %d].\n",
+		stream, br.min_bps, br.max_bps);
+	if (retv == 0) {
+		if (g_mw_stream[stream].h264.brc_mode & 0x1) {
+			g_mw_stream[stream].h264.vbr_min_bps = br.min_bps;
+			g_mw_stream[stream].h264.vbr_max_bps = br.max_bps;
+			stream_map[stream].h264.vbr_min_bps = br.min_bps;
+			stream_map[stream].h264.vbr_max_bps = br.max_bps;
+		} else {
+			g_mw_stream[stream].h264.cbr_avg_bps = br.min_bps;
+			stream_map[stream].h264.cbr_avg_bps = br.min_bps;
+		}
+	}
+#endif
+	ack.result = retv;
+	ack.info = 0;
+	return send_text((u8 *)&ack, sizeof(ack));
+}
 
 static int process_request(Request *req)
 {
@@ -992,7 +1139,7 @@ static int process_request(Request *req)
 		break;
 
 	case REQ_CHANGE_BR:
-//		do_change_br(req);
+		do_change_br(req);
 		break;
 
 	case REQ_CHANGE_FR:

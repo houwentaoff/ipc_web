@@ -3,12 +3,12 @@
 *
 ** \file      webservice.h
 **
-** \version   $Id: webservice.h 2309 2014-11-05 02:05:55Z houwentao $
+** \version   $Id: webservice.h 2409 2014-11-18 13:25:00Z houwentao $
 **
-** \brief     
+** \brief
 **
 ** \attention THIS SAMPLE CODE IS PROVIDED AS IS. GOFORTUNE SEMICONDUCTOR
-**            ACCEPTS NO RESPONSIBILITY OR LIABILITY FOR ANY ERRORS OR 
+**            ACCEPTS NO RESPONSIBILITY OR LIABILITY FOR ANY ERRORS OR
 **            OMMISSIONS.
 **
 ** (C) Copyright 2012-2013 by GOKE MICROELECTRONICS CO.,LTD
@@ -24,9 +24,16 @@
 #define ENCODE_SERVER_PORT			(20000)
 //#define IMAGE_SERVER_PORT			(20002)
 #define BUFFER_SIZE					(1024)
+#define ENCODE_STREAM_NUM           (4)
+#define STREAM_ID_OFFSET			(28)
 
 //#define	FILE_CONTENT_SIZE		(10 * 1024)
 typedef unsigned int u32;
+typedef unsigned char u8;
+typedef signed char s8;
+typedef signed int s32;
+typedef signed short s16;
+typedef unsigned short u16;
 
 /*=========================Start AMBA_VIDEO_INFO==============================*/
 #if 0
@@ -84,7 +91,7 @@ typedef unsigned int u32;
 #define AMBA_VIDEO_FPS_7_5			AMBA_VIDEO_FRAC_FPS(6)
 #define AMBA_VIDEO_FPS_3_75			AMBA_VIDEO_FRAC_FPS(7)
 #define AMBA_VOUT_SINK_TYPE_CVBS    (1)
-#endif 
+#endif
 /* ======================= Standart format defines ========================== */
 enum amba_video_mode {
 	AMBA_VIDEO_MODE_AUTO		= 0,
@@ -251,6 +258,48 @@ typedef struct {
 	u32				type;
 } gk_vout_mode;
 
+
+typedef struct
+{
+    u32            streamId;
+    u8             encodeType;
+    u8             sourceBuf;
+    u8             flipRotate;
+    u16            width;
+    u16            height;
+    u16            xOffset;
+    u16            yOffset;
+    u32            fps;
+}gk_venc_StreamFormat;
+
+typedef struct
+{
+    u32            streamId;
+    u8             gopM;
+    u8             gopN;
+    u8             idrInterval;
+    u8             gopModel;
+    u8             profile;
+    u8             brcMode;
+    u32            cbrAvgBps;
+    u32            vbrMinbps;
+    u32            vbrMaxbps;
+}gk_venc_H264Config;
+
+typedef struct
+{
+    u32            streamId;
+    u8             chromaFormat;
+    u8             quality;
+}gk_venc_MjpegConfig;
+
+typedef struct
+{
+    gk_venc_StreamFormat streamFormat;
+    gk_venc_H264Config   h264Conf;
+    gk_venc_MjpegConfig  mjpegConf;
+    u8                 dptz;
+}gk_encode_stream;
 
 static inline int get_func_null(char *section_name, u32 info)
 {
