@@ -904,7 +904,7 @@ function FlySet(streamId, op)
 {
     try {
         var STREAM_ID_OFFSET = 28;
-        var url = "/cgi-bin/live_view.cgi?streamId=" + streamId;
+        var url = "/cgi-bin/flysetroute.cgi?streamId=" + streamId;
         var ai = new AJAXInteraction(url, display);
         var req, info, data = 0;
         var value;
@@ -984,7 +984,7 @@ function FlySet(streamId, op)
         alert(error);
     }
     function display(response_text) {
-        if (response_text != 'succeed\n') {
+        if (response_text != 'succeeded\n') {
             alert(op + " failed display");
         }
     }
@@ -1292,4 +1292,9 @@ function StopVideo()
             alert(e);
         }
     }
+}
+function setStreamIndex(streamId)
+{
+    var url = "/cgi-bin/demo.cgi?page=1&streamId=" + streamId;
+    window.location.replace(url);
 }

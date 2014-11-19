@@ -49,7 +49,7 @@ const char* const video_html = "<div id=\"video\">\n \
 		</object>\n\
 	</div>\n";
 #endif
-const char * const onload = "onload=\"javascript:OnLoadActiveX(window.location.host, %d, 1, 0, 1);\"";
+const char * const onload = "onload=\"javascript:OnLoadActiveX(window.location.host, %d, 1, 0, 1); \"";
 
 const char * const head_html =  "<!DOCTYPE HTML PUBLIC  \"-//W3C//DTD HTML 4.0 Transitional//EN\"\"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\
 <html>\
@@ -92,9 +92,9 @@ const char * const nav="\
         <div class=\"menu_item\" id=\"fl_menu\">\
             <div class=\"menu\" style=\"none\">\
                 <a href=\"/cgi-bin/demo.cgi?page=0&stream=0\" title=\"liveview\" class=\"menu_item\">liveview</a>\
-                <a href=\"/cgi-bin/demo.cgi?page=1\" title=\"3A\"  class=\"menu_item\">3A</a>\
+                <a href=\"/cgi-bin/demo.cgi?page=2\" title=\"3A\"  class=\"menu_item\">3A</a>\
                 <a href=\"/cgi-bin/demo.cgi?page=5\" title=\"vinvout\" class=\"menu_item\">vinvout</a>\
-                <a href=\"enc.html\" title=\"enc\"  class=\"menu_item\">enc</a>\
+                <a href=\"/cgi-bin/demo.cgi?page=1\" title=\"enc\"  class=\"menu_item\">enc</a>\
                 <a href=\"osd.html\" title=\"osd\"  class=\"menu_item\">osd</a>\
             </div>\
         </div>\
@@ -114,8 +114,9 @@ const char * const activeX="\
 
 //menu 1 2 3 4 5
 //menu 1
-const char * const liveviewcontent="\
+const char * const liveviewcontent="   \
 <div class=\"content\">\
+            <div id=\"stream_id\" class=\"%d\"></div>\
 			<div class=\"stream_selector\">\
 				<a href=\"/cgi-bin/demo.cgi?page=0&stream=0\">Main</a>\
 				<a href=\"/cgi-bin/demo.cgi?page=0&stream=1\">Second</a>\
@@ -131,6 +132,7 @@ const char * const liveviewcontent="\
                 <embed src=\"65536\" width=\"800\" height=\"541\" align=\"left\" _version=\"65536\" _extentx=\"19045\" _extenty=\"11478\" _stockprops=\"0\"></embed>\
             </object>\
         </div> \
+        <div id=\"status\">&nbsp; </div>\
         <div class=\"viewright\">\
             <div class=\"action\">	\
                 <p>\
@@ -141,9 +143,11 @@ const char * const liveviewcontent="\
                 <input class=\"but\" id=\"Record\" type=\"button\" value=\"Start Record\"  onclick=\"javascript:Record()\"/>\
                 <input class=\"but\" id=\"ForceIdr\" type=\"button\" value=\"Force Idr\"  onclick=\"javascript:FlySet(0, 'ForceIdr')\"/>\
                 </p>\
-          </div>\
+        <label for=\"ChangeCBRAvgBps\">CBR average bitrate(kbps) :</label>\
+<input type=\"text\" class=\"textinput\" id=\"ChangeCBRAvgBps\" value=\"%d\" maxlength=5 onkeypress=\"javascript:NumOnly()\" onkeydown=\"javascript:FlySet(document.getElementById('stream_id').className, \'ChangeCBRAvgBps\')\" />\
+            </div>\
             <br />\
-      </div>\
+        </div>\
   </div>\
 ";
 //menu2 
@@ -169,7 +173,49 @@ const char * const vivocontent= "\
     </div>\
  ";
 const char * const enccontent= "\
-                                
+<div class=\"content\">\
+        <div id=\"status\">&nbsp; </div>\
+        <div class=\"enc_right1\">\
+            <div class=\"title\">\
+            %s\
+            </div>\
+            <div class=\"action\">\
+            %s\
+                <div id=\"enc_h264\">\
+                    <label  class=\"title\">H264</label>\
+                    <script type=\"text/javascript\">\
+                        function change(x)\
+                        {\
+                            var value = document.getElementById(x).value;\
+                            document.getElementById(\"_\"+x).innerHTML = value;\
+                        }\
+                    </script>\
+                    <div id=\"__pointa\">\
+                          <label></label><label id=\"_pointa\">1</label><input id=\"pointa\" type=\"range\"  min=\"0\" max=\"255\" value=\"100\" onchange=\"change(this.id)\">\
+                    </div>\
+                    <div id=\"__pointb\">\
+                         <label id=\"_pointb\">2</label><input type=\"range\" id=\"pointb\" min=\"0\" max=\"255\" value=\"100\" onchange=\"change(this.id)\">\
+                    </div>\
+                    <div id=\"__pointc\">\
+                          <label id=\"_pointc\">3</label><input type=\"range\" id=\"pointc\" min=\"0\" max=\"255\" value=\"100\" onchange=\"change(this.id)\">\
+                    </div>\
+                    <div id=\"__pointd\">\
+                          <label id=\"_pointd\">4</label><input type=\"range\" id=\"pointd\" min=\"0\" max=\"255\" value=\"100\" onchange=\"change(this.id)\">	\
+                    </div>\
+                    <div id=\"__pointe\">\
+                          <label id=\"_pointe\">5</label><input type=\"range\" id=\"pointe\" min=\"0\" max=\"255\" value=\"100\" onchange=\"change(this.id)\">\
+                    </div>\
+                    <div id=\"__pointf\">\
+                          <label id=\"_pointe\">6</label><input type=\"range\" id=\"pointe\" min=\"0\" max=\"255\" value=\"100\" onchange=\"change(this.id)\">\
+                    </div>\
+                </div>\
+            </div>\ 
+        </div>\
+        <div class=\"enc_submit\">\
+            <input name=\"button\" type=\"button\" class=\"apply\" id=\"button\"  onclick=\"javascript:setCamBasic()\" value=\"确认\"/> 			&nbsp;\
+            <input name=\"button\" type=\"button\" class=\"cancel\" id=\"button\"  onclick=\"javascript:showPage(\'csb\')\" value=\"取消\"/>\
+        </div>\
+</div>\
 ";
 const char * const body_html = "<body %s>";
 const char * const foot_html = "\

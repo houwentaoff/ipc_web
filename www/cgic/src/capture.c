@@ -3,7 +3,7 @@
  *
  ** \file      capture.c
  **
- ** \version   $Id$
+ ** \version   $Id: capture.c 2417 2014-11-19 09:11:29Z houwentao $
  **
  ** \brief     
  **
@@ -25,6 +25,6 @@ int cgiMain() {
 	fprintf(cgiOut, "<h1>Captured</h1>\n");
 	fprintf(cgiOut, "Your form submission was captured for use in\n");
 	fprintf(cgiOut, "debugging CGI code.\n");
-	return 0;
+	return (GK_CGI_NO_ERROR);
 }
 

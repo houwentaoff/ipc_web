@@ -5,7 +5,7 @@
 ##
 ## (C) Copyright 2012-2014 by Goke Microelectronics Co.,Ltd
 ##
-## Version: $Id: Makefile 2203 2014-10-30 02:29:08Z houwentao $
+## Version: $Id: Makefile 2417 2014-11-19 09:11:29Z houwentao $
 ##
 ## Mandatory settings:
 ##
@@ -111,8 +111,9 @@ install-program:
 	@mkdir -p  $(ROOTFS_TOP)/webSvr
 #	@cp -a  $(PROGRAM) $(ROOTFS_TOP)/webSvr/
 #	@mkdir -p $(ROOTFS_TOP)/usr/local/bin
-#	@cp -a  run_app.sh $(ROOTFS_TOP)/usr/local/bin/
+	@cp -a  run_app.sh $(ROOTFS_TOP)/usr/local/bin/
 	@mkdir -p $(ROOTFS_TOP)/webSvr/www/
+#	@make -C cgic install
 
 	@for f in `find cgi-bin/ -name '*.cgi' |xargs tar czf /tmp/cgi-bin.tgz && tar -zxvf /tmp/cgi-bin.tgz -C $(ROOTFS_TOP)/webSvr/www/`; do echo "### --> [$$ROOTFS_TOP/webSvr/www/$$f]"; done;
 	@for f in `find css/ -name '*.css' |xargs tar czf /tmp/css.tgz && tar -zxvf /tmp/css.tgz -C $(ROOTFS_TOP)/webSvr/www/`; do echo "### --> [$$ROOTFS_TOP/webSvr/www/$$f]"; done;

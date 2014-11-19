@@ -3,7 +3,7 @@
 *
 ** \file      route.c
 **
-** \version   $Id$
+** \version   $Id: route.c 2417 2014-11-19 09:11:29Z houwentao $
 **
 ** \brief     截取ajx数值并返回text使网页局部更新
 **
@@ -25,7 +25,7 @@ int cgiMain()
     //cgiHeaderContentType("text/html");
 	fprintf(cgiOut, "<aa>cccccccccccccccccc<bb>\n");
 
-    return (0);
+    return (GK_CGI_NO_ERROR);
 }
 
 

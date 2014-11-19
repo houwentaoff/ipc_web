@@ -5,7 +5,7 @@
 ##
 ## (C) Copyright 2012-2014 by Goke Microelectronics Co.,Ltd
 ##
-## Version: $Id: Makefile 2137 2014-10-28 03:29:57Z houwentao $
+## Version: $Id: Makefile 2359 2014-11-12 09:07:32Z huangmin $
 ##
 ## Mandatory settings:
 ##
@@ -93,7 +93,7 @@ default: install
 #include $(TOPDIR)/env/make/Makefile.rules
 
 clean: 
-	@make -C www clean
+	#@make -C www clean
 	@make -C server clean
 
 build: 

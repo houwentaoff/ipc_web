@@ -1,5 +1,13 @@
 <!DOCTYPE HTML PUBLIC  "-//W3C//DTD HTML 4.0 Transitional//EN""-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"><html>    <head>        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">        <title>vinvout</title>            <link href="../css/goke_1.css" rel="stylesheet" type="text/css" />            <script language="JavaScript" src="../js/AJAXInteraction.js"></script>            <script language="JavaScript" src="../js/page.js"></script>            <script language="JavaScript" src="../js/style.js"></script>    </head>    <body >        <div class="container">            <div class="header">                <div class="logo">                    <img src="../img/goke.png" name="banner" width="181" height="78" id="banner" />                </div>                <div class="title">                    <h1 align="center">网 络 摄 像 机 产 品 演 示</h1>                    <p align="center">IPC Product demonstration</p>                </div>            </div><div class="leftnav">        <div class="menu_item" id="fl_menu">            <div class="menu" style="none">                <a href="/cgi-bin/demo.cgi?page=0&stream=0" title="liveview" class="menu_item">liveview</a>                <a href="/cgi-bin/demo.cgi?page=1" title="3A"  class="menu_item">3A</a>                <a href="/cgi-bin/demo.cgi?page=5" title="vinvout" class="menu_item">vinvout</a>                <a href="enc.html" title="enc"  class="menu_item">enc</a>                <a href="osd.html" title="osd"  class="menu_item">osd</a>            </div>        </div></div><div class="content">    <div id="status">&nbsp; </div>        
-    <div class="enc_right1">			<div class="title">stream[%d]</div>            
+    <div class="enc_right1">			
+	<div class="title">
+	  <label>stream[%d]</label>
+				  <select>
+			    <option value="0">OFF</option>
+			    <option value="1">H_264</option>
+			    <option value="2">MJPEG</option>
+			  </select>
+	</div>            
               <div class="action">
 			  <div id="s0_type">
 			  <labal>Type :</label>
@@ -70,6 +78,6 @@ function change(x)
 	</div>
 	  </div>		  
 		
-</div>        </div>		
+</div>      
     <div class="enc_submit">		    <input name="button" type="button" class="apply" id="button"  onclick="javascript:setCamBasic()" value="确认"/> 			&nbsp;<input name="button" type="button" class="cancel" id="button"  onclick="javascript:showPage('csb')" value="取消"/>	  </div>    
 </div> <div class="footer">        <div >            <p>&nbsp;</p>            <p>公司地址：长沙市长星路389号 联系电话：0731-88218855 官方网站:www.gokemicro.com </p>            <p>国科微电子有限公司 版权所有</p>        </div>    </div></div></body></html>

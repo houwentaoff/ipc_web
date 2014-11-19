@@ -3,7 +3,7 @@
  *
  ** \file      setroute.c
  **
- ** \version   $Id: setroute.c 2417 2014-11-19 09:11:29Z houwentao $
+ ** \version   $Id: flysetroute.c 2417 2014-11-19 09:11:29Z houwentao $
  **
  ** \brief     
  **
@@ -24,14 +24,16 @@
 
 #include <include.h>
 
+extern int fly_process_PostData();
+
 int cgiMain() {
     int ret=-1;
     /* Send the content type, letting the browser know this is HTML */
     FUN_IN();
     cgiHeaderContentType("text/html");
     
-//    ret = fly_process_PostData();
-    ret = CamBasicPage_process_PostData(); 
+    ret = fly_process_PostData();
+//    ret = CamBasicPage_process_PostData(); 
     if (ret < 0) {
 		fprintf(cgiOut,"1:set params failed");
         PRT_DBG("1:set params failed\n");

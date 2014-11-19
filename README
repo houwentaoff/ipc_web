@@ -12,7 +12,7 @@ Install
 
 Run
 
-[4] After reboot. run 'run_app.sh  --ov9710' and then you can use URL 'http://yourtargetip/html/view.html' or 'http://yourtargetip/cgi-bin/view.cgi' to view real-time video. eg:'http://192.168.100.47/html/view.html'.Remenber to use IE.
+[4] After reboot. run 'run_app.sh  --ov9710' and then you can use URL 'http://yourtargetip/html/demo.cgi?page=0&stream=0' or 'http://yourtargetip/cgi-bin/view.cgi' to view real-time video. eg:'http://192.168.103.47/cgi-bin/demo.cgi?page=0&stream=0'.Remenber to use IE.
 
 notice:
 
@@ -25,31 +25,31 @@ notice:
 The folling is the correct log. please check it.
 
 # run_app.sh --ov9710
-[   39.610242] dsp: module license 'Proprietary' taints kernel.
-[   39.616129] Disabling lock debugging due to kernel taint
-[   39.683201] img: aaa_fifo2_base malloc c30d0000
-[   39.737711] Vout notice: vout0:0 probed!
-[   39.742055] Vout notice: vout1:1 probed!
-[   39.788674] Vin info: amba_vin_vsync_bind to gpio with 0ns delay!
-[   39.795021] Vin notice: vin0:0 probed!
-[   40.225891] >>>>>> DSP LOG ADDR START PHY 0xc0080000 
-[   40.272947] Vout notice: CVBS:0@1 probed!
-[   40.360697] Vout notice: DBus-All:1@0 probed!
-[   40.365257] Vout notice: DBus-LCD:2@1 probed!
-[   40.444537] Vout notice: HDMI:3@1 probed!
-[   40.948057] Vin info: OV9710 sensor ID is 0x9711
-[   40.952873] Vin info: OV9710 init(parallel)
-[   41.007117] amba_debug_init 248:248.
+dsp: module license 'Proprietary' taints kernel.
+Disabling lock debugging due to kernel taint
+img: aaa_fifo2_base malloc c3580000
+Vout notice: vout0:0 probed!
+Vout notice: vout1:1 probed!
+Vin info: amba_vin_vsync_bind to gpio with 0ns delay!
+Vin notice: vin0:0 probed!
+>>>>>> DSP LOG ADDR START PHY 0xc0080000 
+Vout notice: CVBS:0@1 probed!
+Vout notice: DBus-All:1@0 probed!
+Vout notice: DBus-LCD:2@1 probed!
+Vout notice: HDMI:3@1 probed!
+Vin info: OV9710 sensor ID is 0x9711
+Vin info: OV9710 init(parallel)
+amba_debug_init 248:248.
 Use default settings
 map_size = 0x300000
 nr_item = 3
 addr_offset = 0x0 filename = orccode.bin
 addr_offset = 0x200000 filename = orcme.bin
 addr_offset = 0x2a0000 filename = default_binary.bin
-mmap returns 0x40302000
-loading /lib/firmware/orccode.bin...addr = 0x40302000, size = 0x19e696
-loading /lib/firmware/orcme.bin...addr = 0x40502000, size = 0x36374
-loading /lib/firmware/default_binary.bin...addr = 0x405a2000, size = 0x40000
+mmap returns 0xb6b78000
+loading /lib/firmware/orccode.bin...addr = 0xb6b78000, size = 0x19e696
+loading /lib/firmware/orcme.bin...addr = 0xb6d78000, size = 0x36374
+loading /lib/firmware/default_binary.bin...addr = 0xb6e18000, size = 0x40000
 ===============================
 u_code version = 2013/7/19 3.0
 ===============================
@@ -66,18 +66,18 @@ Play this stream using the URL "rtsp://192.168.103.47/stream1"
 Play this stream using the URL "rtsp://192.168.103.47/stream2"
 Play this stream using the URL "rtsp://192.168.103.47/stream3"
 Play this stream using the URL "rtsp://192.168.103.47/stream4"
+# [01/Jan/1970:00:02:16 +0000] boa: server version Boa/0.94.13
+[01/Jan/1970:00:02:16 +0000] boa: server built Oct 28 2014 at 18:31:25.
+[01/Jan/1970:00:02:16 +0000] boa: starting server pid=89, port 80
 [INFO] map_size = 0x00300000 
 [INFO] nr_item = 3
 [INFO] addr_offset = 0x00000000 [INFO] filename = orccode.bin
 [INFO] addr_offset = 0x00200000 [INFO] filename = orcme.bin
 [INFO] addr_offset = 0x002A0000 [INFO] filename = default_binary.bin
-[INFO] mmap returns 0x403f8000
-[INFO] loading /lib/firmware/orccode.bin...[INFO] addr = 0x403f8000, size = 0x19e696
-# [INFO] loading /lib/firmware/orcme.bin...[INFO] addr = 0x405f8000, size = 0x36374
-[10/Jan/2004:18:46:45 +0000] boa: server version Boa/0.94.13
-[10/Jan/2004:18:46:45 +0000] boa: server built Oct 28 2014 at 10:16:13.
-[10/Jan/2004:18:46:45 +0000] boa: starting server pid=743, port 80
-[INFO] loading /lib/firmware/default_binary.bin...[INFO] addr = 0x40698000, size = 0x40000
+[INFO] mmap returns 0xb69c7000
+[INFO] loading /lib/firmware/orccode.bin...[INFO] addr = 0xb69c7000, size = 0x19e696
+[INFO] loading /lib/firmware/orcme.bin...[INFO] addr = 0xb6bc7000, size = 0x36374
+[INFO] loading /lib/firmware/default_binary.bin...[INFO] addr = 0xb6c67000, size = 0x40000
 [INFO] ===============================
 [INFO] ucode version = 2013/7/19 3.0
 [INFO] ===============================
@@ -85,19 +85,26 @@ Play this stream using the URL "rtsp://192.168.103.47/stream4"
 [INFO] Initialize VIN DONE.
 [INFO] Initialize VOUT DONE.
 [INFO] Initialize VENC DONE.
-[   43.022231] Vout info: CVBS-0 switch to mode 65520!0][source devType:1].
-
-resoluMode:0,frameRate:17083750,mirrorPattern:0,bayerPattern:0,resoluMode:65520,sinkType:1
+[INFO] gadi_vin_open:[mode:65524][1280x720][frameRate:0][source devType:1].
+[INFO] gadi:ptz thread create OK
+******************************
+PTZ PROTOCOL SUPPROT:
+pelco-d
+******************************
+resoluMode:0,frameRate:17083750,mirrorPattern:0,bayerPattern:4,resoluMode:65520,sinkType:1
 dptz:0,streamFormat.streamId:0,encodeType:1,width:1920,height:1080,Fps:17066667,flipRotate:0,h264Conf.streamId:0,gopModel:0,gopM:1,gopN:30
-idrInterval:1,profile:0,brcMode:0,cbrAvgBps:4000000,vbrMinbps:1000000,vbrMaxbps:4000000,mjpegConf.streamId:0,quality:5,chromaFormat:0
-dptz:0,streamFormat.streamId:1,encodeType:1,width:704,height:576,Fps:20480000,flipRotate:3,h264Conf.streamId:1,gopModel:0,gopM:1[   43.070279] Vin info: amba_vin_vsync_bind to idsp with 0ns delay!
-,gopN:30
+idrIVout info: CVBS-0 switch to mode 65520!
+nterval:1,profile:0,brcMode:0,cbrAvgBps:4000000,vbrMinbps:1000000,vbrMaxbps:4000000,mjpegConf.streamId:0,quality:5,chromaFormat:0
+dptz:0,streamFormat.streamId:1,encodeType:1,width:720,height:480,Fps:20480000,flipRotate:0,h264Conf.streamId:1,gopModel:0,gopM:1,gopN:30
 idrInterval:1,profile:0,brcMode:0,cbrAvgBps:4000000,vbrMinbps:1000000,vbrMaxbps:4000000,mjpegConf.streamId:1,quality:5,chromaFormat:0
-dptz:0,streamFormat.streamId:2,encodeType:0,width:0,height:0,Fps:0,flipRotate:0,h264Conf.streamId:2,gopModel:0,gopM:1,gopN:30
-idrInterval:1,profile:0,brcMode:0,cbrAvgBps:4000000,vbrMinbps:1000000,vbrMaxbps:4000000,mjpegConf.streamId:2,quality:5,chromaFormat:0
+dptz:0,streamFormat.streamId:2,encodeType:0,width:0,height:0,Fps:0,flipRotate:0,h264Conf.streamId:2,gopModelVin info: amba_vin_vsync_bind to idsp with 0ns delay!
+:0,gopM:1,gopN:30
+idrInterval:1,profile:0,brcMode:0,cbrAvgBps:4000000,vbrMinbps:1000000,vbrMaxbps:4000000,mjpegVin info: amba_vin_vsync_bind to idsp with 0ns delay!
+Conf.streamId:2,quality:5,chromaFormat:0
 dptz:0,streamFormat.streamId:3,encodeType:0,width:0,height:0,Fps:0,flipRotate:0,h264Conf.streamId:3,gopModel:0,gopM:1,gopN:30
-idrInterval:1,profile:0,brcMode:0,cbrAvgBps:4000000,vbrMinbps:1000000,vbrMaxbps:4000000,mjpegConf.streamId:3,quality:5,chr[   43.133134] Vin info: amba_vin_vsync_bind to idsp with 0ns delay!
-omaFormat:0
+idrInterval:1,profile:0,brcMode:0,cbrAvgBps:4000000,vbrMinbps:1000000,vbrMaxbps:4000000,mjpegConf.streamId:3,quality:5,chromaFormat:0
+protocolName:pelco-d,addr:1
+devName:GOKE,presetsCapacity:32
 [INFO] gadi_vin_enter_preview:iav device state=0
 [INFO] sink 3 is HDMI
 [INFO] sink 2 is DBus-LCD
@@ -111,5 +118,26 @@ start stream[0]
 [INFO] DPTZ Type I : zoom_factor_x 0x10000, zoom_factor_y 0x10000, offset_x 0x0, offset_y 0x0.
 [INFO] Start encoding for stream 0x0.		Active encoding num is 1.
 start stream[1]
-[INFO] DPTZ Type II : source 1, input window 880x720, offset 200x0.
+[INFO] DPTZ Type II : source 1, input window 1080x720, offset 100x0.
 [INFO] Start encoding for stream 0x1.		Active encoding num is 2.
+[INFO] isp:img_lib_init done
+[INFO] isp: sensor id[0x00000000] name[ov9715] def_fps[17083750] cur_fps[17083750] op_mode[0]
+[INFO] isp: load cc table done
+ shm addr = 0xb5abf000  0
+[INFO] isp: start aaa done
+[INFO] isp: enable AE done
+[INFO]    saturation = 64.
+[INFO]    brightness = 0.
+[INFO]           hue = 0.
+[INFO]      contrast = 64.
+[INFO]     sharpness = 128.
+[INFO]  mctfStrength = 1.
+[INFO]  localExpMode = 1.
+[INFO]      expLevel = 100.
+[INFO]       awbMode = 0.
+create_server():line[1246] [Done] Create web_service
+
+===> main_loop()
+connect_server():line[1168]Listen to 20000
+
+Waiting for connection!

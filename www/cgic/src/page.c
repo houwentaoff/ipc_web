@@ -18,14 +18,119 @@
 
 #include "page.h"
 #include "include.h"
+
 #define MAX_HEAD            (1024)            /*  */
 #define MAXSTRLEN           (256)               /*错误通常由此引起 */
 #define SMALLHTML           (6*1024)            /*  */
 #define DIV_SELECT_SIZE     (2*1024)            /* tmp, div select size*/
+#define DIV_SELECT_SMALLSIZE     (256)            /* tmp, div select size*/
+
+
+
+
+static ParamData live_params[LIVE_PARAMS_NUM];
 static ParamData vinvout_params[VINVOUT_PARAMS_NUM];
 static ParamData img_params[IMG_PARAMS_NUM];
+
+
+//static int bitrate=0;//码率
+int   view_page_get_params();
+int   view_create_params()
+{
+
+    memset(live_params, 0, sizeof(ParamData)*LIVE_PARAMS_NUM);
+	memset(live_params[ENCODE_TYPE].param_name, 0, PARAM_NAME_LEN);
+//	strcat(live_params[ENCODE_TYPE].param_name, "encode_type");
+	strcat(live_params[ENCODE_TYPE].param_name, "s0_cbr_avg_bps");
+
+	live_params[ENCODE_FPS].value = 30;
+	memset(live_params[ENCODE_FPS].param_name, 0, PARAM_NAME_LEN);
+//	strcat(live_params[ENCODE_FPS].param_name, "encode_fps");
+	strcat(live_params[ENCODE_FPS].param_name, "s1_cbr_avg_bps");
+
+	live_params[ENCODE_WIDTH].value = 0;
+	memset(live_params[ENCODE_WIDTH].param_name, 0, PARAM_NAME_LEN);
+//	strcat(live_params[ENCODE_WIDTH].param_name, "encode_width");
+	strcat(live_params[ENCODE_WIDTH].param_name, "s2_cbr_avg_bps");
+
+	live_params[ENCODE_HEIGHT].value =0;
+	memset(live_params[ENCODE_HEIGHT].param_name, 0, PARAM_NAME_LEN);
+	strcat(live_params[ENCODE_HEIGHT].param_name, "s3_cbr_avg_bps");
+//	strcat(live_params[ENCODE_HEIGHT].param_name, "encode_height");
+
+	live_params[BRC_MODE].value = 0;
+	memset(live_params[BRC_MODE].param_name, 0, PARAM_NAME_LEN);
+	strcat(live_params[BRC_MODE].param_name, "brc_mode");
+
+	live_params[CBR_AVG_BPS].value = 4000000;
+	memset(live_params[CBR_AVG_BPS].param_name, 0, PARAM_NAME_LEN);
+	strcat(live_params[CBR_AVG_BPS].param_name, "encode_height");
+
+	live_params[VBR_MIN_BPS].value = 1000000;
+	memset(live_params[VBR_MIN_BPS].param_name, 0, PARAM_NAME_LEN);
+	strcat(live_params[VBR_MIN_BPS].param_name, "vbr_min_bps");
+
+	live_params[VBR_MAX_BPS].value = 6000000;
+	memset(live_params[VBR_MAX_BPS].param_name, 0, PARAM_NAME_LEN);
+	strcat(live_params[VBR_MAX_BPS].param_name, "vbr_max_bps");    
+
+    return (GK_CGI_NO_ERROR);
+}
+int   view_page_get_params()
+{
+	section_Param section_param;
+    int stream_id=0;
+	char extroInfo[4]={0};
+    char sectionName[10]={0};
+
+    cgiFormInteger("stream", &stream_id, 0);
+	sprintf(extroInfo, "%d", stream_id);
+    sprintf(sectionName, "STREAM%d", stream_id);
+
+    view_create_params();
+
+	live_params[ENCODE_TYPE].value = 0;
+//	if (ret < 0) {
+//		fprintf(stdout,"1:set params failed");
+//	} else {
+//		if (ret == 0) {
+//			fprintf(stdout,"0:set params succeeded");
+//		} else {
+//			if (ret == 1) {
+				memset(&section_param, 0, sizeof(section_param));
+				section_param.sectionName = sectionName;//"LIVE";
+				section_param.sectionPort = LIVE;
+				section_param.paramData = live_params;
+				section_param.extroInfo = extroInfo;//stream_id;
+				section_param.paramDataNum = LIVE_PARAMS_NUM;
+//				if ((&virtual_PageOps)->get_section_param(currentPage, &section_param) == -1) {
+//					return -2;
+//				}
+                if (Base_get_section_param(&section_param)==-1)
+                {
+                    FUN_OUT("line[%d]\n", __LINE__);
+                    return (GK_CGI_ERROR);
+                }
+
+                /*-----------------------------------------------------------------------------
+                 *  set section_param.data to web
+                 *-----------------------------------------------------------------------------*/
+                
+    FUN_OUT();
+	return (GK_CGI_NO_ERROR);
+}
+int   _3a_page_get_params()
+{
+    return (GK_CGI_NO_ERROR);
+}
+ int   enc_page_get_params()
+{
+    return (GK_CGI_NO_ERROR);
+}
 int _3a_page(int (*callback)())
 {
+
+#if 0
     char *text=NULL;
     FUN_IN();
 
@@ -53,7 +158,6 @@ int _3a_page(int (*callback)())
             .selected   = 2,
             .action     = NULL,
         },
-        NULL,
     };
     div_select_t select_label_vout[3] =
     {
@@ -73,12 +177,13 @@ int _3a_page(int (*callback)())
             .selected   = 2,
             .action     = NULL,
         },
-        NULL,
     };
+#endif
     /*-----------------------------------------------------------------------------
      *  preference
      *-----------------------------------------------------------------------------*/
-    select_label_Image Property[]
+//    select_label_Image Property[]
+    return (GK_CGI_NO_ERROR);
     
 }
 static int _3a_page_create_params()
@@ -141,7 +246,7 @@ static int _3a_page_create_params()
 	strcat(img_params[WBC].param_name, "wbc");
 	img_params[WBC].value = 0;
 
-	return 0;    
+	return (GK_CGI_NO_ERROR);    
     //_add_preference
 }
 static int vivo_create_params () 
@@ -164,98 +269,10 @@ static int vivo_create_params ()
 
 	strcat(vinvout_params[VOUT_MODE].param_name, "vout_mode");
 	vinvout_params[VOUT_MODE].value = VIDEO_MODE_480I;
-	return 0;
+	return (GK_CGI_NO_ERROR);
 }
 
-static int create_div_input(char * text, div_input_t * div_input)
-{
-	char* string_format = "<label for=\"%s\" id=\"%s_l\">%s</label>\n\
-						<input type=\"text\" class=\"textinput\" id=\"%s\" value=\"%d\" maxlength=%d %s />\n";
-	char* string_format = "<div id=\"%s_l\">\n\
-						<input type=\"text\" class=\"textinput\" value=\"%d\" maxlength=%d %s /></div>\n";
-	char text_buffer[MAXSTRLEN] = {0};
-	sprintf(text_buffer, string_format, \
-		div_input->id, div_input->value, div_input->maxlen, div_input->ro);
-	strncat(text, text_buffer, strlen(text_buffer));
-    return (0);
-}
-static int create_div_select(char * text, div_select_t * div_select)
-{
-    int num = div_select->option_num;
-    char div_string[MAXSTRLEN] = {0};
-    char* option_string_format = "<option value=%d%s>%s</option>\n";
-    char option_string[MAXSTRLEN] = {0};
-    int i = 0;
 
-    sprintf(div_string, "<div id=\"%s\"><label>\"%s\"</label><select>", div_select->id, div_select->label);
-
-//    strcat(div_string, ">\n");
-
-    strncat(text, div_string, strlen(div_string));
-    PRT_DBG("div_string[%s]\n", div_string);
-
-    for (i = 0; i < num; i++)   {
-        memset(option_string, 0, sizeof(option_string));
-        if (div_select->options[i].value == div_select->selected) {
-            sprintf(option_string, option_string_format, div_select->options[i].value, \
-                    " selected", div_select->options[i].label);
-        } else {
-            sprintf(option_string, option_string_format, div_select->options[i].value, \
-                    " ", div_select->options[i].label);
-        }
-        strncat(text, option_string, strlen(option_string));
-    }
-    char* div_format_end = "</select></div>\n";
-    strncat(text, div_format_end, strlen(div_format_end));
-
-    return (0);
-}
-/**
- * @brief 
- *
- * @param text
- * @param select_label
- *
- * @return 
- */
-static int create_select_label(char * text, select_Label_t* select_label)
-{
-    char* label_format_title = "<label for=\"%s\">%s</label><select id=\"%s\" ";
-    int num = select_label->option_num;
-    char label_string[MAXSTRLEN] = {0};
-
-//    FUN_IN();     
-
-    sprintf(label_string, label_format_title, \
-            select_label->bind.name, select_label->label, select_label->bind.id);
-    if (select_label->action)
-    {
-        sprintf(label_string + strlen(label_string), "onchange =\"%s\"", select_label->action);
-    }
-    strcat(label_string, ">\n");
-
-    strncat(text, label_string, strlen(label_string));
-
-    char* option_string_format = "<option value=%d%s>%s</option>\n";
-    char option_string[MAXSTRLEN] = {0};
-    int i = 0;
-    for (i = 0; i < num; i++)   {
-        memset(option_string, 0, sizeof(option_string));
-        if (select_label->options[i].value == select_label->selected) {
-            sprintf(option_string, option_string_format, select_label->options[i].value, \
-                    " selected", select_label->options[i].label);
-        } else {
-            sprintf(option_string, option_string_format, select_label->options[i].value, \
-                    " ", select_label->options[i].label);
-        }
-        strncat(text, option_string, strlen(option_string));
-    }
-    char* label_format_end = "</select>\n";
-    strncat(text, label_format_end, strlen(label_format_end));
-
-//    FUN_OUT();     
-    return (0);
-}
 
 int vivo_page_get_params()
 {
@@ -338,7 +355,6 @@ int vivo_page(int (*callback)())
             .selected   = 2,
             .action     = NULL,
         },
-        NULL,
     };
     div_select_t select_label_vout[3] =
     {
@@ -358,11 +374,10 @@ int vivo_page(int (*callback)())
             .selected   = 2,
             .action     = NULL,
         },
-        NULL,
     };
     char *vin_mode[]={"Auto", "1080P", "720P", NULL};
     char *vin_fps[]={"Auto", "5", "6", "10", "13", "15", "25", "29.97", "30", "59.94", "60", NULL};
-    char *vout_mode[]={"480I", "576I", "720P", "1080I", "1080P30", NULL};
+//    char *vout_mode[]={"480I", "576I", "720P", "1080I", "1080P30", NULL};
     char *vout_type[]={"OFF", "CVBS", "HDMI", NULL};
 //    char **divs[]={vin_mode, vin_fps};
     char div_text_1[DIV_SELECT_SIZE]={0};
@@ -407,8 +422,8 @@ int vivo_page(int (*callback)())
     }
     else if ((vinvout_params[__VOUT_MODE].value) == VOUT_HDMI) 
     {
-        select_label_vout[__VOUT_MODE].options = (option_t *)malloc(select_label_vout[VOUT_MODE].option_num * sizeof(option_t));
-        memset(select_label_vout[__VOUT_MODE].options, 0, select_label_vout[VOUT_MODE].option_num * sizeof(option_t));
+        select_label_vout[__VOUT_MODE].options = (option_t *)malloc(select_label_vout[__VOUT_MODE].option_num * sizeof(option_t));
+        memset(select_label_vout[__VOUT_MODE].options, 0, select_label_vout[__VOUT_MODE].option_num * sizeof(option_t));
 
         select_label_vout[__VOUT_MODE].options[VOUT_VIDEO_480P].value = VIDEO_MODE_480P;
         select_label_vout[__VOUT_MODE].options[VOUT_VIDEO_480P].label = "480P";
@@ -423,8 +438,8 @@ int vivo_page(int (*callback)())
     }
     else 
     {
-        select_label_vout[__VOUT_MODE].options = (option_t *)malloc(select_label_vout[VOUT_MODE].option_num * sizeof(option_t));
-        memset(select_label_vout[__VOUT_MODE].options, 0, select_label_vout[VOUT_MODE].option_num * sizeof(option_t));
+        select_label_vout[__VOUT_MODE].options = (option_t *)malloc(select_label_vout[__VOUT_MODE].option_num * sizeof(option_t));
+        memset(select_label_vout[__VOUT_MODE].options, 0, select_label_vout[__VOUT_MODE].option_num * sizeof(option_t));
 
         select_label_vout[__VOUT_MODE].options[0].value = VIDEO_MODE_480I;
         select_label_vout[__VOUT_MODE].options[0].label = "480I";
@@ -548,12 +563,13 @@ int vivo_page(int (*callback)())
 #undef  __FPS
 #undef  __VOUT_TYPE
 #undef  __VOUT_MODE
-    return (0);
+    return (GK_CGI_NO_ERROR);
 }
 
 int   view_page(int (*callback)())
 {
     char *text=NULL;
+//    div_input_t ChangeCBRAvgBps
 //    char *load_activeX = "onload=\"javascript: OnLoadActiveX('192.168.103.47', 0, 1, 0, 1);\"";/*Sean Hou: ip need to replace by js fun */
     FUN_IN();
     /*init display*/
@@ -570,33 +586,39 @@ int   view_page(int (*callback)())
         PRT_ERR("index[%d]\n", stream_Id);
         return (GK_CGI_ARGV_ERROR);/*防止绕过密码直接操作,需要通过首页登陆才能进入*/
     }
+    PRT_DBG("index[%d]\n", stream_Id);
+
     char body_onload[MAXSTRLEN]={0};
-    sprintf(body_onload, onload, stream_Id);
+    sprintf(body_onload, onload, stream_Id, stream_Id);
     sprintf(text, head_html, "liveview", body_onload);
     PRT_DBG("text[%s]\n", text);
     strncat(text, nav, strlen(nav));
 //    strncat(text, video_html, strlen(video_html));
-//
+    int brate=0;
     char *pos=text;
     pos += strlen(text);
+    callback();
 
-    sprintf(pos, liveviewcontent, 0);
+    brate = live_params[stream_Id].value/1000;
+    PRT_DBG("live_params[CBR_AVG_BPS].value[%d]\n", live_params[stream_Id].value)
+    sprintf(pos, liveviewcontent, stream_Id, brate);
     fprintf(cgiOut, "%s", text);
 
-    PRT_DBG("size[%d]text[%s]\n",strlen(text), text);
+//    PRT_DBG("size[%d]text[%s]\n",strlen(text), text);
    
     free(text);
 
     FUN_OUT();
 
-    return (0);
+    return (GK_CGI_NO_ERROR);
 }
 
 
 int   enc_page(int (*callback)())
 {
-    int j,i;
+    int i;
     char *text=NULL;
+#if 0
     char *enc_mode[]      = {"Normal mode", "High Mega-pixel mode", "Low delay mode"};
     char *s0_type[]       = {"OFF", "H.264", "MJPEG"};//Type
     char *s0_enc_fps[]    = {"60", "30", "25", "20", "15", "10", "6", "5", "4", "3", "2", "1"};//Encode FPS 
@@ -609,10 +631,18 @@ int   enc_page(int (*callback)())
     char *s0_flip_rotate[] = {"Normal", "Horizontal Flip", "Vertical Flip", "Rotate Clockwise 90", "Rotate 180", "Rotate Clockwise 270"};//Flip & Rotate
 
     char **labels[]={s0_type, s0_enc_fps, s0_dptz, s0_resolution, s0_flip_rotate};
+#endif
+    char js_var[]={"s0_type\0""s0_enc_fps\0""s0_dptz\0""s0_resolution\0""s0_flip_rotate\0"};
+    char *js_var_name[11]={0};
+    char *var = js_var;
+    do{
+        js_var_name[i] = var;
+    }while(!(var = strchr(js_var, '\0')));
     
     /*-----------------------------------------------------------------------------
      *  select
      *-----------------------------------------------------------------------------*/
+#if 0
     div_select_t select_labeltop    =
     {
         .label      = "Encode Mode :",    
@@ -622,11 +652,24 @@ int   enc_page(int (*callback)())
         .selected   = 2,
         .action     = "setEncodeMode(this.options[this.selectedIndex].value)",
     };//top
-    select_Label_t select_label[ENC_NUM] =
+#endif
+    div_select_t select_title =
+    {
+            .label      = "stream :",    
+            .id    = "stream_id",
+            .options    = NULL,
+            .option_num = ENC_STREAM_NUM,
+            .selected   = 0,
+            .action     = "setStreamIndex(this.options[this.selectedIndex].value)",    
+    };
+
+
+
+    div_select_t select_label[ENC_NUM] =
     {
         {
             .label      = "Type :",    
-            .id    = "s0_type",
+            .id    = js_var_name[ENC_TYPE],
             .options    = NULL,
             .option_num = TYPE_LEN,
             .selected   = 2,
@@ -634,7 +677,7 @@ int   enc_page(int (*callback)())
         },
         {
             .label      = "Encode FPS :",    
-            .id    = "s0_enc_fps",
+            .id    = js_var_name[ENC_FPS],
             .options    = NULL,
             .option_num = ENC_FPS_LIST_LEN,
             .selected   = 2,
@@ -642,7 +685,7 @@ int   enc_page(int (*callback)())
         },        
         {
             .label      = "DPTZ Type :",    
-            .id    = "s0_dptz",
+            .id    = js_var_name[ENC_DPTZ],
             .options    = NULL,
             .option_num = DPTZ_LEN,
             .selected   = 2,
@@ -650,7 +693,7 @@ int   enc_page(int (*callback)())
         },
         {
             .label      = "Resolution :",    
-            .id    = "s0_resolution",
+            .id    = js_var_name[ENC_RESOLUTION],
             .options    = NULL,
             .option_num = RES_OPTIONS_LEN,
             .selected   = 2,
@@ -658,17 +701,20 @@ int   enc_page(int (*callback)())
         },            
         {
             .label      = "Flip & Rotate :",    
-            .id    = "s0_flip_rotate",
+            .id    = js_var_name[ENC_FLIP_ROTATE],
             .options    = NULL,
             .option_num = FR_OPTIONS_LEN,
             .selected   = 2,
             .action     = NULL,
         },                       
     };
-    char* fieldset_begin = "<fieldset><legend>%s</legend><br>\n";
-    char* fieldset_end   = "<br><br></fieldset><br>\n";
+    int streamId=0;
+//    char* fieldset_begin = "<fieldset><legend>%s</legend><br>\n";
+//    char* fieldset_end   = "<br><br></fieldset><br>\n";
     
     FUN_IN();     
+    cgiFormIntegerBounded("streamId", &streamId, STREAM_ID0, STREAM_ID_NUM, STREAM_ID0);
+    change_js_var(js_var, streamId/*stream num*/);
 
     /*init select*/
     text = (char *)malloc(SMALLHTML);
@@ -677,16 +723,16 @@ int   enc_page(int (*callback)())
         PRT_ERR("text is null\n");
         return (GK_MEM_ERROR);
     }    
-#if 0
-    select_labeltop.options = (option_t *)malloc(select_labeltop.option_num * sizeof(option_t));
-    /*top  enc_mode*/
-    for (i = 0; i<select_labeltop.option_num;i++)
-    {
-        (select_labeltop.options+i)->value = i;
-        (select_labeltop.options+i)->label = enc_mode[i];/*mark*/
-    }
-    create_select_label(text, &select_labeltop);
-#endif
+    select_title.options = (option_t *)malloc(select_title.option_num * sizeof(option_t));
+    select_title.options[ENC_STREAM1].value = ENC_STREAM1;
+    select_title.options[ENC_STREAM1].label = "0";
+    select_title.options[ENC_STREAM2].value = ENC_STREAM2;
+    select_title.options[ENC_STREAM2].label = "1";
+    select_title.options[ENC_STREAM3].value = ENC_STREAM3;
+    select_title.options[ENC_STREAM3].label = "2";
+    select_title.options[ENC_STREAM4].value = ENC_STREAM4;
+    select_title.options[ENC_STREAM4].label = "3";
+
     select_label[ENC_TYPE].options = (option_t *)malloc(select_label[ENC_TYPE].option_num * sizeof(option_t));
     select_label[ENC_TYPE].options[OFF].value = OFF;
     select_label[ENC_TYPE].options[OFF].label = "OFF";
@@ -748,19 +794,19 @@ int   enc_page(int (*callback)())
    select_label[ENC_RESOLUTION].options[RES_OPS_640x480].label = "640 x 480";
    select_label[ENC_RESOLUTION].options[RES_OPS_352x288].value = RES_352x288;
    select_label[ENC_RESOLUTION].options[RES_OPS_352x288].label = "352 x 288";
-      select_label[ENC_RESOLUTION].options[RES_OPS_352x240].value = RES_352x240;
+   select_label[ENC_RESOLUTION].options[RES_OPS_352x240].value = RES_352x240;
    select_label[ENC_RESOLUTION].options[RES_OPS_352x240].label = "352 x 240";
    select_label[ENC_RESOLUTION].options[RES_OPS_320x240].value = RES_320x240;
    select_label[ENC_RESOLUTION].options[RES_OPS_320x240].label = "320 x 240";
 
    
-   select_label[ENC_RESOLUTION].options[RES_OPS_176x144].option = "176 x 144";
+   select_label[ENC_RESOLUTION].options[RES_OPS_176x144].label = "176 x 144";
    select_label[ENC_RESOLUTION].options[RES_OPS_176x144].value = RES_176x144;
 
-   select_label[ENC_RESOLUTION].options[RES_OPS_176x120].option = "176 x 120";
-   select_label[ENC_RESOLUTION].[RES_OPS_176x120].value = RES_176x120;
+   select_label[ENC_RESOLUTION].options[RES_OPS_176x120].label = "176 x 120";
+   select_label[ENC_RESOLUTION].options[RES_OPS_176x120].value = RES_176x120;
 
-   select_label[ENC_RESOLUTION].options[RES_OPS_160x120].option = "160 x 120";
+   select_label[ENC_RESOLUTION].options[RES_OPS_160x120].label = "160 x 120";
    select_label[ENC_RESOLUTION].options[RES_OPS_160x120].value = RES_160x120;
 //Flip & Rotate
    select_label[ENC_FLIP_ROTATE].options = (option_t *)malloc(select_label[ENC_FLIP_ROTATE].option_num * sizeof(option_t));
@@ -776,18 +822,7 @@ int   enc_page(int (*callback)())
    select_label[ENC_FLIP_ROTATE].options[FR_OPS_ROTATE_180].label = "Rotate 180";
    select_label[ENC_FLIP_ROTATE].options[FR_OPS_ROTATE_270].value = FR_ROTATE_270;
    select_label[ENC_FLIP_ROTATE].options[FR_OPS_ROTATE_270].label = "Rotate Clockwise 270";
-#if 0
-    /*other  select*/
-    for (j = 0;j<5;j++)
-    {
-        select_label[j].options = (option_t *)malloc(select_label[j].option_num * sizeof(option_t));
-        for (i = 0; i<select_label[j].option_num;i++)
-        {
-            (select_label[j].options+i)->value = i;
-            (select_label[j].options+i)->label = labels[j][i];/*mark*/
-        }
-    }
-#endif
+
     char head_html_buf[MAX_HEAD]={0};
 
     sprintf(head_html_buf, head_html, "enc", "");
@@ -805,18 +840,23 @@ int   enc_page(int (*callback)())
     select_label[ENC_FLIP_ROTATE].selected = 1;
 
     char div_text[DIV_SELECT_SIZE]={0};
+    char div_text_1[DIV_SELECT_SMALLSIZE]={0};
     for (i=0;i<ENC_NUM;i++)//enc
     {
         create_div_select(div_text, &select_label[i]);
         free (select_label[i].options);
     }
-    strncat(text, fieldset_end, strlen(fieldset_end));
+    create_div_select(div_text_1, &select_title);
+    char *pos=text;
+    pos += strlen(text);
+    sprintf(pos, enccontent, div_text_1, div_text);
+    PRT_DBG("div_text[%s]div_text_1[%s]\n", div_text, div_text_1);
     /*stream 0 over*/
 
     /*stream 1*/
     strncat(text, "<br><br>", strlen("<br><br>"));
-    sprintf(text+strlen(text), fieldset_begin, "Stream 1");
-    
+//    sprintf(text+strlen(text), fieldset_begin, "Stream 1");
+#if 0    
     for (i=0;i<5;i++)
     {
         if (i == 3)
@@ -847,31 +887,28 @@ int   enc_page(int (*callback)())
 <input type=\"button\" value=\"Apply\" onclick = \"javascript:setEnc()\"/>&nbsp; &nbsp; \
 <input type=\"button\" value=\"Cancel\" onclick = \"javascript:showPage('enc')\"/>";
     strncat(text, button_buf, strlen(button_buf));
+#endif
     fprintf(cgiOut, "%s", text);
     PRT_DBG("size[%d]text[%s]\n",strlen(text), text);
     free(text);
 
     FUN_OUT();
 
-    return (0);
-}
-int _3a_page(int (*callback)())
-{
-
+    return (GK_CGI_NO_ERROR);
 }
 int   pm_page()
 {
 
-    return (0);
+    return (GK_CGI_NO_ERROR);
 }
 int   osd_page()
 {
 
-    return (0);
+    return (GK_CGI_NO_ERROR);
 }
 int   sys_page()
 {
 
-    return (0);
+    return (GK_CGI_NO_ERROR);
 }
 

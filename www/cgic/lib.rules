@@ -1,16 +1,16 @@
 #ifndef CC
-CC:=gcc
-#CC=/home/work/work_ext/ipc/gk7101/customer/juanvision/crosstool/arm-2011.09/bin/arm-none-linux-gnueabi-gcc
+#CC:=gcc
+CC=arm-goke-linux-gnueabi-gcc
 #endif
 
 #ifndef AR
-AR:=ar
-#AR=/home/work/work_ext/ipc/gk7101/customer/juanvision/crosstool/arm-2011.09/bin/arm-none-linux-gnueabi-ar
+#AR:=ar
+AR=arm-goke-linux-gnueabi-ar
 #endif
 
 #ifndef RANLIB
-RANLIB:=ranlib
-#RANLIB=/home/work/work_ext/ipc/gk7101/customer/juanvision/crosstool/arm-2011.09/bin/arm-none-linux-gnueabi-ranlib
+#RANLIB:=ranlib
+RANLIB=arm-goke-linux-gnueabi-ranlib
 #endif
 
 ECHO=echo
@@ -21,11 +21,11 @@ endif
 
 #path
 
-CGIC_TOP=/home/work/work_ext/ipc/gk7101/solution/solution/solution/software/subsystem/web/www/cgic
+CGIC_TOP=$(SDK_TOP)/subsystem/web/www/cgic
 
 CFLAGS += -I$(CGIC_TOP)/include -L$(CGIC_TOP)/lib -lcgic
 #debug
-CFLAGS += -DDEBUG -DCGICDEBUG
+CFLAGS += -DDEBUG -DCGICDEBUG -Wmissing-braces
 
 DESTDIR=$(ROOTFS_TOP)/webSvr/www/cgi-bin
 
@@ -33,7 +33,7 @@ V=1
 
 Q=@
 E=echo
-ifeq ($(V), 1)
+ifeq ($(V), 0)
 Q=
 E=true
 endif

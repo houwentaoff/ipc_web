@@ -3,7 +3,7 @@
  *
  ** \file      page.h
  **
- ** \version   $Id$
+ ** \version   $Id: page.h 2411 2014-11-18 13:43:30Z houwentao $
  **
  ** \brief     
  **
@@ -20,6 +20,7 @@
 #define  __PAGE_H__
 
 #define LABEL_OPTION_LEN 32
+#define STREAM_ID_OFFSET			(28)            /*  */
 
 typedef struct {
 	unsigned int value;/* usually increase */
@@ -126,6 +127,14 @@ typedef enum {
 //	HEIGHT
 }ENC_PARAMS_TYPE;
 
+typedef enum{
+    ENC_STREAM1,
+    ENC_STREAM2,
+    ENC_STREAM3,
+    ENC_STREAM4,
+    ENC_STREAM_NUM,
+}ENC_TYPE_STREAM;
+
 typedef enum {
 	OFF,
 	H_264,
@@ -183,9 +192,22 @@ typedef enum {
 	FR_OPS_ROTATE_270,
 	FR_OPTIONS_LEN
 }FR_OPTIONS;
-
+//liveview
+typedef enum
+{
+	ENCODE_TYPE = 0,
+	ENCODE_FPS,
+	ENCODE_WIDTH,
+	ENCODE_HEIGHT,
+	BRC_MODE,
+	CBR_AVG_BPS,
+	VBR_MIN_BPS,
+	VBR_MAX_BPS,
+	LIVE_PARAMS_NUM
+}LIVE_PARAMS;
 
 extern int   view_page(int (*callback)());
+extern int   view_page_get_params();
 extern int   enc_page(int (*callback)());
 extern int   enc_page_get_params();
 extern int   pm_page();

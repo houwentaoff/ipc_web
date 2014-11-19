@@ -26,7 +26,7 @@
 #include <include.h>
 
 PageMapping pagemap[] = {
-    {"view_page", view_page, NULL, NULL},
+    {"view_page", view_page, view_page_get_params, NULL},
     {"enc_page", enc_page, enc_page_get_params, NULL},
     {"pm_page",  _3a_page, _3a_page_get_params, NULL},
     {"osd_page", osd_page, NULL, NULL},
@@ -44,7 +44,7 @@ static GK_ErrorCode_e switchPage ()
 
     FUN_IN();
 
-	if (cgiFormIntegerBounded("page", &page_index, VIEWPAGE, PAGE_NUM-1, 0) != cgiFormSuccess)
+	if (cgiFormIntegerBounded("page", &page_index, VIEWPAGE, PAGE_NUM-1, VIEWPAGE) != cgiFormSuccess)
     {
         PRT_ERR("index[%d]\n", page_index);
         return (GK_CGI_ARGV_ERROR);/*防止绕过密码直接操作,需要通过首页登陆才能进入*/
@@ -59,7 +59,7 @@ static GK_ErrorCode_e switchPage ()
 
     FUN_OUT();
 
-	return (0);
+	return (GK_CGI_NO_ERROR);
 }
 
 
@@ -104,6 +104,6 @@ int cgiMain() {
 	/* Finish up the page */
 //	fprintf(cgiOut, "</BODY></HTML>\n");
     
-	return (0);
+	return (GK_CGI_NO_ERROR);
 }
 

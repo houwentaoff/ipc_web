@@ -3,7 +3,7 @@
  *
  ** \file      utils.c
  **
- ** \version   $Id$
+ ** \version   $Id: utils.c 2417 2014-11-19 09:11:29Z houwentao $
  **
  ** \brief     
  **
@@ -36,14 +36,6 @@
 #define STREAM_PARAM_LEN 44
 #define SHORTLEN 256
 
-#define LOG_MESSG(MSG) do { \
-	FILE* LOG; \
-	LOG = fopen("debug","a+"); \
-	fprintf(LOG,"%s\n", MSG); \
-	fclose(LOG); } \
-while(0)
-
-
 int Base_get_section_param (section_Param* section_param)
 {
    	Transfer transfer;
@@ -53,19 +45,17 @@ int Base_get_section_param (section_Param* section_param)
 	Pack pack;
 	pack_init(&pack);
 
-    FUN_IN();
-
 	pack.pack_msg(0, section_param->sectionName, \
 		section_param->extroInfo, &msg);
 	ret = transfer.send_get_request(section_param, REQ_GET_PARAM, msg);
 	if (ret < 0) {
 		return -1;
 	}
-	return 0;
+	return (GK_CGI_NO_ERROR);
 }
 int Base_set_section_param (section_Param* section_param)
 {
-	return 0;
+	return (GK_CGI_NO_ERROR);
 }
 
 //Pack
@@ -74,7 +64,7 @@ int pack_init (Pack* pack)
 {
 	pack->pack_req = pack_req;
 	pack->pack_msg = pack_msg;
-	return 0;
+	return (GK_CGI_NO_ERROR);
 }
 
 int parse_postSec (char url_string[], Message* postdata, int datanum)
@@ -105,9 +95,9 @@ int parse_postSec (char url_string[], Message* postdata, int datanum)
 		}
 		//postdata->msg[j] = '\0';
 
-		return 1;
+		return (-1);
 	} else {
-		return 0;
+		return (GK_CGI_NO_ERROR);
 	}
 }
 
@@ -136,9 +126,9 @@ int parse_postData (char url_string[], Message* postdata, int datanum)
 			buffer++;
 		}
 		//postdata->msg[j] = '\0';
-		return 1;
+		return (-1);
 	} else {
-		return 0;
+		return (GK_CGI_NO_ERROR);
 	}
 }
 
@@ -173,19 +163,30 @@ int url_decode (char string_buffer[], char* input_str, int str_length)
 			string_buffer[j++] = input_str[i];
 	}
 	string_buffer[j] = '\0';
-	return 0;
+	return (GK_CGI_NO_ERROR);
 }
 
 int pack_req (req_Msg* req, int Id, int info, int infosize)
 {
+    if (!req)
+    {
+        PRT_ERR("req is null\n");
+    }
+    
 	req->req_Id = (unsigned int)Id;
 	req->info = (unsigned int)info;
 	req->infoSize = (unsigned int)infosize;
-	return 0;
+	return (GK_CGI_NO_ERROR);
 }
 
 int pack_msg (int req_cnt, char * sectionName, char * extroInfo, Message * msg)
 {
+    if (!sectionName || !extroInfo || !msg)
+    {
+        PRT_ERR("sectionName & extroInfo & msg is null\n");
+        return (-1);
+    }
+
 	msg->req_cnt = req_cnt;
 	memset(msg->section_Name,0,sizeof(msg->section_Name));
 	memset(msg->msg,0,sizeof(msg->msg));
@@ -193,12 +194,12 @@ int pack_msg (int req_cnt, char * sectionName, char * extroInfo, Message * msg)
 	strcat(msg->msg, extroInfo);
     PRT_DBG("extroInfo[%s]\n", extroInfo);
 
-	return 0;
+	return (GK_CGI_NO_ERROR);
 }
 
 int parse_sectionData (Message message, ParamData data[])
 {
-	return 0;
+	return (GK_CGI_NO_ERROR);
 }
 
 int decode_Param (section_Param* section_param, char* recv)
@@ -241,7 +242,7 @@ int decode_Param (section_Param* section_param, char* recv)
     }
 
     FUN_OUT();
-	return 0;
+	return (GK_CGI_NO_ERROR);
 }
 //Socket
 
@@ -263,7 +264,7 @@ int socket_init (char* Host, int Port, Socket* Socket)
 	Socket->socket_connect = socket_connect;
 	Socket->Send_Msg = Send_Msg;
 	Socket->Recv_Msg= Recv_Msg;
-	return 0;
+	return (GK_CGI_NO_ERROR);
 }
 
 int socket_connect (int Port, char* IP)
@@ -280,7 +281,7 @@ int socket_connect (int Port, char* IP)
 	serv_addr.sin_addr.s_addr = inet_addr(IP);
 
 	if (connect(sockfd, (struct sockaddr *)&serv_addr,sizeof(struct sockaddr)) == -1) {
-		return -1;
+		return (-1);
 	}
 	return sockfd;
 }
@@ -288,7 +289,7 @@ int socket_connect (int Port, char* IP)
 int close_connect (int sockfd)
 {
 	close(sockfd);
-	return 0;
+	return (GK_CGI_NO_ERROR);
 }
 
 int Send_Msg (int sockfd, char* msg, int length)
@@ -309,10 +310,10 @@ int Recv_Msg (char* ack, int sockfd, int msg_Length)
 	if ((recvbytes = recv(sockfd, ack, msg_Length, 0)) == -1) {
 		PRT_ERR("msg_Length[%d] recv errno=%d.\n", msg_Length, errno);
 		//perror("recv");
-		return -1;
+		return (-1);
 	}
 	//(*ack).info[(*ack).info_length] = '\0';
-	return 0;
+	return (GK_CGI_NO_ERROR);
 }
 
 
@@ -323,7 +324,7 @@ int transfer_init (Transfer* transfer)
 	transfer->send_fly_request = send_fly_request;
 	transfer->send_get_request = send_get_request;
 	transfer->send_set_request = send_set_request;
-	return 0;
+	return (GK_CGI_NO_ERROR);
 }
 
 
@@ -338,7 +339,6 @@ int send_get_request (section_Param* section_param, int RequestId, Message Msg)
 	Pack pack;
 	pack_init(&pack);
 	req_Msg req;
-    FUN_IN();
 
 	int _msg = atoi(Msg.msg);
 	pack.pack_req(&req,RequestId,_msg, strlen(Msg.section_Name));
@@ -355,8 +355,8 @@ int send_get_request (section_Param* section_param, int RequestId, Message Msg)
         char* ackmsg = NULL;
         ackmsg = (char *)malloc(MSG_INFO_LEN);
         if (ackmsg == NULL) {
-            LOG_MESSG("send get request error");
-            return -1;
+            PRT_DBG("send get request error");
+            return (-1);
         }
         memset(ackmsg, 0, MSG_INFO_LEN);
         conn.Recv_Msg(ackmsg,conn.sk_member.sockfd,ack.info_length);
@@ -367,7 +367,7 @@ int send_get_request (section_Param* section_param, int RequestId, Message Msg)
             if(ack.info_length == strlen(ackmsg)) {
                 decode_Param(section_param, ackmsg);
             } else {
-                LOG_MESSG("recv error");
+                PRT_DBG("recv error");
             }
         } else {
             free(ackmsg);
@@ -377,8 +377,7 @@ int send_get_request (section_Param* section_param, int RequestId, Message Msg)
         free(ackmsg);
         ackmsg = NULL;
     }
-    FUN_OUT();
-	return 0;
+	return (GK_CGI_NO_ERROR);
 }
 
 
@@ -407,12 +406,14 @@ int send_set_request (int RequestId, int SectionPort, Message Msg)
 		conn.close_connect(conn.sk_member.sockfd);
 		return (int)ack.result;
 	}
-	return -1;
+	return (-1);
 }
 
 
 int send_fly_request (int RequestId, int Info, int data)
 {
+    FUN_IN("RequestId[%d]data[%d]\n", RequestId, data);
+
 	Socket conn;
 	conn.sk_member.sockfd  = 0;
 	socket_init(HOST, PORT,&conn);

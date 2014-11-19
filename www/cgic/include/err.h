@@ -3,7 +3,7 @@
  *
  ** \file      err.h
  **
- ** \version   $Id$
+ ** \version   $Id: err.h 2411 2014-11-18 13:43:30Z houwentao $
  **
  ** \brief     
  **

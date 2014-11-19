@@ -3,7 +3,7 @@
  *
  ** \file      cgic.c
  **
- ** \version   $Id$
+ ** \version   $Id: cgic.c 2410 2014-11-18 13:35:07Z houwentao $
  **
  ** \brief     
  **
