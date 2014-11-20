@@ -33,7 +33,6 @@ int change_js_var(char *strings, unsigned int replace)
 {
 //    int str_in = false;
     char *var;
-
 //find '0' find '\0'
     if (!strings || replace>9)
     {
@@ -43,15 +42,16 @@ int change_js_var(char *strings, unsigned int replace)
     while (*strings)
     {
         var = do_strchr(strings, '\0');
-        if (isdigit(var))
+        if (isdigit(*var))
         {
+            PRT_DBG("var[%s]\n", var);
             if (*var == ('0' + replace))
             {
                 return (GK_CGI_NO_ERROR);
             }
             *var = '0' + replace;
-            strings = var;
         }
+        strings = var;//mark
         strings++;
     }
     
@@ -125,7 +125,7 @@ int create_div_select(char * text, div_select_t * div_select)
     char option_string[MAXSTRLEN] = {0};
     int i = 0;
 
-    sprintf(div_string, "<div id=\"%s\" %s><label>%s</label><select>", div_select->id, div_select->action, div_select->label);
+    sprintf(div_string, "<div id=\"%s\" onchange=\"%s\"><label>%s</label><select>", div_select->id, div_select->action, div_select->label);
 
 //    strcat(div_string, ">\n");
 

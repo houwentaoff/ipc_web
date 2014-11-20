@@ -1295,6 +1295,6 @@ function StopVideo()
 }
 function setStreamIndex(streamId)
 {
-    var url = "/cgi-bin/demo.cgi?page=1&streamId=" + streamId;
+    var url = "/cgi-bin/demo.cgi?page=1&stream=" + streamId;
     window.location.replace(url);
 }

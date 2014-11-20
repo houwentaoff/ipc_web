@@ -85,6 +85,9 @@ static int set_vinvout_param(char * section_name);
 static int get_vinvout_param(char * section_name, u32 info);
 static int get_stream_param(char * section_name, u32 info);
 static int set_stream_param(char * section_name);
+static int get_encode_param(char * section_name, u32 info);
+static int set_encode_param(char * section_name);
+
 
 static Mapping VinVoutMap[] = {
 	{"vin_enable",			&vin_map.enable,				MAP_TO_U32,	0.0,		0,		0.0,		0.0,	},
@@ -160,9 +163,43 @@ static Mapping Stream3[] = {
 	{NULL,			        NULL,						            -1,	            0.0,	    0,	    0.0,	    0.0,    },
 };
 
+static Mapping EncodeMap[] = {
+//	{"enc_mode",			&encode_mode,							MAP_TO_U32,	0.0,		0,		0.0,		0.0,	},
+
+	{"s0_dptz",			&stream_map[0].dptz,							MAP_TO_U8,	0.0,		0,		0.0,		0.0,	},
+	{"s0_type",			&stream_map[0].streamFormat.encode_type,			MAP_TO_U8,	0.0,		0,		0.0,		0.0,	},
+	{"s0_flip_rotate",		&stream_map[0].streamFormat.flip_rotate,			MAP_TO_U8,	0.0,		0,		0.0,		0.0,	},
+	{"s0_width",			&stream_map[0].streamFormat.encode_width,		MAP_TO_U16,	0.0,		0,		0.0,		0.0,	},
+	{"s0_height",			&stream_map[0].streamFormat.encode_height,		MAP_TO_U16,	0.0,		0,		0.0,		0.0,	},
+	{"s0_enc_fps",		&stream_map[0].streamFormat.encode_fps,			MAP_TO_U32,	30.0,		0,		0.0,		0.0,	},
+
+	{"s1_dptz",			&stream_map[1].dptz,							MAP_TO_U8,	0.0,		0,		0.0,		0.0,	},
+	{"s1_type",			&stream_map[1].streamFormat.encode_type,			MAP_TO_U8,	0.0,		0,		0.0,		0.0,	},
+	{"s1_flip_rotate",		&stream_map[1].streamFormat.flip_rotate,			MAP_TO_U8,	0.0,		0,		0.0,		0.0,	},
+	{"s1_width",			&stream_map[1].streamFormat.encode_width,		MAP_TO_U16,	0.0,		0,		0.0,		0.0,	},
+	{"s1_height",			&stream_map[1].streamFormat.encode_height,		MAP_TO_U16,	0.0,		0,		0.0,		0.0,	},
+	{"s1_enc_fps",		&stream_map[1].streamFormat.encode_fps,			MAP_TO_U32,	30.0,		0,		0.0,		0.0,	},
+
+	{"s2_dptz",			&stream_map[2].dptz,							MAP_TO_U8,	0.0,		0,		0.0,		0.0,	},
+	{"s2_type",			&stream_map[2].streamFormat.encode_type,			MAP_TO_U8,	0.0,		0,		0.0,		0.0,	},
+	{"s2_flip_rotate",		&stream_map[2].streamFormat.flip_rotate,			MAP_TO_U8,	0.0,		0,		0.0,		0.0,	},
+	{"s2_width",			&stream_map[2].streamFormat.encode_width,		MAP_TO_U16,	0.0,		0,		0.0,		0.0,	},
+	{"s2_height",			&stream_map[2].streamFormat.encode_height,		MAP_TO_U16,	0.0,		0,		0.0,		0.0,	},
+	{"s2_enc_fps",		&stream_map[2].streamFormat.encode_fps,			MAP_TO_U32,	30.0,		0,		0.0,		0.0,	},
+
+	{"s3_dptz",			&stream_map[3].dptz,							MAP_TO_U8,	0.0,		0,		0.0,		0.0,	},
+	{"s3_type",			&stream_map[3].streamFormat.encode_type,			MAP_TO_U8,	0.0,		0,		0.0,		0.0,	},
+	{"s3_flip_rotate",		&stream_map[3].streamFormat.flip_rotate,			MAP_TO_U8,	0.0,		0,		0.0,		0.0,	},
+	{"s3_width",			&stream_map[3].streamFormat.encode_width,		MAP_TO_U16,	0.0,		0,		0.0,		0.0,	},
+	{"s3_height",			&stream_map[3].streamFormat.encode_height,		MAP_TO_U16,	0.0,		0,		0.0,		0.0,	},
+	{"s3_enc_fps",		&stream_map[3].streamFormat.encode_fps,			MAP_TO_U32,	30.0,		0,		0.0,		0.0,	},
+
+	{NULL,			NULL,						-1,	0.0,					0,	0.0,	0.0,		},
+};
+
 static Section Params[] = {
 	{"VINVOUT",		VinVoutMap,		get_vinvout_param,		set_vinvout_param},
-//	{"ENCODE",		EncodeMap,		get_func_null,		set_encode_param},
+	{"ENCODE",		EncodeMap,		get_encode_param,		set_encode_param},
 	{"STREAM0",		Stream0,		get_stream_param,		set_stream_param},
 	{"STREAM1",		Stream1,		get_stream_param,		set_stream_param},
 	{"STREAM2",		Stream2,		get_func_null,		set_stream_param},
@@ -226,6 +263,8 @@ int send_fly_request(enum CAMCONTROL_CMDTYPE cmdtype, const unsigned char datale
     FUN_OUT();
     return (0);
 }
+
+
 
 static int check_params(Mapping * Map)
 {
@@ -852,10 +891,43 @@ int receive_text(u8 *pBuffer, u32 size)
     }
 	return retv;
 }
+static int get_encode_param(char * section_name, u32 info)
+{
+	int streamID = info, retv = 0;
 
+    PRT_DBG("Section [%s] setting:streamID[%d]\n", section_name, streamID);
+    stream_map[streamID].dptz = 0;
+    stream_map[streamID].streamFormat.flip_rotate = 0;
+    
+    stream_map[streamID].streamFormat.encode_type = 
+    g_stEncodeInfo[streamID].encode_type;
+
+    stream_map[streamID].streamFormat.encode_fps = 
+    g_stEncodeInfo[streamID].framerate;;
+
+    stream_map[streamID].streamFormat.encode_width = 
+    g_stEncodeInfo[streamID].encode_width;
+
+    stream_map[streamID].streamFormat.encode_height = 
+    g_stEncodeInfo[streamID].encode_height;
+
+    FUN_OUT("\
+            dptz             [%d]\n\
+            flipRotate       [%d]\n\
+            fps              [%d]\n\
+            resolution     [%d X %d]\n\
+            ", 
+            stream_map[streamID].dptz, stream_map[streamID].streamFormat.flip_rotate,   
+            stream_map[streamID].streamFormat.encode_fps,
+            stream_map[streamID].streamFormat.encode_width,
+            stream_map[streamID].streamFormat.encode_height
+    );
+        
+    return retv;
+}
 static int get_vinvout_param(char * section_name, u32 info)
 {
-	int streamID = 0, retv = 0;
+	int streamID = info, retv = 0;
     FUN_IN();
 	PRT_DBG("Section [%s] setting:\n", section_name);
 
@@ -873,6 +945,28 @@ static int get_vinvout_param(char * section_name, u32 info)
             vout_mode      [%d]\n\
             ", vin_map.frame_rate, vin_map.mode, vout_map.type, vout_map.mode);
 	return retv;
+}
+
+
+static int set_encode_param(char * section_name)
+{
+	//static int enc_mode = MW_ENCODE_NORMAL_MODE;
+	int streamID = 0;
+	PRT_DBG("Section [%s] setting:\n", section_name);
+    PRT_DBG("\n\
+            s0_dptz [%d]\n\
+            s0_type       [%d]\n\
+            s0_flip_rotate      [%d]\n\
+            s0_enc_fps      [%d]\n\
+            s0_resolution [%d X %d]\n\
+            ", stream_map[streamID].dptz,  stream_map[streamID].streamFormat.encode_type,
+               stream_map[streamID].streamFormat.flip_rotate,  stream_map[streamID].streamFormat.encode_fps,
+               stream_map[streamID].streamFormat.encode_width, stream_map[streamID].streamFormat.encode_height);
+
+#if 0
+......
+#endif
+	return 0;
 }
 
 static int set_vinvout_param(char * section_name)
@@ -901,50 +995,8 @@ static int set_vinvout_param(char * section_name)
 	if (mw_disable_stream(STREAMS_MASK) < 0) {
 		PRT_ERR("Cannot stop encoding streams!");
 		return -1;
-	}
-	update_encode_info();
+	}......
 
-#ifndef CONFIG_AMBARELLA_IMAGE_SERVER_DAEMON
-	// Disable preview and stop AAA when main buffer is changed
-	if (send_image_signal(AAA_STOP) < 0) {
-		PRT_ERR("REQ_AAA_STOP error");
-		return -1;
-	}
-#endif
-	// Disable preview
-	vin_map.enable = 0;
-	if (mw_enable_preview(vin_map.enable) < 0) {
-		PRT_ERR("Disable preview");
-		return -1;
-	}
-	// Set Vout Mode
-	if (mw_set_vout_mode(&vout_map) < 0) {
-		// Set parameter error, restore map parameter
-		PRT_ERR("mw_set_vout_mode");
-		memcpy(&vout_map, &g_mw_vout, sizeof(g_mw_vout));
-		retv = -1;
-	} else {
-		memcpy(&g_mw_vout, &vout_map, sizeof(g_mw_vout));
-	}
-	if (config_encoder_params(&streamID) < 0) {
-		PRT_ERR("config_encoder_params");
-		return -1;
-	}
-	vin_map.enable = 1;
-	if (mw_enable_preview(vin_map.enable) < 0) {
-		PRT_ERR("Enable preview");
-		return -1;
-	}
-#ifndef CONFIG_AMBARELLA_IMAGE_SERVER_DAEMON
-	if (send_image_signal(AAA_START) < 0) {
-		PRT_ERR("REQ_AAA_START error");
-		return -1;
-	}
-#endif
-	if (mw_enable_stream(streamID) < 0) {
-		PRT_ERR("CANNOT start encoding streams [0x%x]!", streamID);
-		return -1;
-	}
 	update_encode_info();
 #endif
 

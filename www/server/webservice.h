@@ -262,14 +262,14 @@ typedef struct {
 typedef struct
 {
     u32            streamId;
-    u8             encodeType;
+    u8             encode_type;
     u8             sourceBuf;
-    u8             flipRotate;
-    u16            width;
-    u16            height;
+    u8             flip_rotate;
+    u16            encode_width;
+    u16            encode_height;
     u16            xOffset;
     u16            yOffset;
-    u32            fps;
+    u32            encode_fps;
 }gk_venc_StreamFormat;
 
 typedef struct

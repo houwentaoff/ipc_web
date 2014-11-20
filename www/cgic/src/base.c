@@ -73,16 +73,12 @@ const char * const head_html =  "<!DOCTYPE HTML PUBLIC  \"-//W3C//DTD HTML 4.0 T
                 </div>\
             </div>";
 //common
-#if 0
+#if 0  //tmp
 const char * const nav="\
 <div class=\"leftnav\">\
         <div class=\"menu_item\" id=\"fl_menu\">\
             <div class=\"menu\" style=\"none\">\
-                <a href=\"/cgi-bin/demo.cgi?page=\"liveview\" title=\"liveview\" target=\"_blank\" class=\"menu_item\">liveview</a>\
-                <a href=\"/cgi-bin/demo.cgi?page=\"3A\" title=\"3A\" target=\"_blank\" class=\"menu_item\">3A</a>\
-                <a href=\"/cgi-bin/demo.cgi?page=\"vinvout\" title=\"vinvout\" target=\"_blank\" class=\"menu_item\">vinvout</a>\
-                <a href=\"enc.html\" title=\"enc\" target=\"_blank\" class=\"menu_item\">enc</a>\
-                <a href=\"osd.html\" title=\"osd\" target=\"_blank\" class=\"menu_item\">osd</a>\
+                <a href=\"/cgi-bin/demo.cgi?page=0&stream=0\" title=\"liveview\" class=\"menu_item\">liveview</a>\
             </div>\
         </div>\
 </div>";
@@ -118,10 +114,10 @@ const char * const liveviewcontent="   \
 <div class=\"content\">\
             <div id=\"stream_id\" class=\"%d\"></div>\
 			<div class=\"stream_selector\">\
-				<a href=\"/cgi-bin/demo.cgi?page=0&stream=0\">Main</a>\
-				<a href=\"/cgi-bin/demo.cgi?page=0&stream=1\">Second</a>\
-				<a href=\"/cgi-bin/demo.cgi?page=0&stream=2\">Third</a>\
-				<a href=\"/cgi-bin/demo.cgi?page=0&stream=3\">Fourth</a>\
+				<a href=\"/cgi-bin/demo.cgi?page=0&stream=0\">stream1</a>\
+				<a href=\"/cgi-bin/demo.cgi?page=0&stream=1\">stream2</a>\
+				<a href=\"/cgi-bin/demo.cgi?page=0&stream=2\">stream3</a>\
+				<a href=\"/cgi-bin/demo.cgi?page=0&stream=3\">stream4</a>\
 			</div>\
         <div class=\"activeX\" >\
             <object classid=\"CLSID:3BCDAA6A-7306-42FF-B8CF-BE5D3534C1E4\" codebase=\"http://\"+window.location.host+\"/activex/ambaWeb.cab#version=1,0,0,33\" width=\"800\" height=\"541\"		align=\"left\" id=\"GOKEIPCmrWebPlugIn1\">\
@@ -141,9 +137,8 @@ const char * const liveviewcontent="   \
                 </p>\
                 <p>\
                 <input class=\"but\" id=\"Record\" type=\"button\" value=\"Start Record\"  onclick=\"javascript:Record()\"/>\
-                <input class=\"but\" id=\"ForceIdr\" type=\"button\" value=\"Force Idr\"  onclick=\"javascript:FlySet(0, 'ForceIdr')\"/>\
                 </p>\
-        <label for=\"ChangeCBRAvgBps\">CBR average bitrate(kbps) :</label>\
+        <label for=\"ChangeCBRAvgBps\">码率(kbps) :</label>\
 <input type=\"text\" class=\"textinput\" id=\"ChangeCBRAvgBps\" value=\"%d\" maxlength=5 onkeypress=\"javascript:NumOnly()\" onkeydown=\"javascript:FlySet(document.getElementById('stream_id').className, \'ChangeCBRAvgBps\')\" />\
             </div>\
             <br />\

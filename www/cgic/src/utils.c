@@ -340,8 +340,8 @@ int send_get_request (section_Param* section_param, int RequestId, Message Msg)
 	pack_init(&pack);
 	req_Msg req;
 
-	int _msg = atoi(Msg.msg);
-	pack.pack_req(&req,RequestId,_msg, strlen(Msg.section_Name));
+	int _msg = atoi(Msg.msg);//maybe stream id
+	pack.pack_req(&req,RequestId, _msg, strlen(Msg.section_Name));
 
 	if (conn.sk_member.sockfd != -1) {
 		conn.Send_Msg(conn.sk_member.sockfd, (char *)&req, sizeof(req));

@@ -49,40 +49,40 @@ int   view_create_params()
 {
 
     memset(live_params, 0, sizeof(ParamData)*LIVE_PARAMS_NUM);
-	memset(live_params[ENCODE_TYPE].param_name, 0, PARAM_NAME_LEN);
+	memset(live_params[LIVE_ENCODE_TYPE].param_name, 0, PARAM_NAME_LEN);
 //	strcat(live_params[ENCODE_TYPE].param_name, "encode_type");
-	strcat(live_params[ENCODE_TYPE].param_name, "s0_cbr_avg_bps");
+	strcat(live_params[LIVE_ENCODE_TYPE].param_name, "s0_cbr_avg_bps");
 
-	live_params[ENCODE_FPS].value = 30;
-	memset(live_params[ENCODE_FPS].param_name, 0, PARAM_NAME_LEN);
+	live_params[LIVE_ENCODE_FPS].value = 30;
+	memset(live_params[LIVE_ENCODE_FPS].param_name, 0, PARAM_NAME_LEN);
 //	strcat(live_params[ENCODE_FPS].param_name, "encode_fps");
-	strcat(live_params[ENCODE_FPS].param_name, "s1_cbr_avg_bps");
+	strcat(live_params[LIVE_ENCODE_FPS].param_name, "s1_cbr_avg_bps");
 
-	live_params[ENCODE_WIDTH].value = 0;
-	memset(live_params[ENCODE_WIDTH].param_name, 0, PARAM_NAME_LEN);
+	live_params[LIVE_ENCODE_WIDTH].value = 0;
+	memset(live_params[LIVE_ENCODE_WIDTH].param_name, 0, PARAM_NAME_LEN);
 //	strcat(live_params[ENCODE_WIDTH].param_name, "encode_width");
-	strcat(live_params[ENCODE_WIDTH].param_name, "s2_cbr_avg_bps");
+	strcat(live_params[LIVE_ENCODE_WIDTH].param_name, "s2_cbr_avg_bps");
 
-	live_params[ENCODE_HEIGHT].value =0;
-	memset(live_params[ENCODE_HEIGHT].param_name, 0, PARAM_NAME_LEN);
-	strcat(live_params[ENCODE_HEIGHT].param_name, "s3_cbr_avg_bps");
+	live_params[LIVE_ENCODE_HEIGHT].value =0;
+	memset(live_params[LIVE_ENCODE_HEIGHT].param_name, 0, PARAM_NAME_LEN);
+	strcat(live_params[LIVE_ENCODE_HEIGHT].param_name, "s3_cbr_avg_bps");
 //	strcat(live_params[ENCODE_HEIGHT].param_name, "encode_height");
 
-	live_params[BRC_MODE].value = 0;
-	memset(live_params[BRC_MODE].param_name, 0, PARAM_NAME_LEN);
-	strcat(live_params[BRC_MODE].param_name, "brc_mode");
+	live_params[LIVE_BRC_MODE].value = 0;
+	memset(live_params[LIVE_BRC_MODE].param_name, 0, PARAM_NAME_LEN);
+	strcat(live_params[LIVE_BRC_MODE].param_name, "brc_mode");
 
-	live_params[CBR_AVG_BPS].value = 4000000;
-	memset(live_params[CBR_AVG_BPS].param_name, 0, PARAM_NAME_LEN);
-	strcat(live_params[CBR_AVG_BPS].param_name, "encode_height");
+	live_params[LIVE_CBR_AVG_BPS].value = 4000000;
+	memset(live_params[LIVE_CBR_AVG_BPS].param_name, 0, PARAM_NAME_LEN);
+	strcat(live_params[LIVE_CBR_AVG_BPS].param_name, "encode_height");
 
-	live_params[VBR_MIN_BPS].value = 1000000;
-	memset(live_params[VBR_MIN_BPS].param_name, 0, PARAM_NAME_LEN);
-	strcat(live_params[VBR_MIN_BPS].param_name, "vbr_min_bps");
+	live_params[LIVE_VBR_MIN_BPS].value = 1000000;
+	memset(live_params[LIVE_VBR_MIN_BPS].param_name, 0, PARAM_NAME_LEN);
+	strcat(live_params[LIVE_VBR_MIN_BPS].param_name, "vbr_min_bps");
 
-	live_params[VBR_MAX_BPS].value = 6000000;
-	memset(live_params[VBR_MAX_BPS].param_name, 0, PARAM_NAME_LEN);
-	strcat(live_params[VBR_MAX_BPS].param_name, "vbr_max_bps");    
+	live_params[LIVE_VBR_MAX_BPS].value = 6000000;
+	memset(live_params[LIVE_VBR_MAX_BPS].param_name, 0, PARAM_NAME_LEN);
+	strcat(live_params[LIVE_VBR_MAX_BPS].param_name, "vbr_max_bps");    
 
     return (GK_CGI_NO_ERROR);
 }
@@ -104,7 +104,7 @@ int   view_page_get_params()
 
     view_create_params();
 
-	live_params[ENCODE_TYPE].value = 0;
+	live_params[LIVE_ENCODE_TYPE].value = 0;
 //	if (ret < 0) {
 //		fprintf(stdout,"1:set params failed");
 //	} else {
@@ -247,16 +247,35 @@ static int enc_create_params ()
     j++;
 //Resolution
     memset(ret,0,NAME_LEN);
-    _get_name(ret, streamID, "flip_rotate");
+    _get_name(ret, streamID, "resolution");
     strcat(enc_params[j].param_name,ret);
     enc_params[j].value = 0;
     j++;
 
-
-    strcat(enc_params[j].param_name,"enc_mode");
+    
+    memset(ret,0,NAME_LEN);
+    _get_name(ret, streamID, "flip_rotate");
+    strcat(enc_params[j].param_name,ret);
+    enc_params[j].value = 0;
+    j++;
+    
+    memset(ret,0,NAME_LEN);
+    _get_name(ret, streamID, "width");
+    strcat(enc_params[j].param_name,ret);
     enc_params[j].value = 0;
     j++;
 
+    memset(ret,0,NAME_LEN);
+    _get_name(ret, streamID, "height");
+    strcat(enc_params[j].param_name,ret);
+    enc_params[j].value = 0;
+    j++;
+#if 0
+    strcat(enc_params[j].param_name,"enc_mode");
+    enc_params[j].value = 0;
+    j++;
+#endif
+#if 0
     strcat(enc_params[j].param_name,"s0_width");
     enc_params[j].value = 1280;
     j++;
@@ -287,7 +306,7 @@ static int enc_create_params ()
 
 	strcat(enc_params[j].param_name,"s3_height");
 	enc_params[j].value = 240;
-
+#endif
 	return (0);
 
 }
@@ -297,7 +316,12 @@ static int enc_create_params ()
 	int ret = 0;
 	char name[NAME_LEN] = {0};
 	int i;
+    int stream_id=0;
+    char extroInfo[4]={0};
 	section_Param section_param;
+
+    cgiFormInteger("stream", &stream_id, 0);
+    sprintf(extroInfo, "%d", stream_id);
 //	unsigned int stream_port[] = {STREAM0, STREAM1, STREAM2, STREAM3};
 
     /*-----------------------------------------------------------------------------
@@ -317,8 +341,8 @@ static int enc_create_params ()
 				section_param.sectionName  = "ENCODE";
 				section_param.sectionPort  = ENCODE;
 				section_param.paramData    = enc_params;
-				section_param.extroInfo    = "";
-				section_param.paramDataNum = ENC_NODE_LEN;
+				section_param.extroInfo    = extroInfo;
+				section_param.paramDataNum = ENC_NUM;
                 if (Base_get_section_param(&section_param)==-1)
                 {
                     return (GK_CGI_ERROR);
@@ -327,6 +351,7 @@ static int enc_create_params ()
 //					return -1;
 //				}
 //				for ( i = 0; i < STREAM_NUM; i++ ) {
+#if 0
 					memset(name, 0, NAME_LEN);
 					sprintf(name, "STREAM%d", i);
 					memset(&section_param, 0, sizeof(section_Param));
@@ -339,7 +364,7 @@ static int enc_create_params ()
                 {
                     return (GK_CGI_ERROR);
                 }
-
+#endif
 //				}
 //			} else {
 //				fprintf(stdout,"1:unexpected error %d",ret);
@@ -826,7 +851,7 @@ int   view_page(int (*callback)())
     callback();
 
     brate = live_params[stream_Id].value/1000;
-    PRT_DBG("live_params[CBR_AVG_BPS].value[%d]\n", live_params[stream_Id].value)
+    PRT_DBG("live_params[LIVE_CBR_AVG_BPS].value[%d]\n", live_params[stream_Id].value)
     sprintf(pos, liveviewcontent, stream_Id, brate);
     fprintf(cgiOut, "%s", text);
 
@@ -842,7 +867,7 @@ int   view_page(int (*callback)())
 
 int   enc_page(int (*callback)())
 {
-    int i;
+    int i=0;
     char *text=NULL;
 #if 0
     char *enc_mode[]      = {"Normal mode", "High Mega-pixel mode", "Low delay mode"};
@@ -861,9 +886,10 @@ int   enc_page(int (*callback)())
     char js_var[]={"s0_type\0""s0_enc_fps\0""s0_dptz\0""s0_resolution\0""s0_flip_rotate\0"};
     char *js_var_name[11]={0};
     char *var = js_var;
+    char *end = js_var+sizeof(js_var)-1;
     do{
-        js_var_name[i] = ++var;
-    }while(var = strchr(js_var, '\0'));
+        js_var_name[i++] = var;
+    }while((var = strchr(var, '\0')) && *(++var));
     
     /*-----------------------------------------------------------------------------
      *  select
@@ -886,7 +912,8 @@ int   enc_page(int (*callback)())
             .options    = NULL,
             .option_num = ENC_STREAM_NUM,
             .selected   = 0,
-            .action     = "setStreamIndex(this.options[this.selectedIndex].value)",    
+            .action     = 
+            "setStreamIndex(this.lastElementChild.options[this.lastElementChild.selectedIndex].value)",    
     };
 
 
@@ -937,9 +964,9 @@ int   enc_page(int (*callback)())
     int streamId=0;
     
     FUN_IN();     
-    cgiFormIntegerBounded("streamId", &streamId, STREAM_ID0, STREAM_ID_NUM, STREAM_ID0);
+    cgiFormIntegerBounded("stream", &streamId, STREAM_ID0, STREAM_ID_NUM, STREAM_ID0);
     change_js_var(js_var, streamId/*stream num*/);
-
+    PRT_DBG("change OVER [%s]\n", js_var);
     /*init select*/
     text = (char *)malloc(SMALLHTML);
     if (!text)
@@ -1006,8 +1033,8 @@ int   enc_page(int (*callback)())
    select_label[ENC_RESOLUTION].options[RES_OPS_1280x1024].label = "1280 x 1024";
    select_label[ENC_RESOLUTION].options[RES_OPS_1280x960].value = RES_1280x960;
    select_label[ENC_RESOLUTION].options[RES_OPS_1280x960].label = "1280 x 960";   
-   select_label[ENC_RESOLUTION].options[RES_OPS_1920x1080].value = RES_1280x720;
-   select_label[ENC_RESOLUTION].options[RES_OPS_1920x1080].label = "1280 x 720";
+   select_label[ENC_RESOLUTION].options[RES_OPS_1280x720].value = RES_1280x720;
+   select_label[ENC_RESOLUTION].options[RES_OPS_1280x720].label = "1280 x 720";
    select_label[ENC_RESOLUTION].options[RES_OPS_800x600].value = RES_800x600;
    select_label[ENC_RESOLUTION].options[RES_OPS_800x600].label = "800 x 600";
    select_label[ENC_RESOLUTION].options[RES_OPS_720x576].value = RES_720x576;
@@ -1063,6 +1090,9 @@ int   enc_page(int (*callback)())
     {
         select_label[idx].selected =  enc_params[idx].value;
     }
+    //resolution
+    select_label[ENC_RESOLUTION].selected = 
+        create_res(enc_params[ENC_WIDTH].value, enc_params[ENC_HEIGHT].value) ;
 #else 
     select_label[ENC_TYPE].selected =  enc_params[ENC_TYPE].value;
     select_label[ENC_FPS].selected = enc_params[ENC_FPS].value;
@@ -1070,6 +1100,7 @@ int   enc_page(int (*callback)())
     select_label[ENC_RESOLUTION].selected = enc_params[ENC_RESOLUTION].value;
     select_label[ENC_FLIP_ROTATE].selected = enc_params[ENC_FLIP_ROTATE].value;
 #endif
+    select_title.selected = streamId;
     char div_text[DIV_SELECT_SIZE]={0};
     char div_text_1[DIV_SELECT_SMALLSIZE]={0};
     for (i=0;i<ENC_NUM;i++)//enc
@@ -1078,13 +1109,13 @@ int   enc_page(int (*callback)())
         free (select_label[i].options);
     }
     create_div_select(div_text_1, &select_title);
-    free (select_title[i].options);
+    free (select_title.options);
     char *pos=text;
     pos += strlen(text);
     sprintf(pos, enccontent, div_text_1, div_text);
-    PRT_DBG("div_text[%s]div_text_1[%s]\n", div_text, div_text_1);
+    //PRT_DBG("div_text[%s]div_text_1[%s]\n", div_text, div_text_1);
     fprintf(cgiOut, "%s", text);
-    PRT_DBG("size[%d]text[%s]\n",strlen(text), text);
+    //PRT_DBG("size[%d]text[%s]\n",strlen(text), text);
     free(text);
 
     FUN_OUT();
