@@ -24,13 +24,23 @@
 #define SMALLHTML           (6*1024)            /*  */
 #define DIV_SELECT_SIZE     (2*1024)            /* tmp, div select size*/
 #define DIV_SELECT_SMALLSIZE     (256)            /* tmp, div select size*/
-
+#define STREAM_NUM 4
+#define STREAM_NODE_LEN (STREAM_PARAM_TYPE_NUM)
+#define ENC_NODE_LEN 25
+#define NAME_LEN 20
+#define ENC_PARAM_TYPE_NUM 4
+#define ENC_PARAM_SPEC_TYPE_NUM 2
+#define MAX_OPTION_LEN 16
+/*  */
 
 
 
 static ParamData live_params[LIVE_PARAMS_NUM];
 static ParamData vinvout_params[VINVOUT_PARAMS_NUM];
 static ParamData img_params[IMG_PARAMS_NUM];
+
+static ParamData stream_params[STREAM_NODE_LEN];
+static ParamData enc_params[ENC_NODE_LEN];
 
 
 //static int bitrate=0;//码率
@@ -86,6 +96,11 @@ int   view_page_get_params()
     cgiFormInteger("stream", &stream_id, 0);
 	sprintf(extroInfo, "%d", stream_id);
     sprintf(sectionName, "STREAM%d", stream_id);
+    /*-----------------------------------------------------------------------------
+     *  1. init map.
+     *  2. send to server.
+     *  3. set map.
+     *-----------------------------------------------------------------------------*/
 
     view_create_params();
 
@@ -121,11 +136,217 @@ int   view_page_get_params()
 }
 int   _3a_page_get_params()
 {
+    /*-----------------------------------------------------------------------------
+     *  1. init map.
+     *  2. send to server.
+     *  3. set map.
+     *-----------------------------------------------------------------------------*/
+    
     return (GK_CGI_NO_ERROR);
 }
+static int _get_name (char* ret, int streamID, char* name)
+{
+	sprintf(ret, "s%d_%s", streamID, name);
+	return 0;
+}
+
+static int enc_create_params ()
+{
+	int i = 0;
+	int j = 0;
+	int streamID=0;
+	char ret[NAME_LEN] = {0};
+
+    cgiFormInteger("stream", &streamID, 0);
+
+    memset(ret,0,NAME_LEN);
+    _get_name(ret, streamID, "h264_id");
+    strcat(stream_params[i].param_name, ret);
+    stream_params[i].value = 0;
+    i++;
+
+    memset(ret,0,NAME_LEN);
+    _get_name(ret, streamID, "M");
+    strcat(stream_params[i].param_name,ret);
+    stream_params[i].value = 0;
+    i++;
+
+    memset(ret,0,NAME_LEN);
+    _get_name(ret, streamID, "N");
+    strcat(stream_params[i].param_name,ret);
+    stream_params[i].value = 0;
+    i++;
+
+    memset(ret,0,NAME_LEN);
+    _get_name(ret, streamID, "idr_interval");
+    strcat(stream_params[i].param_name,ret);
+    stream_params[i].value = 0;
+    i++;
+
+    memset(ret,0,NAME_LEN);
+    _get_name(ret, streamID, "gop_model");
+    strcat(stream_params[i].param_name,ret);
+    stream_params[i].value = 0;
+    i++;
+
+    memset(ret,0,NAME_LEN);
+    _get_name(ret, streamID, "profile");
+    strcat(stream_params[i].param_name,ret);
+    stream_params[i].value = 0;
+    i++;
+
+    memset(ret,0,NAME_LEN);
+    _get_name(ret, streamID, "brc");
+    strcat(stream_params[i].param_name,ret);
+    stream_params[i].value = 0;
+    i++;
+
+    memset(ret,0,NAME_LEN);
+    _get_name(ret, streamID, "cbr_avg_bps");
+    strcat(stream_params[i].param_name,ret);
+    stream_params[i].value = 0;
+    i++;
+
+    memset(ret,0,NAME_LEN);
+    _get_name(ret, streamID, "vbr_min_bps");
+    strcat(stream_params[i].param_name,ret);
+    stream_params[i].value = 0;
+    i++;
+
+    memset(ret,0,NAME_LEN);
+    _get_name(ret, streamID, "vbr_max_bps");
+    strcat(stream_params[i].param_name,ret);
+    stream_params[i].value = 0;
+    i++;
+
+    memset(ret,0,NAME_LEN);
+    _get_name(ret, streamID, "quality");
+    strcat(stream_params[i].param_name,ret);
+    stream_params[i].value = 0;
+    i++;
+
+    /*-----------------------------------------------------------------------------
+     *  一部分是流的一部分是264的
+     *-----------------------------------------------------------------------------*/
+    memset(ret,0,NAME_LEN);
+    _get_name(ret, streamID, "type");
+    strcat(enc_params[j].param_name,ret);
+    enc_params[j].value = 0;
+    j++;
+
+    memset(ret,0,NAME_LEN);
+    _get_name(ret, streamID, "enc_fps");
+    strcat(enc_params[j].param_name,ret);
+    enc_params[j].value = 0;
+    j++;
+
+    memset(ret,0,NAME_LEN);
+    _get_name(ret, streamID, "dptz");
+    strcat(enc_params[j].param_name,ret);
+    enc_params[j].value = 0;
+    j++;
+//Resolution
+    memset(ret,0,NAME_LEN);
+    _get_name(ret, streamID, "flip_rotate");
+    strcat(enc_params[j].param_name,ret);
+    enc_params[j].value = 0;
+    j++;
+
+
+    strcat(enc_params[j].param_name,"enc_mode");
+    enc_params[j].value = 0;
+    j++;
+
+    strcat(enc_params[j].param_name,"s0_width");
+    enc_params[j].value = 1280;
+    j++;
+
+	strcat(enc_params[j].param_name,"s0_height");
+	enc_params[j].value = 720;
+	j++;
+
+	strcat(enc_params[j].param_name,"s1_width");
+	enc_params[j].value = 720;
+	j++;
+
+	strcat(enc_params[j].param_name,"s1_height");
+	enc_params[j].value = 480;
+	j++;
+
+	strcat(enc_params[j].param_name,"s2_width");
+	enc_params[j].value = 352;
+	j++;
+
+	strcat(enc_params[j].param_name,"s2_height");
+	enc_params[j].value = 240;
+	j++;
+
+	strcat(enc_params[j].param_name,"s3_width");
+	enc_params[j].value = 352;
+	j++;
+
+	strcat(enc_params[j].param_name,"s3_height");
+	enc_params[j].value = 240;
+
+	return (0);
+
+}
+
  int   enc_page_get_params()
 {
-    return (GK_CGI_NO_ERROR);
+	int ret = 0;
+	char name[NAME_LEN] = {0};
+	int i;
+	section_Param section_param;
+//	unsigned int stream_port[] = {STREAM0, STREAM1, STREAM2, STREAM3};
+
+    /*-----------------------------------------------------------------------------
+     *  1. init map.
+     *  2. send to server.
+     *  3. set map.
+     *-----------------------------------------------------------------------------*/
+    enc_create_params();
+//	if (ret < 0) {
+//		fprintf(stdout,"1:set params failed");
+//	} else {
+//		if (ret == 0) {
+//			fprintf(stdout,"0:set params succeeded");
+//		} else {
+//			if (ret == 1) {
+				memset(&section_param, 0, sizeof(section_Param));
+				section_param.sectionName  = "ENCODE";
+				section_param.sectionPort  = ENCODE;
+				section_param.paramData    = enc_params;
+				section_param.extroInfo    = "";
+				section_param.paramDataNum = ENC_NODE_LEN;
+                if (Base_get_section_param(&section_param)==-1)
+                {
+                    return (GK_CGI_ERROR);
+                }
+//				if ((&virtual_PageOps)->get_section_param(currentPage, &section_param) == -1) {
+//					return -1;
+//				}
+//				for ( i = 0; i < STREAM_NUM; i++ ) {
+					memset(name, 0, NAME_LEN);
+					sprintf(name, "STREAM%d", i);
+					memset(&section_param, 0, sizeof(section_Param));
+					section_param.sectionName = name;
+					section_param.sectionPort = ENCODE_PORT;//stream_port[i];
+					section_param.paramData = stream_params;
+					section_param.extroInfo = "";
+					section_param.paramDataNum = STREAM_NODE_LEN;
+                if (Base_get_section_param(&section_param)==-1)
+                {
+                    return (GK_CGI_ERROR);
+                }
+
+//				}
+//			} else {
+//				fprintf(stdout,"1:unexpected error %d",ret);
+//			}
+//		}
+//	}
+	return ret;
 }
 int _3a_page(int (*callback)())
 {
@@ -283,6 +504,11 @@ int vivo_page_get_params()
 
 //	ret = (&virtual_PageOps)->process_PostData(currentPage);
 	section_Param section_param;
+    /*-----------------------------------------------------------------------------
+     *  1. init map.
+     *  2. send to server.
+     *  3. set map.
+     *-----------------------------------------------------------------------------*/
 
     FUN_IN();
     vivo_create_params();
@@ -636,8 +862,8 @@ int   enc_page(int (*callback)())
     char *js_var_name[11]={0};
     char *var = js_var;
     do{
-        js_var_name[i] = var;
-    }while(!(var = strchr(js_var, '\0')));
+        js_var_name[i] = ++var;
+    }while(var = strchr(js_var, '\0'));
     
     /*-----------------------------------------------------------------------------
      *  select
@@ -709,8 +935,6 @@ int   enc_page(int (*callback)())
         },                       
     };
     int streamId=0;
-//    char* fieldset_begin = "<fieldset><legend>%s</legend><br>\n";
-//    char* fieldset_end   = "<br><br></fieldset><br>\n";
     
     FUN_IN();     
     cgiFormIntegerBounded("streamId", &streamId, STREAM_ID0, STREAM_ID_NUM, STREAM_ID0);
@@ -832,13 +1056,20 @@ int   enc_page(int (*callback)())
        //get msg from ctrl server
     //get 分辨率
     //get fps
-    callback(); 
-    select_label[ENC_TYPE].selected = 1;
-    select_label[ENC_FPS].selected = 1;
-    select_label[ENC_DPTZ].selected = 1;
-    select_label[ENC_RESOLUTION].selected = 1;
-    select_label[ENC_FLIP_ROTATE].selected = 1;
-
+    callback();
+#if 1
+    int idx = ENC_TYPE;
+    for (idx = ENC_TYPE; idx<ENC_NUM; idx++)
+    {
+        select_label[idx].selected =  enc_params[idx].value;
+    }
+#else 
+    select_label[ENC_TYPE].selected =  enc_params[ENC_TYPE].value;
+    select_label[ENC_FPS].selected = enc_params[ENC_FPS].value;
+    select_label[ENC_DPTZ].selected = enc_params[ENC_DPTZ].value;
+    select_label[ENC_RESOLUTION].selected = enc_params[ENC_RESOLUTION].value;
+    select_label[ENC_FLIP_ROTATE].selected = enc_params[ENC_FLIP_ROTATE].value;
+#endif
     char div_text[DIV_SELECT_SIZE]={0};
     char div_text_1[DIV_SELECT_SMALLSIZE]={0};
     for (i=0;i<ENC_NUM;i++)//enc
@@ -847,47 +1078,11 @@ int   enc_page(int (*callback)())
         free (select_label[i].options);
     }
     create_div_select(div_text_1, &select_title);
+    free (select_title[i].options);
     char *pos=text;
     pos += strlen(text);
     sprintf(pos, enccontent, div_text_1, div_text);
     PRT_DBG("div_text[%s]div_text_1[%s]\n", div_text, div_text_1);
-    /*stream 0 over*/
-
-    /*stream 1*/
-    strncat(text, "<br><br>", strlen("<br><br>"));
-//    sprintf(text+strlen(text), fieldset_begin, "Stream 1");
-#if 0    
-    for (i=0;i<5;i++)
-    {
-        if (i == 3)
-        {
-            strncat(text, "<br><br>", strlen("<br><br>"));
-        }
-        create_select_label(text, &select_label[i]);
-    }
-    strncat(text, fieldset_end, strlen(fieldset_end));
-    /*stream 1 over*/    
-#if 1
-    /*stream 2*/
-    strncat(text, "<br><br>", strlen("<br><br>"));
-    sprintf(text+strlen(text), fieldset_begin, "Stream 2");
-    
-    for (i=0;i<5;i++)
-    {
-        if (i == 3)
-        {
-            strncat(text, "<br><br>", strlen("<br><br>"));
-        }
-        create_select_label(text, &select_label[i]);
-    }
-    strncat(text, fieldset_end, strlen(fieldset_end));
-    /*stream 2 over*/
-#endif
-   char *button_buf = "<p align=\"center\" > \
-<input type=\"button\" value=\"Apply\" onclick = \"javascript:setEnc()\"/>&nbsp; &nbsp; \
-<input type=\"button\" value=\"Cancel\" onclick = \"javascript:showPage('enc')\"/>";
-    strncat(text, button_buf, strlen(button_buf));
-#endif
     fprintf(cgiOut, "%s", text);
     PRT_DBG("size[%d]text[%s]\n",strlen(text), text);
     free(text);

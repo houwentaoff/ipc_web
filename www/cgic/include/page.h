@@ -117,6 +117,21 @@ typedef enum {
 
 //ENC
 typedef enum {
+	H264_ID,
+	M,
+	N,
+	IDR_INTERVAL,
+	GOP_MODEL,
+	PROFILE,
+	BRC,
+	CBR_AVG_BPS,
+	VBR_MIN_BPS,
+	VBR_MAX_BPS,
+	QUALITY,
+	STREAM_PARAM_TYPE_NUM
+}STREAM_PARAMS_TYPE;
+
+typedef enum {
 	ENC_TYPE,
 	ENC_FPS,
 	ENC_DPTZ,
