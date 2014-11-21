@@ -42,26 +42,26 @@ function EncBufParam()
 function EncParam()
 {
     this.mem = new Array(
-            ['enc_mode', 0],
-            ['s0_state', 0],
+//            ['enc_mode', 0],
+//            ['s0_state', 0],
             ['s0_type', 0],
             ['s0_enc_fps', 0],
             ['s0_dptz', 0],
             ['s0_resolution', 0],
             ['s0_flip_rotate', 0],
-            ['s1_state', 0],
+//            ['s1_state', 0],
             ['s1_type', 0],
             ['s1_enc_fps', 0],
             ['s1_dptz', 0],
             ['s1_resolution', 0],
             ['s1_flip_rotate', 0],
-            ['s2_state', 0],
+//            ['s2_state', 0],
             ['s2_type', 0],
             ['s2_enc_fps', 0],
             ['s2_dptz', 0],
             ['s2_resolution', 0],
             ['s2_flip_rotate', 0],
-            ['s3_state', 0],
+//            ['s3_state', 0],
             ['s3_type', 0],
             ['s3_enc_fps', 0],
             ['s3_dptz', 0],
@@ -516,7 +516,7 @@ function setEnc()
         }
 
         showStatus("Setting encoding parameters ....");
-        var url = "/cgi-bin/enc.py";
+        var url = "/cgi-bin/setroute.cgi";
         var ai = new AJAXInteraction(url, display);
         var req_cnt = 0;
         var postData = '';

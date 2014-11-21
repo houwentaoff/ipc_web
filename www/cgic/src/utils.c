@@ -370,6 +370,7 @@ int send_get_request (section_Param* section_param, int RequestId, Message Msg)
                 PRT_DBG("recv error");
             }
         } else {
+            PRT_DBG("ack.result != 0\n");
             free(ackmsg);
             ackmsg = NULL;
             return -1;
@@ -377,6 +378,7 @@ int send_get_request (section_Param* section_param, int RequestId, Message Msg)
         free(ackmsg);
         ackmsg = NULL;
     }
+    FUN_OUT();
 	return (GK_CGI_NO_ERROR);
 }
 

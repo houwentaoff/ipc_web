@@ -188,16 +188,22 @@ int get_value (char* text,char* cmp_Text)
 
 int CamBasicPage_process_PostData () 
 {
-    int vin_fps_changed = 0;
-    int vv_changed = 0;
-    int view_changed = 0;
+//    int vin_fps_changed = 0;
+//    int vv_changed = 0;
+//    int view_changed = 0;
+//    int enc_changed = 0;
+    int count = 0;
+    int i=0;
     Transfer transfer;
     Message msg;
     transfer_init(&transfer);
 
-    Message image_data;
-    Message vv_data;
-    Message view_data;
+//    Message image_data;
+//    Message vv_data;
+//    Message view_data;
+//    Message enc_data;
+
+    Message msg_set[5]={0};
 
     char sec_name[SHORTLEN];
     char data_name[SHORTLEN];
@@ -208,7 +214,6 @@ int CamBasicPage_process_PostData ()
     
     if (req_cnt>0)
     {
-        int count = 0;
         do
         {
             memset(&msg, 0, sizeof(Message));
@@ -216,7 +221,9 @@ int CamBasicPage_process_PostData ()
             cgiFormString(sec_name, msg.section_Name, MSG_NAME_LEN);
             sprintf(data_name, "data%d", count);
             cgiFormString(data_name, msg.msg, MSG_INFO_LEN);
-
+            
+            memcpy(&msg_set[count], &msg, sizeof(Message));
+#if 0
             if (strcmp(msg.section_Name, "IMAGE") == 0) 
             {
                 memset(&image_data, 0, sizeof(Message));
@@ -240,13 +247,14 @@ int CamBasicPage_process_PostData ()
                 strncat(view_data.msg, msg.msg, strlen(msg.msg));
                 PRT_DBG("view_data.msg[%s]\n", msg.msg);
             }
+#endif
             count++;
         }while (count<req_cnt);
 
 
+#if 0
         PRT_DBG("vin_fps_changed[%d]vv_changed[%d]view_changed[%d]\n",
                 vin_fps_changed, vv_changed, view_changed);
-#if 0
         if (vin_fps_changed) 
         {
             memset(&msg, 0, sizeof(Message));
@@ -260,6 +268,7 @@ int CamBasicPage_process_PostData ()
             }
         }
 #endif
+#if 0
         if (view_changed)
         {
            if ((transfer.send_set_request(REQ_SET_PARAM, LIVE, view_data)) < 0) 
@@ -275,9 +284,22 @@ int CamBasicPage_process_PostData ()
                 return -1;
             }
         }
-        else 
+        if (enc_changed)
         {
-            return -1;
+            if ((transfer.send_set_request(REQ_SET_PARAM, ENCODE_PORT, msg)) < 0) 
+            {
+                PRT_DBG();
+                return -1;
+            }            
+        }
+#endif
+        for (i=0;i<count;i++)
+        {
+            if ((transfer.send_set_request(REQ_SET_PARAM, ENCODE_PORT, msg_set[i])) < 0) 
+            {
+                PRT_ERR();
+                return -1;
+            } 
         }
 #if 0
         if (vin_fps_changed) 
@@ -290,14 +312,13 @@ int CamBasicPage_process_PostData ()
             }
         }
 #endif
-        PRT_DBG();
         FUN_OUT();
         return (GK_CGI_NO_ERROR);
     }
     else 
     {
-        PRT_DBG();
-        FUN_OUT();
+        PRT_ERR("req_cnt < 0\n");
+        FUN_OUT("<0");
         return (GK_CGI_ERROR);
     }
 }

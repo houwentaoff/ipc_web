@@ -46,15 +46,15 @@
 #define	MAX_ITEMS_TO_PARSE		(3*1000)
 
 #if INOUT_DEBUG
-#define FUN_IN(fmt, args...)            printf("===> %s()"fmt"\n", __func__, ##args)/*  */
-#define FUN_OUT(fmt, args...)           printf("<=== %s()"fmt"\n", __func__, ##args) /*  */
+#define FUN_IN(fmt, args...)            printf("===> %s()\n"fmt"\n", __func__, ##args)/*  */
+#define FUN_OUT(fmt, args...)           printf("<=== %s()\n"fmt"\n", __func__, ##args) /*  */
 #else
 #define FUN_IN(fmt, args...)
 #define FUN_OUT(fmt, args...)
 #endif
 
 #if APP_DEBUG
-#define PRT_DBG(fmt, args...)         printf("%s():line[%d]"fmt"\n", __func__, __LINE__, ##args)/*  */
+#define PRT_DBG(fmt, args...)         printf("%s():line[%d]:\n"fmt"\n", __func__, __LINE__, ##args)/*  */
 #else
 #define PRT_DBG(fmt, args...)
 #endif
@@ -90,28 +90,28 @@ static int set_encode_param(char * section_name);
 
 
 static Mapping VinVoutMap[] = {
-	{"vin_enable",			&vin_map.enable,				MAP_TO_U32,	0.0,		0,		0.0,		0.0,	},
-	{"vin_mode",			&vin_map.mode,				MAP_TO_U32,	AMBA_VIDEO_MODE_AUTO,		0,		0.0,		0.0,	},
-	{"vin_framerate",		&vin_map.frame_rate,			MAP_TO_U32,	AMBA_VIDEO_FPS_29_97,		0,		0.0,		0.0,	},
+	{"vin_enable",			&vin_map.enable,				MAP_TO_U32,	0.0,		0,		0.0,		0.0,	false},
+	{"vin_mode",			&vin_map.mode,				MAP_TO_U32,	AMBA_VIDEO_MODE_AUTO,		0,		0.0,		0.0,	false},
+	{"vin_framerate",		&vin_map.frame_rate,			MAP_TO_U32,	AMBA_VIDEO_FPS_29_97,		0,		0.0,		0.0,	false},
 //	{"vin_mirror",			&vin_map.mirror_mode.mirror_pattern,	MAP_TO_U32,	0.0,		0,		0.0,		0.0,	},
 //	{"vin_bayer",			&vin_map.mirror_mode.bayer_pattern,	MAP_TO_U32,	0.0,		0,		0.0,		0.0,	},
 
-	{"vout_type",			&vout_map.type,			MAP_TO_U32,	AMBA_VOUT_SINK_TYPE_CVBS,		0,		0.0,		0.0,	},
-	{"vout_mode",			&vout_map.mode,			MAP_TO_U32,	AMBA_VIDEO_MODE_480I,		0,		0.0,		0.0,	},
+	{"vout_type",			&vout_map.type,			MAP_TO_U32,	AMBA_VOUT_SINK_TYPE_CVBS,		0,		0.0,		0.0,	false},
+	{"vout_mode",			&vout_map.mode,			MAP_TO_U32,	AMBA_VIDEO_MODE_480I,		0,		0.0,		0.0,	false},
 
-	{NULL,			NULL,						-1,	0.0,					0,	0.0,	0.0,		},
+	{NULL,			NULL,						-1,	0.0,					0,	0.0,	0.0,		0},
 };
 
 
 static Mapping Stream0[] = {
-	{"s0_h264_id",			&stream_map[0].h264Conf.streamId,				MAP_TO_U32,     0.0,		0,		0.0,		0.0,	},
+	{"s0_h264_id",			&stream_map[0].h264Conf.streamId,				MAP_TO_U32,     0.0,		0,		0.0,		0.0,	false},
 //	{"s0_M",				&stream_map[0].h264.M,					MAP_TO_U8,	    1.0,		0,		0.0,		0.0,	},
 //	{"s0_N",				&stream_map[0].h264.N,					MAP_TO_U8,	    30.0,		0,		0.0,		0.0,	},
 //	{"s0_idr_interval",		&stream_map[0].h264.idr_interval,		MAP_TO_U8,	    1.0,		0,		0.0,		0.0,	},
 //	{"s0_gop_model",		&stream_map[0].h264.gop_model,			MAP_TO_U8,	    0.0,		0,		0.0,		0.0,	},
 //	{"s0_profile",			&stream_map[0].h264.profile,			MAP_TO_U8,	    0.0,		0,		0.0,		0.0,	},
 //	{"s0_brc",				&stream_map[0].h264.brc_mode,	        MAP_TO_U8,	    0.0,		0,		0.0,		0.0,	},
-	{"s0_cbr_avg_bps",		&stream_map[0].h264Conf.cbrAvgBps,		MAP_TO_U32,	    0.0,		0,		0.0,		0.0,	},
+	{"s0_cbr_avg_bps",		&stream_map[0].h264Conf.cbrAvgBps,		MAP_TO_U32,	    0.0,		0,		0.0,		0.0,	false},
 //	{"s0_vbr_min_bps",		&stream_map[0].h264.vbr_min_bps,		MAP_TO_U32,	    0.0,		0,		0.0,		0.0,	},
 //	{"s0_vbr_max_bps",		&stream_map[0].h264.vbr_max_bps,		MAP_TO_U32,	    0.0,		0,		0.0,		0.0,	},
 //	{"s0_quality",			&stream_map[0].mjpeg.quality,			MAP_TO_U8,	    88.0,	    0,		0.0,		0.0,	},
@@ -119,80 +119,80 @@ static Mapping Stream0[] = {
 };
 
 static Mapping Stream1[] = {
-	{"s1_h264_id",			&stream_map[1].h264Conf.streamId,				MAP_TO_U32,	    1.0,		0,		0.0,		0.0,	},
+	{"s1_h264_id",			&stream_map[1].h264Conf.streamId,				MAP_TO_U32,	    1.0,		0,		0.0,		0.0,	false},
 //	{"s1_M",				&stream_map[1].h264.M,					MAP_TO_U8,	    1.0,		0,		0.0,		0.0,	},
 //	{"s1_N",				&stream_map[1].h264.N,					MAP_TO_U8,	    30.0,		0,		0.0,		0.0,	},
 //	{"s1_idr_interval",		&stream_map[1].h264.idr_interval,		MAP_TO_U8,	    1.0,		0,		0.0,		0.0,	},
 //	{"s1_gop_model",		&stream_map[1].h264.gop_model,			MAP_TO_U8,	    0.0,		0,		0.0,		0.0,	},
 //	{"s1_profile",			&stream_map[1].h264.profile,			MAP_TO_U8,	    0.0,		0,		0.0,		0.0,	},
 //	{"s1_brc",				&stream_map[1].h264.brc_mode,	        MAP_TO_U8,	    0.0,		0,		0.0,		0.0,	},
-	{"s1_cbr_avg_bps",		&stream_map[1].h264Conf.cbrAvgBps,		MAP_TO_U32,	    0.0,		0,		0.0,		0.0,	},
+	{"s1_cbr_avg_bps",		&stream_map[1].h264Conf.cbrAvgBps,		MAP_TO_U32,	    0.0,		0,		0.0,		0.0,	false},
 //	{"s1_vbr_min_bps",		&stream_map[1].h264.vbr_min_bps,		MAP_TO_U32,	    0.0,		0,		0.0,		0.0,	},
 //	{"s1_vbr_max_bps",		&stream_map[1].h264.vbr_max_bps,		MAP_TO_U32,	    0.0,		0,		0.0,		0.0,	},
 //	{"s1_quality",			&stream_map[1].mjpeg.quality,			MAP_TO_U8,	    88.0,	    0,		0.0,		0.0,	},
-	{NULL,			        NULL,						            -1,	            0.0,		0,	    0.0,	    0.0,	},
+	{NULL,			        NULL,						            -1,	            0.0,		0,	    0.0,	    0.0,	false},
 };
 
 static Mapping Stream2[] = {
-	{"s2_h264_id",			&stream_map[2].h264Conf.streamId,				MAP_TO_U32,	    2.0,		0,		0.0,		0.0,	},
+	{"s2_h264_id",			&stream_map[2].h264Conf.streamId,				MAP_TO_U32,	    2.0,		0,		0.0,		0.0,	false},
 //	{"s2_M",				&stream_map[2].h264.M,					MAP_TO_U8,	    1.0,		0,		0.0,		0.0,	},
 //	{"s2_N",				&stream_map[2].h264.N,					MAP_TO_U8,	    30.0,		0,		0.0,		0.0,	},
 //	{"s2_idr_interval",		&stream_map[2].h264.idr_interval,		MAP_TO_U8,	    1.0,		0,		0.0,		0.0,	},
 //	{"s2_gop_model",		&stream_map[2].h264.gop_model,			MAP_TO_U8,	    0.0,		0,		0.0,		0.0,	},
 //	{"s2_profile",			&stream_map[2].h264.profile,			MAP_TO_U8,	    0.0,		0,		0.0,		0.0,	},
 //	{"s2_brc",				&stream_map[2].h264.brc_mode,	        MAP_TO_U8,	    0.0,		0,		0.0,		0.0,	},
-	{"s2_cbr_avg_bps",		&stream_map[2].h264Conf.cbrAvgBps,		MAP_TO_U32,	    0.0,		0,		0.0,		0.0,	},
+	{"s2_cbr_avg_bps",		&stream_map[2].h264Conf.cbrAvgBps,		MAP_TO_U32,	    0.0,		0,		0.0,		0.0,	false},
 //	{"s2_vbr_min_bps",		&stream_map[2].h264.vbr_min_bps,		MAP_TO_U32,	    0.0,		0,		0.0,		0.0,	},
 //	{"s2_vbr_max_bps",		&stream_map[2].h264.vbr_max_bps,		MAP_TO_U32,	    0.0,		0,		0.0,		0.0,	},
 //	{"s2_quality",			&stream_map[2].mjpeg.quality,			MAP_TO_U8,	    88.0,	    0,		0.0,		0.0,	},
-	{NULL,			        NULL,						            -1,	            0.0,	    0,	    0.0,        0.0,    },
+	{NULL,			        NULL,						            -1,	            0.0,	    0,	    0.0,        0.0,    false},
 };
 
 static Mapping Stream3[] = {
-	{"s3_h264_id",			&stream_map[3].h264Conf.streamId,				MAP_TO_U32,	    3.0,		0,		0.0,		0.0,	},
+	{"s3_h264_id",			&stream_map[3].h264Conf.streamId,				MAP_TO_U32,	    3.0,		0,		0.0,		0.0,	false},
 //	{"s3_M",				&stream_map[3].h264.M,					MAP_TO_U8,	    1.0,		0,		0.0,		0.0,	},
 //	{"s3_N",				&stream_map[3].h264.N,					MAP_TO_U8,	    30.0,		0,		0.0,		0.0,	},
 //	{"s3_idr_interval",		&stream_map[3].h264.idr_interval,		MAP_TO_U8,	    1.0,		0,		0.0,		0.0,	},
 //	{"s3_gop_model",		&stream_map[3].h264.gop_model,			MAP_TO_U8,	    0.0,		0,		0.0,		0.0,	},
 //	{"s3_profile",			&stream_map[3].h264.profile,			MAP_TO_U8,	    0.0,		0,		0.0,		0.0,	},
 //	{"s3_brc",				&stream_map[3].h264.brc_mode,	        MAP_TO_U8,	    0.0,		0,		0.0,		0.0,	},
-	{"s3_cbr_avg_bps",		&stream_map[3].h264Conf.cbrAvgBps,		MAP_TO_U32,	    0.0,		0,		0.0,		0.0,	},
+	{"s3_cbr_avg_bps",		&stream_map[3].h264Conf.cbrAvgBps,		MAP_TO_U32,	    0.0,		0,		0.0,		0.0,	false},
 //	{"s3_vbr_min_bps",		&stream_map[3].h264.vbr_min_bps,		MAP_TO_U32,	    0.0,		0,		0.0,		0.0,	},
 //	{"s3_vbr_max_bps",		&stream_map[3].h264.vbr_max_bps,		MAP_TO_U32,	    0.0,		0,		0.0,		0.0,	},
 //	{"s3_quality",			&stream_map[3].mjpeg.quality,			MAP_TO_U8,	    88.0,	    0,		0.0,		0.0,	},
-	{NULL,			        NULL,						            -1,	            0.0,	    0,	    0.0,	    0.0,    },
+	{NULL,			        NULL,						            -1,	            0.0,	    0,	    0.0,	    0.0,    false},
 };
 
 static Mapping EncodeMap[] = {
 //	{"enc_mode",			&encode_mode,							MAP_TO_U32,	0.0,		0,		0.0,		0.0,	},
 
-	{"s0_dptz",			&stream_map[0].dptz,							MAP_TO_U8,	0.0,		0,		0.0,		0.0,	},
-	{"s0_type",			&stream_map[0].streamFormat.encode_type,			MAP_TO_U8,	0.0,		0,		0.0,		0.0,	},
-	{"s0_flip_rotate",		&stream_map[0].streamFormat.flip_rotate,			MAP_TO_U8,	0.0,		0,		0.0,		0.0,	},
-	{"s0_width",			&stream_map[0].streamFormat.encode_width,		MAP_TO_U16,	0.0,		0,		0.0,		0.0,	},
-	{"s0_height",			&stream_map[0].streamFormat.encode_height,		MAP_TO_U16,	0.0,		0,		0.0,		0.0,	},
-	{"s0_enc_fps",		&stream_map[0].streamFormat.encode_fps,			MAP_TO_U32,	30.0,		0,		0.0,		0.0,	},
+	{"s0_dptz",			&stream_map[0].dptz,							MAP_TO_U8,	0.0,		0,		0.0,		0.0,	false},
+	{"s0_type",			&stream_map[0].streamFormat.encode_type,			MAP_TO_U8,	0.0,		0,		0.0,		0.0,	false},
+	{"s0_flip_rotate",		&stream_map[0].streamFormat.flip_rotate,			MAP_TO_U8,	0.0,		0,		0.0,		0.0,	false},
+	{"s0_width",			&stream_map[0].streamFormat.encode_width,		MAP_TO_U16,	0.0,		0,		0.0,		0.0,	false},
+	{"s0_height",			&stream_map[0].streamFormat.encode_height,		MAP_TO_U16,	0.0,		0,		0.0,		0.0,	false},
+	{"s0_enc_fps",		&stream_map[0].streamFormat.encode_fps,			MAP_TO_U32,	30.0,		0,		0.0,		0.0,	false},
 
-	{"s1_dptz",			&stream_map[1].dptz,							MAP_TO_U8,	0.0,		0,		0.0,		0.0,	},
-	{"s1_type",			&stream_map[1].streamFormat.encode_type,			MAP_TO_U8,	0.0,		0,		0.0,		0.0,	},
-	{"s1_flip_rotate",		&stream_map[1].streamFormat.flip_rotate,			MAP_TO_U8,	0.0,		0,		0.0,		0.0,	},
-	{"s1_width",			&stream_map[1].streamFormat.encode_width,		MAP_TO_U16,	0.0,		0,		0.0,		0.0,	},
-	{"s1_height",			&stream_map[1].streamFormat.encode_height,		MAP_TO_U16,	0.0,		0,		0.0,		0.0,	},
-	{"s1_enc_fps",		&stream_map[1].streamFormat.encode_fps,			MAP_TO_U32,	30.0,		0,		0.0,		0.0,	},
+	{"s1_dptz",			&stream_map[1].dptz,							MAP_TO_U8,	0.0,		0,		0.0,		0.0,	false},
+	{"s1_type",			&stream_map[1].streamFormat.encode_type,			MAP_TO_U8,	0.0,		0,		0.0,		0.0,	false},
+	{"s1_flip_rotate",		&stream_map[1].streamFormat.flip_rotate,			MAP_TO_U8,	0.0,		0,		0.0,		0.0,	false},
+	{"s1_width",			&stream_map[1].streamFormat.encode_width,		MAP_TO_U16,	0.0,		0,		0.0,		0.0,	false},
+	{"s1_height",			&stream_map[1].streamFormat.encode_height,		MAP_TO_U16,	0.0,		0,		0.0,		0.0,	false},
+	{"s1_enc_fps",		&stream_map[1].streamFormat.encode_fps,			MAP_TO_U32,	30.0,		0,		0.0,		0.0,	false},
 
-	{"s2_dptz",			&stream_map[2].dptz,							MAP_TO_U8,	0.0,		0,		0.0,		0.0,	},
-	{"s2_type",			&stream_map[2].streamFormat.encode_type,			MAP_TO_U8,	0.0,		0,		0.0,		0.0,	},
-	{"s2_flip_rotate",		&stream_map[2].streamFormat.flip_rotate,			MAP_TO_U8,	0.0,		0,		0.0,		0.0,	},
-	{"s2_width",			&stream_map[2].streamFormat.encode_width,		MAP_TO_U16,	0.0,		0,		0.0,		0.0,	},
-	{"s2_height",			&stream_map[2].streamFormat.encode_height,		MAP_TO_U16,	0.0,		0,		0.0,		0.0,	},
-	{"s2_enc_fps",		&stream_map[2].streamFormat.encode_fps,			MAP_TO_U32,	30.0,		0,		0.0,		0.0,	},
+	{"s2_dptz",			&stream_map[2].dptz,							MAP_TO_U8,	0.0,		0,		0.0,		0.0,	false},
+	{"s2_type",			&stream_map[2].streamFormat.encode_type,			MAP_TO_U8,	0.0,		0,		0.0,		0.0,	false},
+	{"s2_flip_rotate",		&stream_map[2].streamFormat.flip_rotate,			MAP_TO_U8,	0.0,		0,		0.0,		0.0,	false},
+	{"s2_width",			&stream_map[2].streamFormat.encode_width,		MAP_TO_U16,	0.0,		0,		0.0,		0.0,	false},
+	{"s2_height",			&stream_map[2].streamFormat.encode_height,		MAP_TO_U16,	0.0,		0,		0.0,		0.0,	false},
+	{"s2_enc_fps",		&stream_map[2].streamFormat.encode_fps,			MAP_TO_U32,	30.0,		0,		0.0,		0.0,	false},
 
-	{"s3_dptz",			&stream_map[3].dptz,							MAP_TO_U8,	0.0,		0,		0.0,		0.0,	},
-	{"s3_type",			&stream_map[3].streamFormat.encode_type,			MAP_TO_U8,	0.0,		0,		0.0,		0.0,	},
-	{"s3_flip_rotate",		&stream_map[3].streamFormat.flip_rotate,			MAP_TO_U8,	0.0,		0,		0.0,		0.0,	},
-	{"s3_width",			&stream_map[3].streamFormat.encode_width,		MAP_TO_U16,	0.0,		0,		0.0,		0.0,	},
-	{"s3_height",			&stream_map[3].streamFormat.encode_height,		MAP_TO_U16,	0.0,		0,		0.0,		0.0,	},
-	{"s3_enc_fps",		&stream_map[3].streamFormat.encode_fps,			MAP_TO_U32,	30.0,		0,		0.0,		0.0,	},
+	{"s3_dptz",			&stream_map[3].dptz,							MAP_TO_U8,	0.0,		0,		0.0,		0.0,	false},
+	{"s3_type",			&stream_map[3].streamFormat.encode_type,			MAP_TO_U8,	0.0,		0,		0.0,		0.0,	false},
+	{"s3_flip_rotate",		&stream_map[3].streamFormat.flip_rotate,			MAP_TO_U8,	0.0,		0,		0.0,		0.0,	false},
+	{"s3_width",			&stream_map[3].streamFormat.encode_width,		MAP_TO_U16,	0.0,		0,		0.0,		0.0,	false},
+	{"s3_height",			&stream_map[3].streamFormat.encode_height,		MAP_TO_U16,	0.0,		0,		0.0,		0.0,	false},
+	{"s3_enc_fps",		&stream_map[3].streamFormat.encode_fps,			MAP_TO_U32,	30.0,		0,		0.0,		0.0,	false},
 
 	{NULL,			NULL,						-1,	0.0,					0,	0.0,	0.0,		},
 };
@@ -656,7 +656,11 @@ static void parse_content(Mapping * Map, char * buf, int bufsize)
 					items[i], items[i+2]);
 				exit(0);
 			}
-			* (u32 *) (Map[MapIndex].Address) = U32Content;
+            if (* (u32 *) (Map[MapIndex].Address) != U32Content){
+                * (u32 *) (Map[MapIndex].Address) = U32Content;
+                Map[MapIndex].Update = true;
+            }
+
 			sprintf(msg, "%s.", msg);
 			break;
 
@@ -666,7 +670,10 @@ static void parse_content(Mapping * Map, char * buf, int bufsize)
 					items[i], items[i+2]);
 				exit(0);
 			}
-			* (u16 *) (Map[MapIndex].Address) = U32Content;
+            if (* (u16 *) (Map[MapIndex].Address != U32Content)){
+                * (u16 *) (Map[MapIndex].Address) = U32Content;
+                Map[MapIndex].Update = true;
+            }
 			sprintf(msg, "%s.", msg);
 			break;
 
@@ -676,7 +683,10 @@ static void parse_content(Mapping * Map, char * buf, int bufsize)
 					items[i], items[i+2]);
 				exit(0);
 			}
-			* (u8 *) (Map[MapIndex].Address) = U32Content;
+			if (* (u8 *) (Map[MapIndex].Address) != U32Content){
+                * (u8 *) (Map[MapIndex].Address) = U32Content;
+                Map[MapIndex].Update = true;
+            }
 			sprintf(msg, "%s.", msg);
 			break;
 
@@ -686,7 +696,10 @@ static void parse_content(Mapping * Map, char * buf, int bufsize)
 					items[i], items[i+2]);
 				exit(0);
 			}
-			* (int *) (Map[MapIndex].Address) = IntContent;
+			if (* (int *) (Map[MapIndex].Address) != IntContent){
+                * (int *) (Map[MapIndex].Address) = IntContent;
+                Map[MapIndex].Update = true;
+            }
 			sprintf(msg, "%s.", msg);
 			break;
 
@@ -696,7 +709,10 @@ static void parse_content(Mapping * Map, char * buf, int bufsize)
 					items[i], items[i+2]);
 				exit(0);
 			}
-			* (s16 *) (Map[MapIndex].Address) = IntContent;
+			if (* (s16 *) (Map[MapIndex].Address) != IntContent){
+                * (s16 *) (Map[MapIndex].Address) = IntContent;
+                Map[MapIndex].Update = true;
+            }
 			sprintf(msg, "%s.", msg);
 			break;
 
@@ -706,7 +722,10 @@ static void parse_content(Mapping * Map, char * buf, int bufsize)
 					items[i], items[i+2]);
 				exit(0);
 			}
-			* (s8 *) (Map[MapIndex].Address) = IntContent;
+			if (* (s8 *) (Map[MapIndex].Address) != IntContent){
+                * (s8 *) (Map[MapIndex].Address) = IntContent;
+                Map[MapIndex].Update = true;
+            }
 			sprintf(msg, "%s.", msg);
 			break;
 
@@ -716,11 +735,14 @@ static void parse_content(Mapping * Map, char * buf, int bufsize)
 					items[i], items[i+2]);
 				exit(0);
 			}
-			* (double *) (Map[MapIndex].Address) = DoubleContent;
+			if (* (double *) (Map[MapIndex].Address) != DoubleContent){
+                * (double *) (Map[MapIndex].Address) = DoubleContent;
+                Map[MapIndex].Update = true;
+            }
 			sprintf(msg, "%s.", msg);
 			break;
 
-		case MAP_TO_STRING:						// String
+        case MAP_TO_STRING:						// String  attention:no Update
 			memset((char *) Map[MapIndex].Address, 0, Map[MapIndex].StringLengthLimit);
 			if (NULL != items[i+2]) {
 				strncpy((char *) Map[MapIndex].Address, items[i+2], Map[MapIndex].StringLengthLimit - 1);
@@ -903,7 +925,7 @@ static int get_encode_param(char * section_name, u32 info)
     g_stEncodeInfo[streamID].encode_type;
 
     stream_map[streamID].streamFormat.encode_fps = 
-    g_stEncodeInfo[streamID].framerate;;
+    512000000/g_stEncodeInfo[streamID].framerate;;
 
     stream_map[streamID].streamFormat.encode_width = 
     g_stEncodeInfo[streamID].encode_width;
@@ -952,17 +974,38 @@ static int set_encode_param(char * section_name)
 {
 	//static int enc_mode = MW_ENCODE_NORMAL_MODE;
 	int streamID = 0;
+    CAMCONTROL_Encode_Cmd stEncCmd;
+
 	PRT_DBG("Section [%s] setting:\n", section_name);
-    PRT_DBG("\n\
-            s0_dptz [%d]\n\
-            s0_type       [%d]\n\
-            s0_flip_rotate      [%d]\n\
-            s0_enc_fps      [%d]\n\
-            s0_resolution [%d X %d]\n\
-            ", stream_map[streamID].dptz,  stream_map[streamID].streamFormat.encode_type,
+    PRT_DBG("\n"
+            "s0_dptz             [%d]\n"
+            "s0_type             [%d]\n"
+            "s0_flip_rotate      [%d]\n"
+            "s0_enc_fps          [%d]\n"
+            "s0_resolution    [%d X %d]\n"
+            ,  stream_map[streamID].dptz,  stream_map[streamID].streamFormat.encode_type,
                stream_map[streamID].streamFormat.flip_rotate,  stream_map[streamID].streamFormat.encode_fps,
                stream_map[streamID].streamFormat.encode_width, stream_map[streamID].streamFormat.encode_height);
 
+    memset(&stEncCmd, 0, sizeof(stEncCmd));
+#if 1
+    int i=0;
+    for (i=0;i<sizeof(EncodeMap)/sizeof(Mapping) - 1; i++)
+    {
+        if (EncodeMap[i].Update)
+        {
+            if (strstr(EncodeMap[i].TokenName, "enc_fps"))
+            {
+                sscanf(EncodeMap[i].TokenName, "%*[^0-9]%i", &streamID);
+            	stEncCmd.streamid = streamID;
+                stEncCmd.framerate = 512000000/stream_map[streamID].streamFormat.encode_fps;
+                PRT_DBG("streamid[%d]fps[%d]\n", streamID, stEncCmd.framerate);
+                send_fly_request(MEDIA_SET_FRAMERATE, sizeof(CAMCONTROL_Encode_Cmd), (unsigned char *)&stEncCmd, 0, NULL);
+            }
+            EncodeMap[i].Update = true;
+        }
+    }
+#endif
 #if 0
 ......
 #endif

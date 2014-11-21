@@ -544,7 +544,7 @@ function setEnc()
 		}
 
 		showStatus("Setting encoding parameters ....");
-		var url = "/cgi-bin/webdemo.cgi?page=enc";
+		var url = "/cgi-bin/demo.cgi?page=1&stream=";
 		var ai = new AJAXInteraction(url, display);
 		var req_cnt = 0;
 		var postData = '';

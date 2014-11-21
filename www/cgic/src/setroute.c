@@ -41,7 +41,7 @@ int cgiMain() {
         if (ret == 0) 
         {
 //			fprintf(cgiOut,"0:set params succeeded");
-			fprintf(cgiOut,"succeeded\n");
+			fprintf(cgiOut,"0:set params succeeded");
             PRT_DBG("0:set params succeeded\n");
 		}
     }

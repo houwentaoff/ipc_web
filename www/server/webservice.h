@@ -27,7 +27,12 @@
 #define ENCODE_STREAM_NUM           (4)
 #define STREAM_ID_OFFSET			(28)
 
+#define false                  (0)       /*  */
+#define true                !(false)      /*  */
+
 //#define	FILE_CONTENT_SIZE		(10 * 1024)
+//
+typedef int bool;
 typedef unsigned int u32;
 typedef unsigned char u8;
 typedef signed char s8;
@@ -232,6 +237,7 @@ typedef struct {
 	double					MinLimit;		// Minimun value
 	double					MaxLimit;		// Maximun value
 	int						StringLengthLimit;	// Dimension of type char[]
+    bool                    Update;
 } Mapping;
 
 typedef int (*get_func)(char * section_name, u32 info);

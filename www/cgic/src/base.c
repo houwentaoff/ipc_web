@@ -149,23 +149,23 @@ const char * const liveviewcontent="   \
 const char * const vivocontent= "\
 <div class=\"content\">\
     <div id=\"status\">&nbsp; </div>\
-        <div class=\"vinvout_right\">\
-			<div class=\"title\">输出设置</div>\
-            <div class=\"action\">		\
+    <div class=\"vinvout_right\">\
+        <div class=\"title\">输出设置</div>\
+        <div class=\"action\">		\
 %s\
-            </div>\
         </div>\
-        <div class=\"vivout_right2\">\
-			<div class=\"title\">输入设置</div>\
-            <div class=\"action\">\
-%s\
-            </div>\
-        </div>\
-		<div class=\"vinvout_submit\">\
-		    <input name=\"button\" type=\"button\" class=\"apply\" id=\"button\"  onclick=\"javascript:setCamBasic()\" value=\"确认\"/> \
-			&nbsp;<input name=\"button\" type=\"button\" class=\"cancel\" id=\"button\"  onclick=\"javascript:showPage('csb')\" value=\"取消\"/>\
-	  </div>\
     </div>\
+    <div class=\"vivout_right2\">\
+        <div class=\"title\">输入设置</div>\
+        <div class=\"action\">\
+%s\
+        </div>\
+    </div>\
+    <div class=\"vinvout_submit\">\
+        <input name=\"button\" type=\"button\" class=\"apply\" id=\"button\"  onclick=\"javascript:setCamBasic()\" value=\"确认\"/> \
+        &nbsp;<input name=\"button\" type=\"button\" class=\"cancel\" id=\"button\"  onclick=\"javascript:showPage('csb')\" value=\"取消\"/>\
+    </div>\
+</div>\
  ";
 const char * const enccontent= "\
 <div class=\"content\">\
@@ -207,8 +207,8 @@ const char * const enccontent= "\
             </div>\ 
         </div>\
         <div class=\"enc_submit\">\
-            <input name=\"button\" type=\"button\" class=\"apply\" id=\"button\"  onclick=\"javascript:setCamBasic()\" value=\"确认\"/> 			&nbsp;\
-            <input name=\"button\" type=\"button\" class=\"cancel\" id=\"button\"  onclick=\"javascript:showPage(\'csb\')\" value=\"取消\"/>\
+            <input name=\"button\" type=\"button\" class=\"apply\" id=\"button\"  onclick=\"javascript:setEnc()\" value=\"确认\"/> 			&nbsp;\
+            <input name=\"button\" type=\"button\" class=\"cancel\" id=\"button\"  onclick=\"javascript:showPage(\'enc\')\" value=\"取消\"/>\
         </div>\
 </div>\
 ";
