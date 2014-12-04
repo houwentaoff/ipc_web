@@ -13,6 +13,10 @@ Install
 Run
 
 [4] After reboot. run 'run_app.sh  --ov9710' and then you can use URL 'http://yourtargetip/html/demo.cgi?page=0&stream=0' or 'http://yourtargetip/cgi-bin/view.cgi' to view real-time video. eg:'http://192.168.103.47/cgi-bin/demo.cgi?page=0&stream=0'.Remenber to use IE.
+    osd page      : http://192.168.103.47/cgi-bin/demo.cgi?page=3&stream=0
+    liveview page : http://192.168.103.47/cgi-bin/demo.cgi?page=0&stream=0
+    enc page      : http://192.168.103.47/cgi-bin/demo.cgi?page=1&stream=0
+    
 
 notice:
 

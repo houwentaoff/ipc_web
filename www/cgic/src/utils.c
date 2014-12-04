@@ -3,7 +3,7 @@
  *
  ** \file      utils.c
  **
- ** \version   $Id: utils.c 2417 2014-11-19 09:11:29Z houwentao $
+ ** \version   $Id: utils.c 2481 2014-12-04 07:41:31Z houwentao $
  **
  ** \brief     
  **
@@ -229,7 +229,7 @@ int decode_Param (section_Param* section_param, char* recv)
 				buf++;
 
 			}
-            PRT_DBG("param_value[%s]\n", param_value);
+//            PRT_DBG("param_value[%s]\n", param_value);
 			param_value[index] = '\0';
 			if (param_value[0] != '"') {
 				section_param->paramData[i].value = atoi(param_value);

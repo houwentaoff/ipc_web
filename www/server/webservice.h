@@ -3,7 +3,7 @@
 *
 ** \file      webservice.h
 **
-** \version   $Id: webservice.h 2409 2014-11-18 13:25:00Z houwentao $
+** \version   $Id: webservice.h 2482 2014-12-04 07:45:14Z houwentao $
 **
 ** \brief
 **
@@ -18,17 +18,21 @@
 #ifndef __WEBSERVICE_H__
 #define __WEBSERVICE_H__
 
+#include "adi_osd.h"
 
+//#include "adi_venc.h"
 //#define SERVER_CONFIG_PATH		"/etc/ambaipcam/mediaserver"
-
 #define ENCODE_SERVER_PORT			(20000)
 //#define IMAGE_SERVER_PORT			(20002)
 #define BUFFER_SIZE					(1024)
 #define ENCODE_STREAM_NUM           (4)
 #define STREAM_ID_OFFSET			(28)
+#define HOST                        "127.0.0.1"
 
 #define false                  (0)       /*  */
 #define true                !(false)      /*  */
+
+#define OSD_TEXT_LENGTH		(64)
 
 //#define	FILE_CONTENT_SIZE		(10 * 1024)
 //
@@ -40,6 +44,7 @@ typedef signed int s32;
 typedef signed short s16;
 typedef unsigned short u16;
 
+#if 1 //legacy has 
 /*=========================Start AMBA_VIDEO_INFO==============================*/
 #if 0
 #define AMBA_VIDEO_FPS(fps)				(fps)
@@ -152,7 +157,7 @@ enum amba_video_mode {
 	AMBA_VIDEO_MODE_TEST		= 0xFFFE,
 	AMBA_VIDEO_MODE_MAX	= 0xFFFF,
 };
-
+#endif
 typedef enum {
 	HIGH_FRAMERATE = 0,
 	LOW_DELAY,
@@ -306,6 +311,83 @@ typedef struct
     gk_venc_MjpegConfig  mjpegConf;
     u8                 dptz;
 }gk_encode_stream;
+
+typedef enum {
+	COLOR_BLACK = 0,
+	COLOR_RED,
+	COLOR_BLUE,
+	COLOR_GREEN,
+	COLOR_YELLOW,
+	COLOR_MAGENTA,
+	COLOR_CYAN,
+	COLOR_WHITE,
+	COLOR_TYPE_NUM,
+} color_type;
+
+typedef struct osd_text_s {
+	u32			stream;
+	u32			time_enable;
+	// font content
+	char			str[OSD_TEXT_LENGTH];	// text content
+	u32			length;					// text string length
+	// font attribute parameters
+	u8			type;					// font type: 0/1 English, 2 Chinese, 3 Korean
+	u8			size;					// font size
+	u8			outline;					// font outline width
+	u8			color;					// font color type
+	int			bold;					// font bold
+	int			italic;					// font italic
+	// text area box parameters
+	u16			start_x;					// text area offset x, 0~100, 100 means 100% of encode width
+	u16			start_y;					// text area offset y, 0~100, 100 means 100% of encode height
+	u16			box_w;					// text area box width, 0~100, 100 means 100% of encode width
+	u16			box_h;					// text area box height, 0~100, 100 means 100% of encode height
+} osd_text_t;
+
+typedef struct osd_param_s {
+	u8			bmp_enable;
+	u8			time_enable;
+	u8			text_enable;
+	u8			no_rotate;
+	osd_text_t	text;
+} osd_param_t;
+
+typedef struct {
+	int				unit; //0- percent ,1-pixel
+	int				x;
+	int				y;
+	int				width;
+	int				height;
+	u32				color;		// 0:Black, 1:Red, 2:Blue, 3:Green, 4:Yellow, 5:Magenta, 6:Cyan, 7:White
+	u32				action;
+} privacy_mask_t;
+
+/*!
+*******************************************************************************
+** \brief one stream format struct.
+*******************************************************************************
+*/
+typedef struct
+{
+    /*stream index.*/
+    GADI_U32            streamId;
+    /*0: none, 1: H.264, 2: MJPEG*/
+    GADI_U8             encodeType;
+    /*0: main source buffer (IAV_ENCODE_SOURCE_MAIN_BUFFER)    1: secondary source buffer*/
+    GADI_U8             sourceBuf;
+    /*rotate*/
+    GADI_U8             flipRotate;
+    /*encode width.*/
+    GADI_U16            width;
+    /*encode height.*/
+    GADI_U16            height;
+    /*encode x offset.*/
+    GADI_U16            xOffset;
+    /*encode y offset.*/
+    GADI_U16            yOffset;
+    /*encode frame rate.*/
+    GADI_U32            fps;
+}GADI_VENC_StreamFormatT;
 
 static inline int get_func_null(char *section_name, u32 info)
 {

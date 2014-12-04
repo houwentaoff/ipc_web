@@ -19,12 +19,14 @@
 #include "page.h"
 #include "include.h"
 
-#define MAX_HEAD            (1024)            /*  */
+#define MAX_HEAD            (2*1024)            /*  */
 #define MAXSTRLEN           (256)               /*错误通常由此引起 */
 #define SMALLHTML           (6*1024)            /*  */
 #define BIGHTML             (8*1024)  
 #define DIV_SELECT_SIZE     (2*1024)            /* tmp, div select size*/
-#define DIV_SELECT_SMALLSIZE     (256)            /* tmp, div select size*/
+#define DIV_SELECT_SMALLSIZE     (512)            /* tmp, div select size*/
+#define DIV_SLIDER_SMALLSIZE     (256)            /* tmp, div select size*/
+#define DIV_SLIDER_BIGSIZE     (1024)            /* tmp, div select size*/
 #define STREAM_NUM 4
 #define STREAM_NODE_LEN (STREAM_PARAM_TYPE_NUM)
 #define ENC_NODE_LEN 25
@@ -32,6 +34,8 @@
 #define ENC_PARAM_TYPE_NUM 4
 #define ENC_PARAM_SPEC_TYPE_NUM 2
 #define MAX_OPTION_LEN 16
+
+#define OSD_PARAM_NUM (OSD_PARAM_TYPE_NUM*STREAM_NUM)
 /*  */
 
 
@@ -42,9 +46,131 @@ static ParamData img_params[IMG_PARAMS_NUM];
 
 static ParamData stream_params[STREAM_NODE_LEN];
 static ParamData enc_params[ENC_NODE_LEN];
-
+static ParamData osd_params[OSD_PARAM_NUM];
+static ParamData pm_params[PM_PARAM_NUM];
 
 //static int bitrate=0;//码率
+
+static int _get_osd_Index (int streamID, char* text)
+{
+	char* osd_params_option[] = {"no_rotate","bmp_enable","time_enable","text_enable","text",\
+		"text_size","text_outline","text_color","text_bold","text_italic","text_startx",\
+		"text_starty","text_boxw","text_boxh"};
+	int i;
+	for (i = 0 ; i < OSD_PARAM_TYPE_NUM; i++) {
+		if (strcmp(text, osd_params_option[i]) == 0) {
+			return streamID *OSD_PARAM_TYPE_NUM + i;
+		}
+	}
+	return -1;
+}
+
+static int _get_name (char* ret, int streamID, char* name)
+{
+	sprintf(ret, "s%d_%s", streamID, name);
+    return (GK_CGI_NO_ERROR);
+}
+
+static int osd_create_params ()
+{
+	char name[NAME_LEN] = {0};
+	int i;
+
+	memset(pm_params,0,sizeof(ParamData)*PM_PARAM_NUM);
+	strcat(pm_params[PM_LEFT].param_name, "pm_x");
+	pm_params[PM_LEFT].value = 0;
+
+	strcat(pm_params[PM_TOP].param_name, "pm_y");
+	pm_params[PM_TOP].value = 0;
+
+	strcat(pm_params[PM_W].param_name, "pm_w");
+	pm_params[PM_W].value = 0;
+
+	strcat(pm_params[PM_H].param_name, "pm_h");
+	pm_params[PM_H].value = 0;
+
+	strcat(pm_params[PM_COLOR].param_name, "pm_color");
+	pm_params[PM_COLOR].value = 0;
+
+	strcat(pm_params[PM_ACTION].param_name, "pm_action");
+	pm_params[PM_ACTION].value = 0;
+
+
+	memset(osd_params, 0, sizeof(ParamData)*OSD_PARAM_NUM);
+	for (i = 0; i < STREAM_NUM; i++) {
+		memset(name,0,NAME_LEN);
+		_get_name(name, i, "no_rotate");
+		strcat(osd_params[_get_osd_Index(i, "no_rotate")].param_name, name);
+		osd_params[_get_osd_Index(i, "no_rotate")].value = 0;
+
+		memset(name,0,NAME_LEN);
+		_get_name(name, i, "bmp_enable");
+		strcat(osd_params[_get_osd_Index(i, "bmp_enable")].param_name, name);
+		osd_params[_get_osd_Index(i, "bmp_enable")].value = 0;
+
+		memset(name,0,NAME_LEN);
+		_get_name(name, i, "time_enable");
+		strcat(osd_params[_get_osd_Index(i, "time_enable")].param_name, name);
+		osd_params[_get_osd_Index(i, "time_enable")].value = 0;
+
+		memset(name,0,NAME_LEN);
+		_get_name(name, i, "text_enable");
+		strcat(osd_params[_get_osd_Index(i, "text_enable")].param_name, name);
+		osd_params[_get_osd_Index(i, "text_enable")].value = 0;
+
+		memset(name,0,NAME_LEN);
+		_get_name(name, i, "text");
+		strcat(osd_params[_get_osd_Index(i, "text")].param_name, name);
+		osd_params[_get_osd_Index(i, "text")].value = -100;
+
+		memset(name,0,NAME_LEN);
+		_get_name(name, i, "text_size");
+		strcat(osd_params[_get_osd_Index(i, "text_size")].param_name, name);
+		osd_params[_get_osd_Index(i, "text_size")].value = FTSIZE_NORMAL;
+
+		memset(name,0,NAME_LEN);
+		_get_name(name, i, "text_outline");
+		strcat(osd_params[_get_osd_Index(i, "text_outline")].param_name, name);
+		osd_params[_get_osd_Index(i, "text_outline")].value = 0;
+
+		memset(name,0,NAME_LEN);
+		_get_name(name, i, "text_color");
+		strcat(osd_params[_get_osd_Index(i, "text_color")].param_name, name);
+		osd_params[_get_osd_Index(i, "text_color")].value = 0;
+
+		memset(name,0,NAME_LEN);
+		_get_name(name, i, "text_bold");
+		strcat(osd_params[_get_osd_Index(i, "text_bold")].param_name, name);
+		osd_params[_get_osd_Index(i, "text_bold")].value = 0;
+
+		memset(name,0,NAME_LEN);
+		_get_name(name, i, "text_italic");
+		strcat(osd_params[_get_osd_Index(i, "text_italic")].param_name, name);
+		osd_params[_get_osd_Index(i, "text_italic")].value = 0;
+
+		memset(name,0,NAME_LEN);
+		_get_name(name, i, "text_startx");
+		strcat(osd_params[_get_osd_Index(i, "text_startx")].param_name, name);
+		osd_params[_get_osd_Index(i, "text_startx")].value = 0;
+
+		memset(name,0,NAME_LEN);
+		_get_name(name, i, "text_starty");
+		strcat(osd_params[_get_osd_Index(i, "text_starty")].param_name, name);
+		osd_params[_get_osd_Index(i, "text_starty")].value = 0;
+
+		memset(name,0,NAME_LEN);
+		_get_name(name, i, "text_boxw");
+		strcat(osd_params[_get_osd_Index(i, "text_boxw")].param_name, name);
+		osd_params[_get_osd_Index(i, "text_boxw")].value = 50;
+
+		memset(name,0,NAME_LEN);
+		_get_name(name, i, "text_boxh");
+		strcat(osd_params[_get_osd_Index(i, "text_boxh")].param_name, name);
+		osd_params[_get_osd_Index(i, "text_boxh")].value = 50;
+	}
+    return (GK_CGI_NO_ERROR);
+}
+//
 int   view_page_get_params();
 int   view_create_params()
 {
@@ -144,11 +270,6 @@ int   _3a_page_get_params()
      *-----------------------------------------------------------------------------*/
     
     return (GK_CGI_NO_ERROR);
-}
-static int _get_name (char* ret, int streamID, char* name)
-{
-	sprintf(ret, "s%d_%s", streamID, name);
-	return 0;
 }
 
 static int enc_create_params ()
@@ -353,7 +474,8 @@ static int enc_create_params ()
 //					return -1;
 //				}
 //				for ( i = 0; i < STREAM_NUM; i++ ) {
-#if 0
+#if 1
+                    i = stream_id;
 					memset(name, 0, NAME_LEN);
 					sprintf(name, "STREAM%d", i);
 					memset(&section_param, 0, sizeof(section_Param));
@@ -375,6 +497,43 @@ static int enc_create_params ()
 //	}
     FUN_OUT();
 	return ret;
+}
+int   osd_page_get_params()
+{
+	int ret = 0;
+	char name[NAME_LEN] = {0};
+	int i;
+    int stream_id=0;
+    char extroInfo[4]={0};
+	section_Param section_param;
+
+    FUN_IN();    
+
+    osd_create_params();
+
+    memset(&section_param, 0, sizeof(section_Param));
+    section_param.sectionName  = "OSD";
+    section_param.sectionPort  = ENCODE;
+    section_param.paramData    = enc_params;
+    section_param.extroInfo    = "";
+    section_param.paramDataNum = OSD_PARAM_NUM;
+    if (Base_get_section_param(&section_param)==-1)
+    {
+        return (GK_CGI_ERROR);
+    }
+#if 0
+    memset(&section_param, 0, sizeof(section_Param));
+    section_param.sectionName  = "PRIMASK";
+    section_param.sectionPort  = ENCODE;
+    section_param.paramData    = pm_params;
+    section_param.extroInfo    = "";
+    section_param.paramDataNum = OSD_PARAM_NUM;
+    if (Base_get_section_param(&section_param)==-1)
+    {
+        return (GK_CGI_ERROR);
+    }
+#endif
+    return (GK_CGI_NO_ERROR);
 }
 int _3a_page(int (*callback)())
 {
@@ -788,7 +947,7 @@ int vivo_page(int (*callback)())
         {
             strncat(div_text_1, "<br><br>", strlen("<br><br>"));//????
         }
-        create_div_select(div_text_1, &select_label[i]);
+        create_div_select(div_text_1, &select_label[i], DIV_SELECT_SIZE);
         free (select_label[i].options);
         i++;
     }
@@ -799,7 +958,7 @@ int vivo_page(int (*callback)())
         {
             strncat(div_text_2, "<br><br>", strlen("<br><br>"));//????
         }
-        create_div_select(div_text_2, &select_label_vout[i]);
+        create_div_select(div_text_2, &select_label_vout[i], DIV_SELECT_SIZE);
         free (select_label_vout[i].options);
         i++;
     }
@@ -827,8 +986,6 @@ int vivo_page(int (*callback)())
 int   view_page(int (*callback)())
 {
     char *text=NULL;
-//    div_input_t ChangeCBRAvgBps
-//    char *load_activeX = "onload=\"javascript: OnLoadActiveX('192.168.103.47', 0, 1, 0, 1);\"";/*Sean Hou: ip need to replace by js fun */
     FUN_IN();
     /*init display*/
     text = (char *)malloc(SMALLHTML);/*6k may much small*/
@@ -866,6 +1023,11 @@ int   view_page(int (*callback)())
     PRT_DBG("\n.............................................\n"
             ".................html size[%dk]...............\n"
             ".............................................\n",strlen(text)/1024);
+     if (strlen(text) >= SMALLHTML)
+     {
+         PRT_ERR("size[%d] is too big!\n", strlen(text));
+         return (GK_MEM_OVERFLOW);
+     }
 
     free(text);
 
@@ -893,8 +1055,10 @@ int   enc_page(int (*callback)())
 
     char **labels[]={s0_type, s0_enc_fps, s0_dptz, s0_resolution, s0_flip_rotate};
 #endif
-    char js_var[]={"s0_type\0""s0_enc_fps\0""s0_dptz\0""s0_resolution\0""s0_flip_rotate\0"};
-    char *js_var_name[11]={0};
+    char js_var[]={"s0_type\0" "s0_enc_fps\0" "s0_dptz\0" "s0_resolution\0"
+                   "s0_flip_rotate\0" "s0_M\0" "s0_N\0" "s0_idr_interval\0"
+                   "s0_quality\0"};
+    char *js_var_name[15]={0};
     char *var = js_var;
     char *end = js_var+sizeof(js_var)-1;
     do{
@@ -915,10 +1079,48 @@ int   enc_page(int (*callback)())
         .action     = "setEncodeMode(this.options[this.selectedIndex].value)",
     };//top
 #endif
+#if 1
+    div_slider_t h264_sliders[] =
+    {
+        {
+            .label_display = "     M(1-3)",
+            .value         = 0,
+            .id            = js_var_name[ENC_FLIP_ROTATE + H264_M + 1],
+            .min           = 1, 
+            .max           = 3, 
+            .action        = "change(this.id)",
+
+        },
+        {
+            .label_display = "   N(1-255)",
+            .value         = 0,
+            .id            = js_var_name[ENC_FLIP_ROTATE + H264_N + 1],
+            .min           = 1, 
+            .max           = 255,             
+        },
+        {
+            .label_display = " IDR(1-100)",
+            .value         = 0,
+            .id            = js_var_name[ENC_FLIP_ROTATE + H264_IDR + 1],
+            .min           = 1, 
+            .max           = 100,             
+        },
+    };
+   div_slider_t mpeg_sliders[] =
+   {
+       {
+            .label_display = "质量(0-100)",
+            .value         = 0,
+            .id            = js_var_name[ENC_FLIP_ROTATE + H264_IDR + 1 + MPEG_QUA + 1],
+            .min           = 0, 
+            .max           = 100,             
+       },
+   };
+#endif
     div_select_t select_title =
     {
-            .label      = "stream :",    
-            .id    = "stream_id",
+            .label      = "流 :",    
+            .id         = "stream_id",
             .options    = NULL,
             .option_num = ENC_STREAM_NUM,
             .selected   = 0,
@@ -931,7 +1133,7 @@ int   enc_page(int (*callback)())
     div_select_t select_label[ENC_NUM] =
     {
         {
-            .label      = "Type :",    
+            .label      = "类型     :",    
             .id    = js_var_name[ENC_TYPE],
             .options    = NULL,
             .option_num = TYPE_LEN,
@@ -939,7 +1141,7 @@ int   enc_page(int (*callback)())
             .action     = NULL,
         },
         {
-            .label      = "Encode FPS :",    
+            .label      = "帧率     :",    
             .id    = js_var_name[ENC_FPS],
             .options    = NULL,
             .option_num = ENC_FPS_LIST_LEN,
@@ -947,7 +1149,7 @@ int   enc_page(int (*callback)())
             .action     = NULL,
         },        
         {
-            .label      = "DPTZ Type :",    
+            .label      = "云台类型 :",    
             .id    = js_var_name[ENC_DPTZ],
             .options    = NULL,
             .option_num = DPTZ_LEN,
@@ -955,7 +1157,7 @@ int   enc_page(int (*callback)())
             .action     = NULL,
         },
         {
-            .label      = "Resolution :",    
+            .label      = "分辨率   :",    
             .id    = js_var_name[ENC_RESOLUTION],
             .options    = NULL,
             .option_num = RES_OPTIONS_LEN,
@@ -963,7 +1165,7 @@ int   enc_page(int (*callback)())
             .action     = NULL,
         },            
         {
-            .label      = "Flip & Rotate :",    
+            .label      = "旋转     :",    
             .id    = js_var_name[ENC_FLIP_ROTATE],
             .options    = NULL,
             .option_num = FR_OPTIONS_LEN,
@@ -972,7 +1174,12 @@ int   enc_page(int (*callback)())
         },                       
     };
     int streamId=0;
-    
+    char div_text[DIV_SELECT_SIZE]={0};
+    char div_title_text[DIV_SELECT_SMALLSIZE]={0};
+    char div_h264_text[DIV_SLIDER_BIGSIZE]={0};
+    char div_mpeg_text[DIV_SLIDER_SMALLSIZE]={0};
+    char head_html_buf[MAX_HEAD]={0};
+
     FUN_IN();     
     cgiFormIntegerBounded("stream", &streamId, STREAM_ID0, STREAM_ID_NUM, STREAM_ID0);
     change_js_var(js_var, streamId/*stream num*/);
@@ -1096,16 +1303,21 @@ int   enc_page(int (*callback)())
    select_label[ENC_FLIP_ROTATE].options[FR_OPS_ROTATE_270].value = FR_ROTATE_270;
    select_label[ENC_FLIP_ROTATE].options[FR_OPS_ROTATE_270].label = "Rotate Clockwise 270";
 
-    char head_html_buf[MAX_HEAD]={0};
 
     sprintf(head_html_buf, head_html, "enc", "onload=\"javascript: getData('enc')\"");
+    if (strlen(head_html_buf) >= MAX_HEAD)
+    {
+        PRT_ERR("size[%d] is too big!\n", strlen(head_html_buf));
+        return (GK_MEM_OVERFLOW);
+    }
     sprintf(text, "%s", head_html_buf);
     strncat(text, nav, strlen(nav));
-    /*stream 0*/
-       //get msg from ctrl server
-    //get 分辨率
-    //get fps
-    callback();
+    //get fps ...
+    if (GK_CGI_NO_ERROR != callback())
+    {
+        PRT_ERR("get param fail\n");
+        return (GK_CGI_ERROR);
+    }
 #if 0
     int idx = ENC_TYPE;
     for (idx = ENC_TYPE; idx<ENC_NUM-2; idx++)
@@ -1117,34 +1329,50 @@ int   enc_page(int (*callback)())
     select_label[ENC_RESOLUTION].selected = 
         create_res(enc_params[ENC_WIDTH].value, enc_params[ENC_HEIGHT].value) ;
 #else 
-    select_label[ENC_TYPE].selected =  enc_params[ENC_TYPE].value;
-    select_label[ENC_FPS].selected = enc_params[ENC_FPS].value;
-    select_label[ENC_DPTZ].selected = enc_params[ENC_DPTZ].value;
-    select_label[ENC_RESOLUTION].selected = create_res(enc_params[ENC_WIDTH].value, enc_params[ENC_HEIGHT].value);
+    select_label[ENC_TYPE].selected        = enc_params[ENC_TYPE].value;
+    select_label[ENC_FPS].selected         = enc_params[ENC_FPS].value;
+    select_label[ENC_DPTZ].selected        = enc_params[ENC_DPTZ].value;
+    select_label[ENC_RESOLUTION].selected  = create_res(enc_params[ENC_WIDTH].value, enc_params[ENC_HEIGHT].value);
     select_label[ENC_FLIP_ROTATE].selected = enc_params[ENC_FLIP_ROTATE].value;
+
+    /*-----------------------------------------------------------------------------
+     *  h264 & mpeg
+     *-----------------------------------------------------------------------------*/
+    h264_sliders[H264_M].value             = stream_params[H264_M + 1].value;//stream_params[streamId].value; 
+    h264_sliders[H264_N].value             = stream_params[H264_N + 1].value; 
+    h264_sliders[H264_IDR].value           = stream_params[H264_IDR + 1].value; 
+    mpeg_sliders[MPEG_QUA].value           = stream_params[10].value; 
 #endif
     select_title.selected = streamId;
-    char div_text[DIV_SELECT_SIZE]={0};
-    char div_text_1[DIV_SELECT_SMALLSIZE]={0};
+
     for (i=0;i<ENC_NUM-2;i++)//enc
     {
-        create_div_select(div_text, &select_label[i]);
+        create_div_select(div_text, &select_label[i], DIV_SELECT_SIZE);
         free (select_label[i].options);
     }
-    create_div_select(div_text_1, &select_title);
+    create_div_select(div_title_text, &select_title, DIV_SELECT_SMALLSIZE);
     free (select_title.options);
+    for (i=0; i<H264_NUM; i++)//enc
+    {
+        create_div_slider(div_h264_text, &h264_sliders[i], DIV_SLIDER_BIGSIZE);
+    }
+    create_div_slider(div_mpeg_text, &mpeg_sliders[MPEG_QUA], DIV_SLIDER_SMALLSIZE);
 
     char *pos=text;
     pos += strlen(text);
-    sprintf(pos, enccontent, div_text_1, div_text);
-//       PRT_DBG("\n");
-    //PRT_DBG("div_text[%s]div_text_1[%s]\n", div_text, div_text_1);
+    sprintf(pos, enccontent, div_title_text, div_text, div_h264_text, div_mpeg_text);
+//    PRT_DBG("div_title_text[\n%s\n]\n div_text[\n%s\n]\ndiv_h264_text[%d\n%s\n]\ndiv_mpeg_text[n\%s\n]\n", div_title_text, div_text, strlen(div_h264_text), div_h264_text, div_mpeg_text);
     fprintf(cgiOut, "%s", text);
-//    PRT_DBG("\n");
 
     PRT_DBG("\n.............................................\n"
               ".................html size[%dk]...............\n"
               ".............................................\n",strlen(text)/1024);
+     if (strlen(text) >= BIGHTML)
+     {
+         PRT_ERR("size[%d] is too big!\n", strlen(text));
+         return (GK_MEM_OVERFLOW);
+     }
+
     free(text);
 
     FUN_OUT();
@@ -1156,14 +1384,93 @@ int   pm_page()
 
     return (GK_CGI_NO_ERROR);
 }
-int   osd_page()
+int   osd_page(int (*callback)())
 {
+    int num=STREAM_NUM;
+    char *text=NULL;
+    char head_html_buf[MAX_HEAD]={0};
+    int streamId=0;
 
+    cgiFormIntegerBounded("stream", &streamId, STREAM_ID0, STREAM_ID_NUM, STREAM_ID0);
+
+    text = (char *)malloc(BIGHTML);
+    if (!text)
+    {
+        PRT_ERR("text is null\n");
+        return (GK_MEM_ERROR);
+    }
+    sprintf(head_html_buf, head_html, "enc", "onload=\"javascript: getData('osd')\"");
+    if (strlen(head_html_buf) >= MAX_HEAD)
+    {
+        PRT_ERR("size[%d] is too big!\n", strlen(head_html_buf));
+        return (GK_MEM_OVERFLOW);
+    }
+    sprintf(text, "%s", head_html_buf);
+    strncat(text, nav, strlen(nav));    
+
+    if (GK_CGI_NO_ERROR != callback())
+    {
+        PRT_ERR("get param fail\n");
+        return (GK_CGI_ERROR);
+    }
+    //赋值给web上展示
+#if  1
+    char *pos=text;
+    pos += strlen(text);
+    sprintf(pos, osdcontent,
+            osd_params[_get_osd_Index(streamId, "text")].value == NULL ? " " : osd_params[_get_osd_Index(streamId, "text")].value,
+            "FF0000",//osd_params[_get_osd_Index(streamId, "text_color")].value,
+            osd_params[_get_osd_Index(streamId, "text_size")].value,
+            osd_params[_get_osd_Index(streamId, "text_startx")].value,
+            osd_params[_get_osd_Index(streamId, "text_starty")].value,
+            osd_params[_get_osd_Index(streamId, "text_boxw")].value,
+            osd_params[_get_osd_Index(streamId, "text_boxh")].value,
+            osd_params[_get_osd_Index(streamId, "time_enable")].value,
+            osd_params[_get_osd_Index(streamId, "bmp_enable")].value,
+           0,// pm_params[_get_osd_Index(streamId, "pm_enable")].value,
+            pm_params[PM_LEFT].value,
+            pm_params[PM_TOP].value,
+            pm_params[PM_W].value,
+            pm_params[PM_H].value,
+            "FF0000"//pm_params[PM_COLOR].value
+            );
+#endif
+    fprintf(cgiOut, "%s", text);
+
+    print_params(osd_params, num * OSD_PARAM_TYPE_NUM);
+    print_params(pm_params, PM_PARAM_NUM);
+
+    PRT_DBG("\n.............................................\n"
+              ".................html size[%dk]...............\n"
+              ".............................................\n",strlen(text)/1024);
+     if (strlen(text) >= BIGHTML)
+     {
+         PRT_ERR("size[%d] is too big!\n", strlen(text));
+         return (GK_MEM_OVERFLOW);
+     }
+
+    free(text);
+
+    FUN_OUT();
     return (GK_CGI_NO_ERROR);
 }
 int   sys_page()
 {
 
+    return (GK_CGI_NO_ERROR);
+}
+
+/*-----------------------------------------------------------------------------
+ *  DBG PRINT
+ *-----------------------------------------------------------------------------*/
+int print_params(ParamData *param, int num)
+{
+    int i=0;
+
+	for (i = 0; i < num; i++) 
+    {
+        PRT_DBG("var_name[%s] value[%d]\n", param[i].param_name, param[i].value);
+    }
     return (GK_CGI_NO_ERROR);
 }
 

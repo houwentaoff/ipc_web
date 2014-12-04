@@ -3,7 +3,7 @@
  *
  ** \file      base.h
  **
- ** \version   $Id: base.h 2411 2014-11-18 13:43:30Z houwentao $
+ ** \version   $Id: base.h 2481 2014-12-04 07:41:31Z houwentao $
  **
  ** \brief     
  **
@@ -29,4 +29,5 @@ extern  const char * const nav;
 extern  const char * const vivocontent;
 extern  const char * const liveviewcontent;
 extern  const char * const enccontent;
+extern  const char * const osdcontent;
 #endif

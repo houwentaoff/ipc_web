@@ -3,7 +3,7 @@
  *
  ** \file      base_page.c
  **
- ** \version   $Id: base_page.c 2417 2014-11-19 09:11:29Z houwentao $
+ ** \version   $Id: base_page.c 2451 2014-11-25 09:59:20Z houwentao $
  **
  ** \brief     
  **
@@ -18,7 +18,7 @@
 #include "include.h"
 
 #define SHORTLEN 32
-#define MAXSTRLEN           (256)               /*错误通常由此引起 */
+#define MAXSTRLEN           (512)               /*错误通常由此引起 */
 
 char *do_strchr(const char *s, int c)
 {
@@ -57,19 +57,54 @@ int change_js_var(char *strings, unsigned int replace)
     
     return (GK_CGI_NO_ERROR);
 }
-int create_div_input(char * text, div_input_t * div_input)
+int create_div_input(char * text, div_input_t * div_input, int size)
 {
 //	char* string_format = "<label for=\"%s\" id=\"%s_l\">%s</label>\n
 //						<input type=\"text\" class=\"textinput\" id=\"%s\" value=\"%d\" maxlength=%d %s />\n";
+    int len_buffer = 0;
 	char* string_format = "<div id=\"%s_l\">\n\
 						<input type=\"text\" class=\"textinput\" value=\"%d\" maxlength=%d %s /></div>\n";
 	char text_buffer[MAXSTRLEN] = {0};
-	sprintf(text_buffer, string_format, \
+	sprintf(text_buffer, string_format,
 		div_input->id, div_input->value, div_input->maxlen, div_input->ro);
+    len_buffer = strlen(text_buffer);
+    if (len_buffer >= size)
+    {
+        PRT_ERR("size[%d] is too big!\n", len_buffer);
+        return (GK_MEM_OVERFLOW);
+    }
 	strncat(text, text_buffer, strlen(text_buffer));
     return (GK_CGI_NO_ERROR);
 }
+int create_div_slider(char * text, div_slider_t * div_slider, int size)
+{
+	char* string_format = "<div id=\"__%s\">"
+                          "<label>%s</label>"
+                          "<input type=\"range\" id=\"%s\" value=\"%d\" max=\"%d\" min=\"%d\" onchange=\"change(this.id)\">"
+                          "<label id=\"_%s\">%d</label>"
+                          "</div>";
+	char text_buffer[MAXSTRLEN] = {0};
+    int len_buffer = 0;
+    sprintf(text_buffer, string_format,
+            div_slider->id, div_slider->label_display, div_slider->id,
+            div_slider->value, div_slider->max, div_slider->min, div_slider->id,
+            div_slider->value);
+    len_buffer =  strlen(text_buffer);
 
+    if (len_buffer >= MAXSTRLEN)
+    {
+        PRT_ERR("size[%d] is too big!\n", len_buffer);
+        return (GK_MEM_OVERFLOW);        
+    }
+    strncat(text, text_buffer, len_buffer);
+    len_buffer = strlen(text);
+    if (len_buffer >= size)
+    {
+        PRT_ERR("size[%d] is too big!\n", len_buffer);
+        return (GK_MEM_OVERFLOW);
+    }    
+    return (GK_CGI_NO_ERROR);
+}
 /**
  * @brief 
  *
@@ -117,13 +152,16 @@ int create_select_label(char * text, select_Label_t* select_label)
     return (GK_CGI_NO_ERROR);
 }
 
-int create_div_select(char * text, div_select_t * div_select)
+int create_div_select(char * text, div_select_t * div_select, int size)
 {
     int num = div_select->option_num;
     char div_string[MAXSTRLEN] = {0};
     char* option_string_format = "<option value=%d%s>%s</option>\n";
     char option_string[MAXSTRLEN] = {0};
     int i = 0;
+    int len_buffer=0;
+
+    FUN_IN("size[%d]\n", size);
 
     sprintf(div_string, "<div id=\"%s\" onchange=\"%s\"><label>%s</label><select>", div_select->id, div_select->action, div_select->label);
 
@@ -141,10 +179,21 @@ int create_div_select(char * text, div_select_t * div_select)
             sprintf(option_string, option_string_format, div_select->options[i].value, \
                     " ", div_select->options[i].label);
         }
+        if (strlen(option_string) >= MAXSTRLEN)
+        {
+            PRT_ERR("size[%d] is too big!\n", strlen(option_string));
+            return (GK_MEM_OVERFLOW);
+        }
         strncat(text, option_string, strlen(option_string));
     }
     char* div_format_end = "</select></div>\n";
     strncat(text, div_format_end, strlen(div_format_end));
+    len_buffer = strlen(text);
+    if (len_buffer >= size || strlen(div_string) >= MAXSTRLEN)
+    {
+        PRT_ERR("size[%d] is too big!\n", len_buffer);
+        return (GK_MEM_OVERFLOW);
+    }
 
     return (GK_CGI_NO_ERROR);
 }

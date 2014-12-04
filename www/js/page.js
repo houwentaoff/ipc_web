@@ -260,7 +260,7 @@ function NumOnly()
         event.returnValue = false;
 }
 
-function $(tagName)
+function _$(tagName)
 {
     return document.getElementById(tagName);
 }
@@ -292,37 +292,42 @@ function add_to_pack(pack, name, value)
 
 function get_page_data(Param)
 {
-        for (var i = 0; i < Param.count; i++) {
-        var objtmp = $(Param.mem[i][0]);
+    for (var i = 0; i < Param.count; i++) {
+        var objtmp = _$(Param.mem[i][0]);
         if (objtmp != undefined){
-           var  obj = objtmp.lastChild;
-            if (obj != undefined) {
-                switch (obj.type) {
-                    case "text" :
-                    case "select-one" :
-                        Param.mem[i][1] = obj.value;
-                        break;
-                    case "radio" :
-                        var radio = document.getElementsByName("n_" + Param.mem[i][0]);
-                        for (var j = 0; j < radio.length; j++) {
-                            if (radio[j].checked) {
-                                Param.mem[i][1] = radio[j].value;
+            if ( objtmp.type == "range"){
+                Param.mem[i][1] = objtmp.value;
+            }
+            else{
+                var  obj = objtmp.lastChild;
+                if (obj != undefined) {
+                    switch (obj.type) {
+                        case "text" :
+                        case "select-one" :
+                            Param.mem[i][1] = obj.value;
+                            break;
+                        case "radio" :
+                            var radio = document.getElementsByName("n_" + Param.mem[i][0]);
+                            for (var j = 0; j < radio.length; j++) {
+                                if (radio[j].checked) {
+                                    Param.mem[i][1] = radio[j].value;
+                                }
                             }
-                        }
-                        break;
-                    case "checkbox" :
-                        if (obj.checked) {
-                            Param.mem[i][1] = 1;
-                        } else {
-                            Param.mem[i][1] = 0;
-                        }
-                        break;
-                    default :
-                        alert("Unknown obj name : [" + Param.mem[i][0] + "], type is : ["+obj.type+"].\n");
-                        break;
+                            break;
+                        case "checkbox" :
+                            if (obj.checked) {
+                                Param.mem[i][1] = 1;
+                            } else {
+                                Param.mem[i][1] = 0;
+                            }
+                            break;
+                        default :
+                            alert("Unknown obj name : [" + Param.mem[i][0] + "], type is : ["+obj.type+"].\n");
+                            break;
+                    }
                 }
             }
-       }
+        }
     }
 }
 
@@ -330,39 +335,39 @@ function set_page_data(Param)
 {
     var i;
     for (i = 0; i < Param.count; i++) {
-        var objtmp = $(Param.mem[i][0]);
+        var objtmp = _$(Param.mem[i][0]);
         if (objtmp != undefined){
             var obj = objtmp.lastChild;
-        ;
-        if (obj != undefined) {
-            switch (obj.type) {
-                case "text" :
-                case "select-one" :
-                    obj.value = Param.mem[i][1];
-                    break;
-                case "radio" :
-                    var radio = document.getElementsByName("n_" + Param.mem[i][0]);
-                    for (var j = 0; j < radio.length; j++) {
-                        if (Param.mem[i][1] == radio[j].value) {
-                            radio[j].checked = true;
-                        } else {
-                            radio[j].checked = false;
+            ;
+            if (obj != undefined) {
+                switch (obj.type) {
+                    case "text" :
+                    case "select-one" :
+                        obj.value = Param.mem[i][1];
+                        break;
+                    case "radio" :
+                        var radio = document.getElementsByName("n_" + Param.mem[i][0]);
+                        for (var j = 0; j < radio.length; j++) {
+                            if (Param.mem[i][1] == radio[j].value) {
+                                radio[j].checked = true;
+                            } else {
+                                radio[j].checked = false;
+                            }
                         }
-                    }
-                    break;
-                case "checkbox" :
-                    if (Param.mem[i][1] == 1) {
-                        obj.checked = true;
-                    } else {
-                        obj.checked = false;
-                    }
-                    break;
-                default :
-                    alert("Unknown type is : ["+obj.type+"].\n");
-                    break;
+                        break;
+                    case "checkbox" :
+                        if (Param.mem[i][1] == 1) {
+                            obj.checked = true;
+                        } else {
+                            obj.checked = false;
+                        }
+                        break;
+                    default :
+                        alert("Unknown type is : ["+obj.type+"].\n");
+                        break;
+                }
             }
         }
-     }
     }
 }
 
@@ -371,13 +376,13 @@ function showStatus(text)
     if (text == undefined) {
         text = '';
     }
-    var la = $("status");
+    var la = _$("status");
     la.innerHTML = text;
     la.style.visibility = "visible";
 }
 
 function hideStatus() {
-    var la = $("status");
+    var la = _$("status");
     la.innerHTML = '';
     la.style.visibility = "hidden";
 }
@@ -396,7 +401,7 @@ function showPage(page, postData)
     }
 
     function display(response_text) {
-        $("content").innerHTML = response_text;
+        _$("content").innerHTML = response_text;
     }
 }
 
@@ -605,8 +610,8 @@ function addRemovePrivacyMask(add_or_remove)
         var width = new_PMParam.mem[2][1];
         var height = new_PMParam.mem[3][1];
 
-        mask = $("pm_mask");
-        canvas = $('pm_canvas');
+        mask = _$("pm_mask");
+        canvas = _$('pm_canvas');
         w = canvas.getAttribute('width');
         h = canvas.getAttribute('height');
 
@@ -678,7 +683,7 @@ function clearPrivacyMask()
 
     function clearAllMasks() {
         var mask;
-        mask = $("pm_mask");
+        mask = _$("pm_mask");
         while (mask.hasChildNodes()) {
             var node = getLastChild(mask);
             mask.removeChild(node);
@@ -696,9 +701,41 @@ function clearPrivacyMask()
         }
     }
 }
-
+function enablePM()
+{
+	//在图上画方块， 随着拖动，图上方块最多不超过过5个。		
+    var paintContext = document.getElementById("canvas_2");
+    var pen          = paintContext.getContext("2d");	
+    var x            = document.getElementById("pm_x").lastChild.value;
+    var y            = document.getElementById("pm_y").lastChild.value;
+    var width        = document.getElementById("pm_w").lastChild.value;
+    var height       = document.getElementById("pm_h").lastChild.value;	
+	var color       = document.getElementById("pm_color").lastChild.value
+	pen.fillStyle    = '#' + _$('pm_color').lastChild.value;
+	pen.fillRect(x, y, width, height);
+}
 function setOSD()
 {
+    //display in canvas
+    var paintContext = document.getElementById("canvas");
+    var pen          = paintContext.getContext("2d");
+    var text         = document.getElementById("s0_text").lastChild.value;
+    var x            = document.getElementById("s0_text_startx").lastChild.value;
+    var y            = document.getElementById("s0_text_starty").lastChild.value;
+    var width        = document.getElementById("s0_text_boxw").lastChild.value;
+    var height       = document.getElementById("s0_text_boxh").lastChild.value;
+    pen.fillStyle    = '#' + document.getElementById("s0_text_color").lastChild.value;
+	pen.clearRect(0, 0, 800, 600);
+//	pen.font = _$('s0_text_size').lastChild.value+"px Arial";
+    pen.font =  document.getElementById("s0_text_size").lastChild.value+"px Arial";
+           
+    pen.fillText(text, x, y);
+	if (document.getElementById("pm_enable").lastChild.value == 1)
+	{
+		enablePM();	
+	}
+	
+//    pen.fillStyle = "rgba(255, 0)"
     try {
         var i, content;
         var new_OSDParam = new OSDParam();
@@ -721,7 +758,7 @@ function setOSD()
         }
 
         showStatus("Setting OSD parameters ....");
-        var url = "/cgi-bin/osd.py";
+        var url = "/cgi-bin/setroute.cgi";
         var ai = new AJAXInteraction(url, display);
         var req_cnt = 0;
         var postData = '';
@@ -771,7 +808,7 @@ function setStream(streamId)
         }
 
         showStatus("Setting stream parameters ....");
-        var url = "/cgi-bin/stream.py?streamId=" + streamId;
+        var url = "/cgi-bin/setroute.cgi";
         var ai = new AJAXInteraction(url, display);
         var req_cnt = 0;
         var postData = '';
@@ -926,7 +963,7 @@ function FlySet(streamId, op)
                     return;
                 }
                 req = 'REQ_CHANGE_FR';
-                value = $(op).value;
+                value = _$(op).value;
                 if (value == 0) {
                     alert("invalid value");
                     return;
@@ -939,7 +976,7 @@ function FlySet(streamId, op)
                     return;
                 }
                 req = 'REQ_CHANGE_BRC';
-                value = $(op).value;
+                value = _$(op).value;
                 info = (streamId << STREAM_ID_OFFSET) + parseInt(value, 10);
                 data = parseInt(value, 10);
                 break;
@@ -948,7 +985,7 @@ function FlySet(streamId, op)
                     return;
                 }
                 req = 'REQ_CHANGE_BR';
-                value = $(op).value;
+                value = _$(op).value;
                 if (value == 0) {
                     alert("invalid value for CBR Avg Bitrate");
                     return;
@@ -962,13 +999,13 @@ function FlySet(streamId, op)
                     return;
                 }
                 req = 'REQ_CHANGE_BR';
-                value = $('ChangeVBRMinBps').value;
+                value = _$('ChangeVBRMinBps').value;
                 if (value == 0) {
                     alert("invalid value for VBR Min Bitrate");
                     return;
                 }
                 info = (streamId << STREAM_ID_OFFSET) + parseInt(value, 10) * 1000;
-                value = $('ChangeVBRMaxBps').value;
+                value = _$('ChangeVBRMaxBps').value;
                 if (value == 0) {
                     alert("invalid value for VBR Max Bitrate");
                     return;
@@ -1035,15 +1072,15 @@ function OnLoadActiveX(hostname, stream_id, recvType, statSize, showStat)
 {
 //	if (window.ActiveXObject) {
 		try {
-			var activeX = $("GOKEIPCmrWebPlugIn1");
+			var activeX = _$("GOKEIPCmrWebPlugIn1");
 			if (activeX.SetRecvType(recvType)) {
 				activeX.SetHostname(hostname);
 				activeX.SetStreamId(stream_id);
 				activeX.SetStatWindowSize(statSize);
 				activeX.ShowStat(0);
 //				if (!activeX.EnableDPTZ()) {
-//					if ($("DPTZ")) {
-//						$("DPTZ").style.display = "none";
+//					if (_$("DPTZ")) {
+//						_$("DPTZ").style.display = "none";
 //					}
 //				} else {
 //					activeX.ShowDPTZ(showStat);
@@ -1065,7 +1102,7 @@ function PlayActiveX()
 {
 //	if (window.ActiveXObject) {
 		try {
-			$("GOKEIPCmrWebPlugIn1").Play();
+			_$("GOKEIPCmrWebPlugIn1").Play();
 		} catch (e) {
 			alert(e);
 		}
@@ -1075,7 +1112,7 @@ function StopActiveX()
 {
 //	if (window.ActiveXObject) {
 		try {
-			$("GOKEIPCmrWebPlugIn1").Stop();
+			_$("GOKEIPCmrWebPlugIn1").Stop();
 		} catch (e) {
 			alert(e);
 		}
@@ -1085,9 +1122,9 @@ function Record()
 {
 //	if (window.ActiveXObject) {
         try {
-            var obj = $("GOKEIPCmrWebPlugIn1");
+            var obj = _$("GOKEIPCmrWebPlugIn1");
             var record_status = obj.GetRecordStatus();
-            var record = $("Record");
+            var record = _$("Record");
             if (record_status == false ) {
                 obj.Record(true);
                 record.value = "Stop Rec";
@@ -1104,8 +1141,8 @@ function ShowStat()
 {
 //	if (window.ActiveXObject) {
 		try {
-			var obj = $("GOKEIPCmrWebPlugIn1");
-			var stat = $("Stat");
+			var obj = _$("GOKEIPCmrWebPlugIn1");
+			var stat = _$("Stat");
 			if (stat.value == "Hide Statistics") {
 				if (obj.ShowStat(false)) {
 					stat.value = "Show Statistics";
@@ -1125,8 +1162,8 @@ function ShowDPTZ()
 {
 //	if (window.ActiveXObject) {
 		try {
-			var obj = $("GOKEIPCmrWebPlugIn1");
-			var dptz = $("DPTZ");
+			var obj = _$("GOKEIPCmrWebPlugIn1");
+			var dptz = _$("DPTZ");
 			if (dptz.value == "Hide Digital PTZ") {
 				if (obj.ShowDPTZ(false)) {
 					dptz.value = "Show Digital PTZ";
@@ -1272,7 +1309,7 @@ function PlayVideo()
     }
     else if (window.ActiveXObject) {//not IE
         try {
-            $("GOKEIPCmrWebPlugIn1").Play();
+            _$("GOKEIPCmrWebPlugIn1").Play();
         } catch (e) {
             alert(e);
         }
@@ -1287,7 +1324,7 @@ function StopVideo()
     }
     else if (window.ActiveXObject) {
         try {
-            $("GOKEIPCmrWebPlugIn1").Stop();
+            _$("GOKEIPCmrWebPlugIn1").Stop();
         } catch (e) {
             alert(e);
         }
@@ -1297,4 +1334,10 @@ function setStreamIndex(streamId)
 {
     var url = "/cgi-bin/demo.cgi?page=1&stream=" + streamId;
     window.location.replace(url);
+}
+
+function change(x)
+{
+    var value = document.getElementById(x).value;
+    document.getElementById("_"+x).innerHTML = value;
 }

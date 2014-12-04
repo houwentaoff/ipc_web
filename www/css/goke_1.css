@@ -545,24 +545,116 @@ right:标记元素靠右，左边无文字绕排； */
 	left: 165px;
 	top: 3px;
 }
-#__pointa{
+#__s0_M{
 	position:absolute;
 	left: 34px;
 	top: 12px;
 	width: 377px;
 }
-#__pointb{
+#__s0_N{
 	position:absolute;
 	left: 35px;
 	top: 50px;
 	width: 396px;
 }
-#__pointc{
+#__s0_idr_interval{
 	position:absolute;
 	left: 32px;
 	top: 99px;
 }
-#__pointd{
+#__s0_quality{
+	position:absolute;
+	left: 32px;
+	top: 140px;
+}
+
+#__s1_M{
+	position:absolute;
+	left: 34px;
+	top: 12px;
+	width: 377px;
+}
+#__s1_N{
+	position:absolute;
+	left: 35px;
+	top: 50px;
+	width: 396px;
+}
+#__s1_idr_interval{
+	position:absolute;
+	left: 32px;
+	top: 99px;
+}
+#__s1_quality{
+	position:absolute;
+	left: 32px;
+	top: 140px;
+}
+
+#__s2_M{
+	position:absolute;
+	left: 34px;
+	top: 12px;
+	width: 377px;
+}
+#__s2_N{
+	position:absolute;
+	left: 35px;
+	top: 50px;
+	width: 396px;
+}
+#__s2_idr_interval{
+	position:absolute;
+	left: 32px;
+	top: 99px;
+}
+#__s2_quality{
+	position:absolute;
+	left: 32px;
+	top: 140px;
+}
+
+#__s3_M{
+	position:absolute;
+	left: 34px;
+	top: 12px;
+	width: 377px;
+}
+#__s3_N{
+	position:absolute;
+	left: 35px;
+	top: 50px;
+	width: 396px;
+}
+#__s3_idr_interval{
+	position:absolute;
+	left: 32px;
+	top: 99px;
+}
+#__s3_quality{
+	position:absolute;
+	left: 32px;
+	top: 140px;
+}
+
+#__s4_M{
+	position:absolute;
+	left: 34px;
+	top: 12px;
+	width: 377px;
+}
+#__s4_N{
+	position:absolute;
+	left: 35px;
+	top: 50px;
+	width: 396px;
+}
+#__s4_idr_interval{
+	position:absolute;
+	left: 32px;
+	top: 99px;
+}
+#__s4_quality{
 	position:absolute;
 	left: 32px;
 	top: 140px;
@@ -631,6 +723,102 @@ right:标记元素靠右，左边无文字绕排； */
 	top: 88px;
 	width: 271px;
 }
+
+#s1_type{
+	position:absolute;
+	left: 51px;
+	top: 131px;
+	width: 271px;
+}
+#s1_dptz{
+	position:absolute;
+	left: 47px;
+	top: 244px;
+	width: 271px;
+}
+#s1_enc_fps{
+	position:absolute;
+	left: 48px;
+	top: 176px;
+	width: 273px;
+}
+
+#s1_resolution{
+	position:absolute;
+	left: 48px;
+	top: 39px;
+	width: 269px;
+}
+#s1_flip_rotate{
+	position:absolute;
+	left: 46px;
+	top: 88px;
+	width: 271px;
+}
+
+#s2_type{
+	position:absolute;
+	left: 51px;
+	top: 131px;
+	width: 271px;
+}
+#s2_dptz{
+	position:absolute;
+	left: 47px;
+	top: 244px;
+	width: 271px;
+}
+#s2_enc_fps{
+	position:absolute;
+	left: 48px;
+	top: 176px;
+	width: 273px;
+}
+
+#s2_resolution{
+	position:absolute;
+	left: 48px;
+	top: 39px;
+	width: 269px;
+}
+#s2_flip_rotate{
+	position:absolute;
+	left: 46px;
+	top: 88px;
+	width: 271px;
+}
+
+#s3_type{
+	position:absolute;
+	left: 51px;
+	top: 131px;
+	width: 271px;
+}
+#s3_dptz{
+	position:absolute;
+	left: 47px;
+	top: 244px;
+	width: 271px;
+}
+#s3_enc_fps{
+	position:absolute;
+	left: 48px;
+	top: 176px;
+	width: 273px;
+}
+
+#s3_resolution{
+	position:absolute;
+	left: 48px;
+	top: 39px;
+	width: 269px;
+}
+#s3_flip_rotate{
+	position:absolute;
+	left: 46px;
+	top: 88px;
+	width: 271px;
+}
 #enc_h264{
 	position:absolute;
 	left: 542px;
@@ -644,4 +832,16 @@ right:标记元素靠右，左边无文字绕排； */
 	top: 488px;
 	width: 258px;
 	height: 56px;
+}
+
+
+.canvas_1{
+	display:inline;/*不能去. chrome 中为block*/
+	width:800px;
+	height:542px;
+	margin-right: 0px;
+	margin-left: 0px;
+	position:absolute;
+	left: 23px;
+	top: 21px;
 }

@@ -3,7 +3,7 @@
  *
  ** \file      err.h
  **
- ** \version   $Id: err.h 2411 2014-11-18 13:43:30Z houwentao $
+ ** \version   $Id: err.h 2451 2014-11-25 09:59:20Z houwentao $
  **
  ** \brief     
  **
@@ -24,7 +24,7 @@ GK_CGI_NO_ERROR=0,
 GK_CGI_ERROR,/*return by cgiMain */
 GK_CGI_ARGV_ERROR,/* Page argv or other argv*/
 GK_MEM_ERROR,
-
+GK_MEM_OVERFLOW,
 }GK_ErrorCode_e;
 
 #endif//__ERR_H__

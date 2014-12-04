@@ -3,7 +3,7 @@
  *
  ** \file      page.h
  **
- ** \version   $Id: page.h 2411 2014-11-18 13:43:30Z houwentao $
+ ** \version   $Id: page.h 2481 2014-12-04 07:41:31Z houwentao $
  **
  ** \brief     
  **
@@ -77,6 +77,17 @@ typedef struct {
 	char *exprop;
 }input_t;
 
+typedef struct {
+    char *label_display;
+    int  value;
+    char *id;//div
+ //   char *label_id;//label changed "_"+id
+ //   char *slider_id;//slider  "__" + id
+    int min;
+    int max;
+    char *action;//change
+}div_slider_t;
+
 typedef enum {
 	VIDEO_OPS_AUTO,
 	VIDEO_OPS_1080P,
@@ -141,6 +152,19 @@ typedef enum {
 	ENC_HEIGHT,
 	ENC_NUM,//7
 }ENC_PARAMS_TYPE;
+
+
+typedef enum{
+    H264_M,
+    H264_N,
+    H264_IDR,
+    H264_NUM,
+}H264_PARAMS;
+
+typedef enum{
+    MPEG_QUA,
+    MPEG_NUM,
+}MPEG_PARAMS;
 
 typedef enum{
     ENC_STREAM1,
@@ -220,7 +244,36 @@ typedef enum
 	LIVE_VBR_MAX_BPS,
 	LIVE_PARAMS_NUM
 }LIVE_PARAMS;
-
+//OSD
+typedef enum
+{
+	NO_ROTATE = 0,
+	BMP_ENABLE,
+	TIME_ENABLE,
+	TEXT_ENABLE,
+	TEXT,
+	TEXT_SIZE,
+	TEXT_OUTLINE,
+	TEXT_COLOR,
+	TEXT_BOLD,
+	TEXT_ITALIC,
+	TEXT_STARTX,
+	TEXT_STARTY,
+	TEXT_BOXW,
+	TEXT_BOXH,
+	OSD_PARAM_TYPE_NUM
+}OSD_PARAMS;
+//PM
+typedef enum
+{
+	PM_LEFT,
+	PM_TOP,
+	PM_W,
+	PM_H,
+	PM_COLOR,
+	PM_ACTION,
+	PM_PARAM_NUM
+}PM_PARAMS;
 extern int   view_page(int (*callback)());
 extern int   view_page_get_params();
 extern int   enc_page(int (*callback)());
@@ -228,7 +281,8 @@ extern int   enc_page_get_params();
 extern int   pm_page();
 extern int   _3a_page(int (*callback)());
 extern int   _3a_page_get_params();
-extern int   osd_page();
+extern int   osd_page(int (*callback)());
+extern int   osd_page_get_params();
 extern int   sys_page();
 extern int   vivo_page(int (*callback)());
 extern int   vivo_page_get_params();

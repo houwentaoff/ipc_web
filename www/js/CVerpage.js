@@ -323,6 +323,7 @@ function get_page_data(Param)
 					Param.mem[i][1] = 0;
 				}
 				break;
+            case "" :
 			default :
 				alert("Unknown obj name : [" + Param.mem[i][0] + "], type is : ["+obj.type+"].\n");
 				break;
