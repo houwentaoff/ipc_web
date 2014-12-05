@@ -84,7 +84,10 @@ static int sockfd2 = -1;
 
 extern GONVIF_Encode_Cmd g_stEncodeInfo[4];
 extern int g_slIPCMsgID;
-
+extern IPC_XML_TYPE g_emIpcXmlType;
+extern GADI_SYS_HandleT vinHandle;
+extern GADI_SYS_HandleT voutHandle;
+extern GADI_SYS_HandleT vencHandle;
 static   GADI_SYS_HandleT osdHandle;
 
 static int set_vinvout_param(char * section_name);
@@ -1296,9 +1299,6 @@ static int set_osd_param(char * section_name)
         /*-----------------------------------------------------------------------------
          *  text
          *-----------------------------------------------------------------------------*/
-        if (OSDMap[i].Update == true)
-        {
-        }
 		if (1) {
 			osd_map[i].text.length = strlen(osd_map[i].text.str);
 			osd_map[i].text.stream = i;
@@ -1341,10 +1341,10 @@ static int set_osd_param(char * section_name)
 }
 static int set_encode_param(char * section_name)
 {
-	//static int enc_mode = MW_ENCODE_NORMAL_MODE;
 	int streamID = 0;
-    GONVIF_Encode_Cmd stEncCmd;
     u16 width=0,height=0;
+    int retVal=0;
+    int i=0;
 
 	PRT_DBG("Section [%s] setting:\n", section_name);
     PRT_DBG("\n"
@@ -1357,72 +1357,85 @@ static int set_encode_param(char * section_name)
                stream_map[streamID].streamFormat.flip_rotate,  stream_map[streamID].streamFormat.encode_fps,
                stream_map[streamID].streamFormat.encode_width, stream_map[streamID].streamFormat.encode_height);
 
-    memset(&stEncCmd, 0, sizeof(stEncCmd));
-#if 1
-    int i=0;
-    for (i=0;i<sizeof(EncodeMap)/sizeof(Mapping) - 1; i++)
+
+    /*-----------------------------------------------------------------------------
+     *  set enc_fps
+     *-----------------------------------------------------------------------------*/
+    for (i=5; i<sizeof(EncodeMap)/sizeof(Mapping); i+=6)
     {
+       streamID = (i+6)/6 - 1;
         if (EncodeMap[i].Update)
         {
-            sscanf(EncodeMap[i].TokenName, "%*[^0-9]%i", &streamID);
-            stEncCmd.streamid = streamID;
-
-            if (strstr(EncodeMap[i].TokenName, "enc_fps"))
-            {
-
-                stEncCmd.framerate = 512000000/stream_map[streamID].streamFormat.encode_fps;
-                PRT_DBG("streamid[%d]fps[%ld]\n", streamID, stEncCmd.framerate);
-                if (0 != send_fly_request(MEDIA_SET_FRAMERATE, sizeof(GONVIF_Encode_Cmd), (unsigned char *)&stEncCmd, 0, 
-                NULL))
-                {
-                    PRT_ERR("set FRAMERATE error\n");
-                }
+            retVal = gapp_video_set_framerate(streamID, 512000000/stream_map[streamID].streamFormat.encode_fps);
+            if(retVal != GADI_OK){
+                break;
             }
-            else if (strstr(EncodeMap[i].TokenName, "type"))
-            {
-//                if (0 != send_fly_request(MEDIA_SET_FRAMERATE, sizeof(CAMCONTROL_Encode_Cmd), (unsigned char *)&stEncCmd, 0, NULL))
-//                {
-//                    PRT_ERR("set FRAMERATE error\n");
-//                }
-                PRT_ERR("NO type\n");
-            }
-            else if (strstr(EncodeMap[i].TokenName, "width"))
-            {
-                width = *(u16*)EncodeMap[i].Address;
-                //send_fly_request(MEDIA_SET_FRAMERATE, sizeof(CAMCONTROL_Encode_Cmd), (unsigned char *)&stEncCmd, 0, NULL);
-
-            }
-            else if (strstr(EncodeMap[i].TokenName, "height"))
-            {
-                height = *(u16*)EncodeMap[i].Address;
-                stEncCmd.encode_width = width;
-	            stEncCmd.encode_height = height;
-                if (0 != send_fly_request(MEDIA_SET_RESOLUTION, sizeof(GONVIF_Encode_Cmd), (unsigned char *)&stEncCmd, 0, NULL))
-                {
-                    PRT_ERR("set resolution error\n");
-                }
-            }
-
-            EncodeMap[i].Update = true;
+            g_stEncodeInfo[streamID].framerate = 512000000/stream_map[streamID].streamFormat.encode_fps;
+            g_emIpcXmlType = IPC_XML_ENCODE;
+            EncodeMap[i].Update = false;
         }
     }
-#endif
+
+    /*-----------------------------------------------------------------------------
+     *  set resolution
+     *-----------------------------------------------------------------------------*/
+    for (i=3; i<sizeof(EncodeMap)/sizeof(Mapping); i+=6)
+    {
+        streamID = (i+6)/6 - 1;
+        if (EncodeMap[i].Update)
+        {
+            retVal = gapp_video_set_resolution(streamID, stream_map[streamID].streamFormat.encode_width, stream_map[streamID].streamFormat.encode_height);
+            if(retVal != GADI_OK){
+                break;
+            }
+            g_stEncodeInfo[streamID].encode_width = stream_map[streamID].streamFormat.encode_width;
+            g_stEncodeInfo[streamID].encode_height= stream_map[streamID].streamFormat.encode_height;
+            g_emIpcXmlType = IPC_XML_ENCODE;
+            EncodeMap[i].Update = false;
+        }
+    }
+
+     /*-----------------------------------------------------------------------------
+      *  set flip_rotate : adi not implementationed
+      *-----------------------------------------------------------------------------*/
+    for (i=2; i<sizeof(EncodeMap)/sizeof(Mapping); i+=6)
+    {
+        streamID = (i+6)/6 - 1;
+        if (EncodeMap[i].Update)
+        {
+            PRT_ERR("adi not implementationed\n");
 #if 0
-......
+            retVal = gapp_video_set_framerate(streamID, 512000000/stream_map[streamID].streamFormat.encode_fps);
+            if(retVal != GADI_OK){
+                break;
+            }
+            g_stEncodeInfo[streamID].framerate = pstEncCmd->framerate;
+            g_emIpcXmlType = IPC_XML_ENCODE;
 #endif
-	return 0;
+            EncodeMap[i].Update = false;
+        }
+    }
+    /* save xml single */
+    if(retVal == GADI_OK)
+    {
+        raise(XMLSAVE);
+    }   
+#if 0
+    ......
+#endif
+        return 0;
 }
 
 static int set_vinvout_param(char * section_name)
 {
-	int streamId = 0, retv = 0;
+    int streamId = 0, retv = 0;
     GONVIF_Encode_Cmd stEncCmd;
 
-	FUN_IN("Section [%s] setting:\n", section_name);
+    FUN_IN("Section [%s] setting:\n", section_name);
     /*-----------------------------------------------------------------------------
      *  remenber to convert frame_rate  [] -> 1-60
      *-----------------------------------------------------------------------------*/
-//    g_stEncodeInfo[streamId].framerate = vin_map.frame_rate;
+    //    g_stEncodeInfo[streamId].framerate = vin_map.frame_rate;
     PRT_DBG("\n\
             vin_frame_rate [%d]\n\
             vin_mode       [%d]\n\
@@ -1430,46 +1443,46 @@ static int set_vinvout_param(char * section_name)
             vout_mode      [%d]\n\
             ", vin_map.frame_rate, vin_map.mode, vout_map.type, vout_map.mode);
 
-	memset(&stEncCmd, 0, sizeof(stEncCmd));
-	stEncCmd.streamid = streamId;
-	stEncCmd.framerate = 512000000/vin_map.frame_rate;
+    memset(&stEncCmd, 0, sizeof(stEncCmd));
+    stEncCmd.streamid = streamId;
+    stEncCmd.framerate = 512000000/vin_map.frame_rate;
     //set FRAMERATE
     if (0 != send_fly_request(MEDIA_SET_FRAMERATE, sizeof(GONVIF_Encode_Cmd), (unsigned char *)&stEncCmd, 0, NULL))
     {
         PRT_ERR("set FRAMERATE error!\n");
     }
 #if 0 //need to replace
-	if (mw_disable_stream(STREAMS_MASK) < 0) {
-		PRT_ERR("Cannot stop encoding streams!");
-		return -1;
-	}......
+    if (mw_disable_stream(STREAMS_MASK) < 0) {
+        PRT_ERR("Cannot stop encoding streams!");
+        return -1;
+    }......
 
-	update_encode_info();
+    update_encode_info();
 #endif
 
-	return retv;
+    return retv;
 }
 
 static int get_stream_param(char *section_name, u32 info)
 {
-	int streamId = 0, retv = 0, streamID;
+    int streamId = 0, retv = 0;
     FUN_IN();
-	PRT_DBG("Section [%s] setting:\n", section_name);
+    PRT_DBG("Section [%s] setting:\n", section_name);
 
-    streamID = streamId = atoi(&section_name[6]);
+     streamId = atoi(&section_name[6]);
     stream_map[streamId].h264Conf.cbrAvgBps =
-    g_stEncodeInfo[streamId].bitrate*1000;
+        g_stEncodeInfo[streamId].bitrate*1000;
 #if 0
     //h264
     stream_map[streamID].h264Conf.gopM              = 
-    g_stEncodeInfo[streamID].h264.gopM;
+        g_stEncodeInfo[streamID].h264.gopM;
     stream_map[streamID].h264Conf.gopN              = 
-    g_stEncodeInfo[streamID].h264.gopN;
+        g_stEncodeInfo[streamID].h264.gopN;
     stream_map[streamID].h264Conf.idrInterval       = 
-    g_stEncodeInfo[streamID].h264.idrInterval;
-//mpeg 
+        g_stEncodeInfo[streamID].h264.idrInterval;
+    //mpeg 
     stream_map[streamID].mjpegConf.quality          = 
-    g_stEncodeInfo[streamID].mpeg.quality;
+        g_stEncodeInfo[streamID].mpeg.quality;
     FUN_OUT("\
             dptz             [%d]\n\
             flipRotate       [%d]\n\
@@ -1501,25 +1514,56 @@ static int get_stream_param(char *section_name, u32 info)
 
 static int set_stream_param(char *section_name)
 {
-    int streamId = 0, retv = 0;
-    GONVIF_Encode_Cmd stEncCmd;
+    int streamId = 0; 
+    int retVal = -1;
+    int h264_update = false;
+    int i=0;
 
 	FUN_IN("Section [%s] setting:\n", section_name);
 
     streamId = atoi(&section_name[6]);
     FUN_OUT("cbrAvgBps [%d]\n", stream_map[streamId].h264Conf.cbrAvgBps);
 
-	memset(&stEncCmd, 0, sizeof(stEncCmd));
-	stEncCmd.streamid = (u32)streamId;
-	stEncCmd.bitrate = stream_map[streamId].h264Conf.cbrAvgBps;
-
-    retv = send_fly_request(MEDIA_SET_BITRATE, sizeof(GONVIF_Encode_Cmd), (unsigned char *)&stEncCmd, 0, NULL);
-    if(retv != 0)
-    {
-        PRT_ERR("send_fly_request(): error!\n");
+    /*-----------------------------------------------------------------------------
+     *  set bitrate
+     *-----------------------------------------------------------------------------*/
+    retVal = gapp_video_set_bitrate(streamId, stream_map[streamId].h264Conf.cbrAvgBps);
+    if(retVal != GADI_OK){
+        PRT_ERR("send_bitrate: error!\n");
     }
+    g_stEncodeInfo[streamId].bitrate = stream_map[streamId].h264Conf.cbrAvgBps;
 
-	return retv;
+#if 1
+    /*-----------------------------------------------------------------------------
+     *  H264 set M N idrInterval 
+     *-----------------------------------------------------------------------------*/
+    for (i=1; i<=5 ;i++)
+    {
+        if (Params[streamId + 2].map[i].Update)
+        {
+            h264_update = true;
+        }
+    }
+    if (true == h264_update)
+    {
+        if (!vencHandle)
+        {
+            PRT_ERR("vencHandle NULL\n");
+            return (-1);
+        }
+        if(gadi_venc_set_h264_config(vencHandle, &stream_map[streamId].h264Conf) < 0)
+        {
+            PRT_ERR("gadi_venc_set_h264_config error, steamId=%d\n", streamId);
+            return (-1);
+        }
+    }
+#endif
+    /* save xml single */
+    if(retVal == GADI_OK)
+    {
+        raise(XMLSAVE);
+    }
+	return retVal;
 }
 
 
@@ -1784,7 +1828,6 @@ static int create_server(void)
 }
 static int load_default_configs()
 {
-	int i;
 	char string[10 * 1024], *content;
 
 	content = string;
