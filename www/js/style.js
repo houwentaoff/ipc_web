@@ -446,6 +446,9 @@ function addOSD(type, stream)
 		break;
 	case 'time':
 		break;
+	case 'pm':
+		outside_redraw();
+		break;
 	case 'text':
 		if (text_enable.checked == true) {
 			enable = 1;

@@ -74,8 +74,8 @@ function EncParam()
 function PMParam()
 {
     this.mem = new Array(
-            ['pm_left', 0],
-            ['pm_top', 0],
+            ['pm_x', 0],
+            ['pm_y', 0],
             ['pm_w', 0],
             ['pm_h', 0],
             ['pm_color', 0],
@@ -279,8 +279,8 @@ function browserInfo()
         sys.name = "Chrome";
         sys.version = browserName.match(/chrome\/([\d.]+)/)[1];
     } else {
-        sys.name = "Others";
-        sys.version = "1.0.0";
+        sys.name = "IE";
+        sys.version = "11.0.0";
     }
     return sys;
 }
@@ -566,11 +566,11 @@ function addRemovePrivacyMask(add_or_remove)
         var PMPack = new Pack();
         get_page_data(new_PMParam);
         for (var i = 0; i < new_PMParam.count; i++) {
-            if ( (new_PMParam.mem[i][1] - g_PMParam.mem[i][1]) ) {
+            if ( (new_PMParam.mem[i][1] - g_PMParam.mem[i][1]) ) {//!= pack
                 add_to_pack(PMPack, new_PMParam.mem[i][0], new_PMParam.mem[i][1]);
             }
             if (i == new_PMParam.count - 1) {
-                add_to_pack(PMPack, new_PMParam.mem[i][0], add_or_remove);
+                add_to_pack(PMPack, new_PMParam.mem[i][0], add_or_remove);//? pm_action 1 or 0
             }
         }
 
@@ -584,8 +584,9 @@ function addRemovePrivacyMask(add_or_remove)
             addRemoveMask(new_PMParam, add_or_remove);
         }
 
-        showStatus("Add Privacy Mask ....");
-        var url = "/cgi-bin/pm.py";
+        showStatus("������˽����....");
+        var url = "/cgi-bin/setroute.cgi";
+
         var ai = new AJAXInteraction(url, display);
         var req_cnt = 0;
         var postData = '';
@@ -597,6 +598,27 @@ function addRemovePrivacyMask(add_or_remove)
             postData = "req_cnt=" + req_cnt + postData;
             ai.doPost(postData);
         }
+		//packed & added to 
+		for (var i=0; i < drawp.count; i++)
+		{
+			PMPack.mem = '';
+			add_to_pack(PMPack, "pm_x", Math.floor(drawp.x[i]));//float to int
+			add_to_pack(PMPack, "pm_y", Math.floor(drawp.y[i]));
+			add_to_pack(PMPack, "pm_w", Math.floor(drawp.w[i]));
+			add_to_pack(PMPack, "pm_h", Math.floor(drawp.h[i]));
+			
+        	var ai = new AJAXInteraction(url, display);
+        	var req_cnt = 0;
+        	var postData = '';
+        	if (PMPack.mem != '') {
+         	    postData += "&sec" + req_cnt + "=PRIMASK&data" + req_cnt + "=" + encodeURIComponent(PMPack.mem);
+           		req_cnt++;
+        	}
+        	if (req_cnt != 0) {
+            	postData = "req_cnt=" + req_cnt + postData;
+            	ai.doPost(postData);
+        	}
+		}
     } catch (error) {
         alert(error);
     }
@@ -609,7 +631,8 @@ function addRemovePrivacyMask(add_or_remove)
         var top = new_PMParam.mem[1][1];
         var width = new_PMParam.mem[2][1];
         var height = new_PMParam.mem[3][1];
-
+        alert("addRemoveMask");
+        /*
         mask = _$("pm_mask");
         canvas = _$('pm_canvas');
         w = canvas.getAttribute('width');
@@ -633,9 +656,12 @@ function addRemovePrivacyMask(add_or_remove)
         string += '; top:' + top + '%';
         div.setAttribute('style', string);
         mask.appendChild(div);
+        */
     }
 
     function display(response_text) {
+		hideStatus();
+/*	modified by Sean	
         var ret = response_text.substring(0, 1);
         hideStatus();
         if (ret == '0') {
@@ -647,13 +673,14 @@ function addRemovePrivacyMask(add_or_remove)
         } else {
             alert("unexpected error");
         }
+*/
     }
 }
 
 function clearPrivacyMask()
 {
     try {
-        clearAllMasks();
+        //clearAllMasks();
         var PMPack = new Pack();
         for (var i = 0; i < g_PMParam.count; i++) {
             if (g_PMParam.mem[i][0] == 'pm_action')
@@ -664,7 +691,7 @@ function clearPrivacyMask()
         }
 
         showStatus("Clear all privacy masks ....");
-        var url = "/cgi-bin/pm.py";
+        var url = "/cgi-bin/setroute.cgi";
         var ai = new AJAXInteraction(url, display);
         var postData = '';
         postData = "req_cnt=1&sec0=PRIMASK&data0=" + encodeURIComponent(PMPack.mem);
@@ -704,37 +731,53 @@ function clearPrivacyMask()
 function enablePM()
 {
 	//在图上画方块， 随着拖动，图上方块最多不超过过5个。		
-    var paintContext = document.getElementById("canvas_2");
+    var paintContext = document.getElementById("canvas_test");
     var pen          = paintContext.getContext("2d");	
     var x            = document.getElementById("pm_x").lastChild.value;
     var y            = document.getElementById("pm_y").lastChild.value;
     var width        = document.getElementById("pm_w").lastChild.value;
     var height       = document.getElementById("pm_h").lastChild.value;	
 	var color       = document.getElementById("pm_color").lastChild.value
-	pen.fillStyle    = '#' + _$('pm_color').lastChild.value;
-	pen.fillRect(x, y, width, height);
+//	pen.fillStyle    = '#' + _$('pm_color').lastChild.value;
+//	pen.fillRect(x, y, width, height);
+    redraw();//keep pm :text over pm. 
+    addRemovePrivacyMask(0);
 }
 function setOSD()
 {
     //display in canvas
-    var paintContext = document.getElementById("canvas");
+    var paintContext = document.getElementById("canvas_test");
     var pen          = paintContext.getContext("2d");
     var text         = document.getElementById("s0_text").lastChild.value;
     var x            = document.getElementById("s0_text_startx").lastChild.value;
     var y            = document.getElementById("s0_text_starty").lastChild.value;
     var width        = document.getElementById("s0_text_boxw").lastChild.value;
     var height       = document.getElementById("s0_text_boxh").lastChild.value;
+	var pm_enable 	 = document.getElementById("pm_enable").lastChild;
     pen.fillStyle    = '#' + document.getElementById("s0_text_color").lastChild.value;
-	pen.clearRect(0, 0, 800, 600);
+//	pen.clearRect(0, 0, 800, 600);
+    if (pm_enable.checked == true)
+	{
+		enablePM();	
+	}
+	else
+	{
+		clearPrivacyMask();
+	}
 //	pen.font = _$('s0_text_size').lastChild.value+"px Arial";
     pen.font =  document.getElementById("s0_text_size").lastChild.value+"px Arial";
            
     pen.fillText(text, x, y);
+/*
 	if (document.getElementById("pm_enable").lastChild.value == 1)
 	{
 		enablePM();	
 	}
-	
+	else
+	{
+		clearPrivacyMask();
+	}
+*/
 //    pen.fillStyle = "rgba(255, 0)"
     try {
         var i, content;
@@ -1077,7 +1120,7 @@ function OnLoadActiveX(hostname, stream_id, recvType, statSize, showStat)
 				activeX.SetHostname(hostname);
 				activeX.SetStreamId(stream_id);
 				activeX.SetStatWindowSize(statSize);
-				activeX.ShowStat(0);
+				activeX.ShowStat(1);
 //				if (!activeX.EnableDPTZ()) {
 //					if (_$("DPTZ")) {
 //						_$("DPTZ").style.display = "none";

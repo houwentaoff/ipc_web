@@ -1,69 +1,78 @@
+/////////////////////////////////////////////////////////////////////
+//
+// osd.js
+//
+/////////History:
+//	2014/11/26 - [Sean Hou] Created this file
+//
+// Copyright (C) 2012 - 2030, GOKE, Inc.
+//
+// All rights reserved. No Part of this file may be reproduced, stored
+// in a retrieval system, or transmitted, in any form, or by any means,
+// electronic, mechanical, photocopying, recording, or otherwise,
+// without the prior consent of GOKE, Inc.
+//
+/////////////////////////////////////////////////////////////////////
 var paint = false;
 var context;
 var colorBrown = "#986928";
 
-var tmpX ;//= new Array();
-var tmpY ;//= new Array();
-var tmpW ;//= new Array();
-var tmpH ;//= new Array();
-var	clickX = new Array();
-var	clickY = new Array();
-var	widthX = new Array();
-var	heightY = new Array();
-
 var canvasWidth = 800;
 var canvasHeight = 600;
+var MAX_RECT = 4;
 
-function point()
+function point()//class
 {
-    var x=[];
-    var y=[];
-    var w=[];
-    var h=[];
-    var count=0;
-    var tmpx;
-    var tmpy;
-    var tmpw;
-    var tmph;
+    this.x=[];
+    this.y=[];
+    this.w=[];
+    this.h=[];
+    this.count=0;
+    this.tmpx;
+    this.tmpy;
+    this.tmpw;
+    this.tmph;
     this.addtmpwh = function(tw, th)//一定要这样么
     {
-        tmpw = tw;
-        tmph = th;
+        this.tmpw = tw;
+        this.tmph = th;
     }
-    function addtmpxy(tx, ty)
+    this.addtmpxy = function(tx, ty)
     {
-        tmpx = tx;
-        tmpy = ty;
+        this.tmpx = tx;
+        this.tmpy = ty;
     }
-    function addtmp()
+    this.addtmp = function()
     {
-        x.push(tmpx);
-        y.push(tmpy);
-        w.push(tmpw);
-        h.push(tmph);
-        count++;
+        //cover int to unsigned int
+        if (this.tmpw < 0)
+        {
+            this.tmpx += this.tmpw;
+            this.tmpw = 0 - this.tmpw;
+        }
+        if (this.tmph < 0)
+        {
+            this.tmpy += this.tmph;
+            this.tmph = 0 - this.tmph;
+        }
+
+        this.x.push(this.tmpx);
+        this.y.push(this.tmpy);
+        this.w.push(this.tmpw);
+        this.h.push(this.tmph);
+        this.count++;
     }
-    function clear()
+    this.clear = function()
     {
-        x.splice(0, x.length);
-        y.splice(0, y.length);
-        w.splice(0, w.length);
-        h.splice(0, h.length);
+        this.x.splice(0, this.x.length);
+        this.y.splice(0, this.y.length);
+        this.w.splice(0, this.w.length);
+        this.h.splice(0, this.h.length);
+        this.count = 0;
     }
 }
 
-function addXY(x, y)
-{
-    tmpX = x;
-    tmpY = y;
-}
-
-function addWH(w, h)
-{
-    tmpW = w;
-    tmpH = h;
-}
-
+var drawp = new point();
 /**
 * Clears the canvas.
 */
@@ -71,58 +80,42 @@ function clearCanvas()
 {
 	context.clearRect(0, 0, canvasWidth, canvasHeight);
 }
+/**
+* interface to redraw
+*/
+function outside_redraw()
+{
+//    context.save();
+    context.fillStyle = colorBrown;
+    if (drawp.count > MAX_RECT)
+    {
+        drawp.clear();
+    }
+    for (var i=0; i<drawp.count; i++)
+    {
+        context.fillRect(drawp.x[i], drawp.y[i], drawp.w[i], drawp.h[i]);	
+    }
+ 
+    drawstroke();
+}
 
 function redraw()
 {
     clearCanvas();
-    var i;
-    for (i=0; i<clickX.length; i++)
-    {
-        context.fillStyle = colorBrown;
-        context.fillRect(clickX[i], clickY[i], widthX[i], heightY[i]);	
-//        context.beginPath();
-//        context.moveTo(clickX[i], clickY[i]);
-//        context.lineTo(clickX[i] + widthX[i], clickY[i]);
-//        context.lineTo(clickX[i] + widthX[i], clickY[i]+heightY[i]);
-//        context.closePath();
-//        context.strokeStyle="green";
-//        context.stroke();       
-
-    }
-
     context.fillStyle = colorBrown;
-    context.fillRect(tmpX, tmpY, tmpW, tmpH);	
+    if (drawp.count > MAX_RECT)
+    {
+        drawp.clear();
+    }
+    for (var i=0; i<drawp.count; i++)
+    {
+        context.fillRect(drawp.x[i], drawp.y[i], drawp.w[i], drawp.h[i]);	
+    }
+ 
+    context.fillRect(drawp.tmpx, drawp.tmpy, drawp.tmpw, drawp.tmph);	
     drawstroke();
-//    context.beginPath();
-//    context.moveTo(clickX[i], clickY[i]);
-//    context.lineTo(clickX[i] + widthX[i], clickY[i]);
-//    context.lineTo(clickX[i] + widthX[i], clickY[i]+heightY[i]);
-//    context.closePath();
-//    context.strokeStyle="green";
-//    context.stroke();       
-}
-/**
-* Adds a point to the drawing array.
-* @param x
-* @param y
-* @param dragging
-*/
-function addClick(x, y, dragging)
-{
-	clickX.push(x);
-	clickY.push(y);
 }
 
-function addClickwh(x, y, dragging)
-{
-	widthX.push(x);
-	heightY.push(y);
-
-//	clickTool.push(curTool);
-//	clickColor.push(curColor);
-//	clickSize.push(curSize);
-//	clickDrag.push(dragging);
-}
 function drawstroke()
 {
     context.rect(0, 0, canvasWidth, canvasHeight);
@@ -136,7 +129,7 @@ function prepareCanvas()
 	canvas = document.createElement('canvas');
 	canvas.setAttribute('width', canvasWidth);
 	canvas.setAttribute('height', canvasHeight);
-	canvas.setAttribute('id', 'canvas');
+	canvas.setAttribute('id', 'canvas_test');
 	canvasDiv.appendChild(canvas);
 	if(typeof G_vmlCanvasManager != 'undefined') {
 		canvas = G_vmlCanvasManager.initElement(canvas);
@@ -148,27 +141,33 @@ function prepareCanvas()
 	
 	// Add mouse events
 	// ----------------
-	$('#canvas').mousedown(function(e)
+	$('#canvas_test').mousedown(function(e)
 	{
 		// Mouse down location
 		var mouseX = e.pageX - this.offsetLeft;
 		var mouseY = e.pageY - this.offsetTop;
-        addXY(mouseX, mouseY);//tmp
+
+        drawp.addtmpxy(mouseX, mouseY);
         paint = true;
 
     });
-	$('#canvas').mousemove(function(e){
+	$('#canvas_test').mousemove(function(e){
 		if(paint==true){
-			addWH(e.pageX - this.offsetLeft - tmpX, e.pageY - this.offsetTop - tmpY, true);//tmp
+            var mouseX = e.pageX - this.offsetLeft;
+            var mouseY = e.pageY - this.offsetTop;
+
+            drawp.addtmpwh(mouseX - drawp.tmpx, mouseY - drawp.tmpy);
 			redraw();//画前面几个和当前的这个
 		}
 	});
 	
-	$('#canvas').mouseup(function(e){
-        addClickwh(e.pageX - this.offsetLeft - tmpX, e.pageY - this.offsetTop - tmpY, true);
+	$('#canvas_test').mouseup(function(e){
+        var mouseX = e.pageX - this.offsetLeft;
+        var mouseY = e.pageY - this.offsetTop;
 
-        addClick(tmpX, tmpY);
+        drawp.addtmpwh(mouseX - drawp.tmpx, mouseY - drawp.tmpy);
 	  	redraw();
+        drawp.addtmp();
         paint = false;
 	});
     

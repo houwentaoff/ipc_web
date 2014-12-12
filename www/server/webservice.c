@@ -89,6 +89,7 @@ extern GADI_SYS_HandleT vinHandle;
 extern GADI_SYS_HandleT voutHandle;
 extern GADI_SYS_HandleT vencHandle;
 static   GADI_SYS_HandleT osdHandle;
+static GADI_SYS_HandleT pmHandle;
 
 static int set_vinvout_param(char * section_name);
 static int get_vinvout_param(char * section_name, u32 info);
@@ -275,14 +276,14 @@ static Mapping OSDMap[] = {
 
 };
 static Mapping PMMap[] = {
-	{"pm_x",			&pm_map.x,		MAP_TO_U8,	0.0,		MIN_MAX_LIMIT,		0.0,		100.0,	false},
-	{"pm_y",			&pm_map.y,		MAP_TO_U8,	0.0,		MIN_MAX_LIMIT,		0.0,		100.0,	false},
-	{"pm_w",				&pm_map.width,		MAP_TO_U8,	0.0,		MIN_MAX_LIMIT,		0.0,		100.0,	false},
-	{"pm_h",				&pm_map.height,		MAP_TO_U8,	0.0,		MIN_MAX_LIMIT,		0.0,		100.0,	false},
+	{"pm_x",			&pm_map.x,		MAP_TO_U32,	0.0,		MIN_MAX_LIMIT,		0.0,		10000.0,	false},
+	{"pm_y",			&pm_map.y,		MAP_TO_U32,	0.0,		MIN_MAX_LIMIT,		0.0,		10000.0,	false},
+	{"pm_w",				&pm_map.width,		MAP_TO_U32,	0.0,		MIN_MAX_LIMIT,		0.0,		10000.0,	false},
+	{"pm_h",				&pm_map.height,		MAP_TO_U32,	0.0,		MIN_MAX_LIMIT,		0.0,		10000.0,	false},
 	{"pm_color",			&pm_map.color,		MAP_TO_U32,	0.0,		MIN_MAX_LIMIT,		0.0,		
 COLOR_TYPE_NUM,	false},
 	{"pm_action",			&pm_map.action,		MAP_TO_U32,	0.0,		MIN_MAX_LIMIT,		0.0,		
-1,	false},
+4,	false},
 
 	{NULL,			NULL,						-1,	0.0,					0,	0.0,	0.0,		false},
 };
@@ -1201,17 +1202,66 @@ static int osd_set_text(GADI_OSD_TextParamsT* textParam)
 	return retVal;
 
 }
+
+
+static int add_pm(const privacy_mask_t *pm_param)
+{
+    int retVal;
+    unsigned char pmIndex;
+    GADI_U32 enable = 1;
+
+    if (!pmHandle)    
+    {
+        retVal = gadi_pm_init();
+        pmHandle = gadi_pm_open(&retVal);
+        if(retVal != GADI_OK)
+        {
+            PRT_ERR("gadi_pm_open error\n");
+            goto err;
+        }
+    }
+    retVal = gadi_pm_malloc(pmHandle, pm_param, &pmIndex);
+    if(retVal != 0)
+    {
+        PRT_ERR("gadi_pm_malloc error:%d\n",retVal);
+        goto err;
+    }
+
+    retVal =  gadi_pm_enable(pmHandle, pmIndex, enable);
+    if(retVal != 0)
+    {
+        PRT_ERR("gadi_pm_enable error:%d\n",retVal);
+        goto err;
+    }
+
+    return retVal;    
+err:
+    PRT_ERR("add_pm failed!\n");
+    return retVal;    
+}
 static int set_pm_param(char * section_name)
 {
 	FUN_IN("Section [%s] setting:\n", section_name);
 	privacy_mask_t pm;
-	pm.unit = 0;
+	pm.unit = 1;
 	pm.width = pm_map.width;
 	pm.height = pm_map.height;
 	pm.x = pm_map.x;
 	pm.y = pm_map.y;
 	pm.action = pm_map.action;
 	pm.color = pm_map.color;
+    PRT_DBG("\n---------pm-----------\n"
+            "witdh  :            %d\n"
+            "height  :           %d\n"
+            "x  :                %d\n"
+            "y  :                %d\n"
+            "action  :           %d\n"
+            "color  :            %d\n"
+            "----------------------\n",
+            pm.width, pm.height, pm.x,
+            pm.y, pm.action, pm.color
+            );
+    add_pm(&pm);
 #if 0
 	if (mw_add_privacy_mask(&pm) < 0) {
 		APP_ERROR("mw_add_privacy_mask");

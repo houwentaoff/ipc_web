@@ -352,7 +352,7 @@ typedef struct osd_param_s {
 	osd_text_t	text;
 } osd_param_t;
 
-typedef struct {
+typedef struct privacy_mask_s{
 	int				unit; //0- percent ,1-pixel
 	int				x;
 	int				y;
