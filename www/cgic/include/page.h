@@ -3,7 +3,7 @@
  *
  ** \file      page.h
  **
- ** \version   $Id: page.h 2481 2014-12-04 07:41:31Z houwentao $
+ ** \version   $Id: page.h 2523 2014-12-17 06:53:55Z houwentao $
  **
  ** \brief     
  **
@@ -173,13 +173,14 @@ typedef enum{
     ENC_STREAM4,
     ENC_STREAM_NUM,
 }ENC_TYPE_STREAM;
-
+ /* :TODO:2014/12/17 14:33:13:Sean: sort TYPE_OPTIONS */
 typedef enum {
 	OFF,
-	H_264,
 	MJPEG,
+    H_264,
 	TYPE_LEN
 }TYPE_OPTIONS;
+ /* :TODO:End---  */
 
 typedef enum {
 	ENC_FPS_60,
@@ -242,15 +243,15 @@ typedef enum
 	LIVE_CBR_AVG_BPS,
 	LIVE_VBR_MIN_BPS,
 	LIVE_VBR_MAX_BPS,
-	LIVE_PARAMS_NUM
+	LIVE_PARAMS_NUM=1
 }LIVE_PARAMS;
 //OSD
 typedef enum
-{
-	NO_ROTATE = 0,
-	BMP_ENABLE,
+{	
+	BMP_ENABLE = 0,
 	TIME_ENABLE,
 	TEXT_ENABLE,
+	NO_ROTATE,
 	TEXT,
 	TEXT_SIZE,
 	TEXT_OUTLINE,

@@ -17,7 +17,9 @@ var paint = false;
 var context;
 var colorBrown = "#986928";
 
-var canvasWidth = 800;
+var canvas_bx = 200;
+var canvas_by = 110;
+var canvasWidth = 800;//当前分辨率的长宽
 var canvasHeight = 600;
 var MAX_RECT = 4;
 
@@ -144,8 +146,8 @@ function prepareCanvas()
 	$('#canvas_test').mousedown(function(e)
 	{
 		// Mouse down location
-		var mouseX = e.pageX - this.offsetLeft;
-		var mouseY = e.pageY - this.offsetTop;
+		var mouseX = e.pageX - this.offsetLeft - canvas_bx;
+		var mouseY = e.pageY - this.offsetTop - canvas_by;
 
         drawp.addtmpxy(mouseX, mouseY);
         paint = true;
@@ -153,8 +155,8 @@ function prepareCanvas()
     });
 	$('#canvas_test').mousemove(function(e){
 		if(paint==true){
-            var mouseX = e.pageX - this.offsetLeft;
-            var mouseY = e.pageY - this.offsetTop;
+            var mouseX = e.pageX - this.offsetLeft - canvas_bx;
+            var mouseY = e.pageY - this.offsetTop - canvas_by;
 
             drawp.addtmpwh(mouseX - drawp.tmpx, mouseY - drawp.tmpy);
 			redraw();//画前面几个和当前的这个
@@ -162,12 +164,13 @@ function prepareCanvas()
 	});
 	
 	$('#canvas_test').mouseup(function(e){
-        var mouseX = e.pageX - this.offsetLeft;
-        var mouseY = e.pageY - this.offsetTop;
+        var mouseX = e.pageX - this.offsetLeft - canvas_bx;
+        var mouseY = e.pageY - this.offsetTop - canvas_by;
 
         drawp.addtmpwh(mouseX - drawp.tmpx, mouseY - drawp.tmpy);
 	  	redraw();
         drawp.addtmp();
+//		alert("x:"+drawp.tmpx + " y:" + drawp.tmpy + " w:" + drawp.tmpw + " h:" + drawp.tmph);
         paint = false;
 	});
     

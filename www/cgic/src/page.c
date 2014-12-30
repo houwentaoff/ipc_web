@@ -53,7 +53,7 @@ static ParamData pm_params[PM_PARAM_NUM];
 
 static int _get_osd_Index (int streamID, char* text)
 {
-	char* osd_params_option[] = {"no_rotate","bmp_enable","time_enable","text_enable","text",\
+	char* osd_params_option[] = {"bmp_enable","time_enable","text_enable","no_rotate","text",\
 		"text_size","text_outline","text_color","text_bold","text_italic","text_startx",\
 		"text_starty","text_boxw","text_boxh"};
 	int i;
@@ -168,6 +168,7 @@ static int osd_create_params ()
 		strcat(osd_params[_get_osd_Index(i, "text_boxh")].param_name, name);
 		osd_params[_get_osd_Index(i, "text_boxh")].value = 50;
 	}
+
     return (GK_CGI_NO_ERROR);
 }
 //
@@ -178,8 +179,8 @@ int   view_create_params()
     memset(live_params, 0, sizeof(ParamData)*LIVE_PARAMS_NUM);
 	memset(live_params[LIVE_ENCODE_TYPE].param_name, 0, PARAM_NAME_LEN);
 //	strcat(live_params[ENCODE_TYPE].param_name, "encode_type");
-	strcat(live_params[LIVE_ENCODE_TYPE].param_name, "s0_cbr_avg_bps");
-
+	strcat(live_params[LIVE_ENCODE_TYPE].param_name, "cbr_avg_bps");
+#if 0
 	live_params[LIVE_ENCODE_FPS].value = 30;
 	memset(live_params[LIVE_ENCODE_FPS].param_name, 0, PARAM_NAME_LEN);
 //	strcat(live_params[ENCODE_FPS].param_name, "encode_fps");
@@ -194,7 +195,8 @@ int   view_create_params()
 	memset(live_params[LIVE_ENCODE_HEIGHT].param_name, 0, PARAM_NAME_LEN);
 	strcat(live_params[LIVE_ENCODE_HEIGHT].param_name, "s3_cbr_avg_bps");
 //	strcat(live_params[ENCODE_HEIGHT].param_name, "encode_height");
-
+#endif
+#if 0
 	live_params[LIVE_BRC_MODE].value = 0;
 	memset(live_params[LIVE_BRC_MODE].param_name, 0, PARAM_NAME_LEN);
 	strcat(live_params[LIVE_BRC_MODE].param_name, "brc_mode");
@@ -210,7 +212,7 @@ int   view_create_params()
 	live_params[LIVE_VBR_MAX_BPS].value = 6000000;
 	memset(live_params[LIVE_VBR_MAX_BPS].param_name, 0, PARAM_NAME_LEN);
 	strcat(live_params[LIVE_VBR_MAX_BPS].param_name, "vbr_max_bps");    
-
+#endif
     return (GK_CGI_NO_ERROR);
 }
 int   view_page_get_params()
@@ -218,11 +220,11 @@ int   view_page_get_params()
 	section_Param section_param;
     int stream_id=0;
 	char extroInfo[4]={0};
-    char sectionName[10]={0};
+    char sectionName[10]={"LIVE"};
 
     cgiFormInteger("stream", &stream_id, 0);
 	sprintf(extroInfo, "%d", stream_id);
-    sprintf(sectionName, "STREAM%d", stream_id);
+    //sprintf(sectionName, "STREAM%d", stream_id);
     /*-----------------------------------------------------------------------------
      *  1. init map.
      *  2. send to server.
@@ -257,6 +259,7 @@ int   view_page_get_params()
                 /*-----------------------------------------------------------------------------
                  *  set section_param.data to web
                  *-----------------------------------------------------------------------------*/
+    PRT_DBG("live_params[LIVE_CBR_AVG_BPS].value[%d]\n", live_params[0].value)
                 
     FUN_OUT();
 	return (GK_CGI_NO_ERROR);
@@ -514,7 +517,7 @@ int   osd_page_get_params()
     memset(&section_param, 0, sizeof(section_Param));
     section_param.sectionName  = "OSD";
     section_param.sectionPort  = ENCODE;
-    section_param.paramData    = enc_params;
+    section_param.paramData    = osd_params;
     section_param.extroInfo    = "";
     section_param.paramDataNum = OSD_PARAM_NUM;
     if (Base_get_section_param(&section_param)==-1)
@@ -1008,15 +1011,15 @@ int   view_page(int (*callback)())
     sprintf(text, head_html, "liveview", body_onload);
     PRT_DBG("text[%s]\n", text);
     strncat(text, nav, strlen(nav));
-//    strncat(text, video_html, strlen(video_html));
-    int brate=0;
+    int kbrate=0;
     char *pos=text;
     pos += strlen(text);
     callback();
 
-    brate = live_params[stream_Id].value/1000;
-    PRT_DBG("live_params[LIVE_CBR_AVG_BPS].value[%d]\n", live_params[stream_Id].value)
-    sprintf(pos, liveviewcontent, stream_Id, brate);
+    //kbrate = live_params[stream_Id].value/1000;
+    kbrate = live_params[0].value/1000;
+    PRT_DBG("live_params[LIVE_CBR_AVG_BPS].value[%d]\n", live_params[0].value)
+    sprintf(pos, liveviewcontent, stream_Id, kbrate);
     fprintf(cgiOut, "%s", text);
 
 //    PRT_DBG("size[%d]text[%s]\n",strlen(text), text);
@@ -1055,9 +1058,17 @@ int   enc_page(int (*callback)())
 
     char **labels[]={s0_type, s0_enc_fps, s0_dptz, s0_resolution, s0_flip_rotate};
 #endif
-    char js_var[]={"s0_type\0" "s0_enc_fps\0" "s0_dptz\0" "s0_resolution\0"
-                   "s0_flip_rotate\0" "s0_M\0" "s0_N\0" "s0_idr_interval\0"
-                   "s0_quality\0"};
+    char js_var[]={""
+    "s0_type" "\0"
+    "s0_enc_fps" "\0"
+    "s0_dptz" "\0"
+    "s0_resolution" "\0"
+    "s0_flip_rotate" "\0"
+    "s0_M" "\0"
+    "s0_N" "\0"
+    "s0_idr_interval"  "\0"
+    "s0_quality" "\0"
+    };
     char *js_var_name[15]={0};
     char *var = js_var;
     char *end = js_var+sizeof(js_var)-1;
@@ -1399,7 +1410,7 @@ int   osd_page(int (*callback)())
         PRT_ERR("text is null\n");
         return (GK_MEM_ERROR);
     }
-    sprintf(head_html_buf, head_html, "enc", "onload=\"javascript: getData('osd')\"");
+    sprintf(head_html_buf, head_html, "osd", "onload=\"javascript: getData('osd')\"");
     if (strlen(head_html_buf) >= MAX_HEAD)
     {
         PRT_ERR("size[%d] is too big!\n", strlen(head_html_buf));
@@ -1413,32 +1424,47 @@ int   osd_page(int (*callback)())
         PRT_ERR("get param fail\n");
         return (GK_CGI_ERROR);
     }
+    PRT_DBG("STR[%s] value[%s]\n", osd_params[_get_osd_Index(streamId, 
+    "text")].param_value, osd_params[TEXT].param_value);
     //赋值给web上展示
 #if  1
     char *pos=text;
     pos += strlen(text);
-    sprintf(pos, osdcontent,
-            osd_params[_get_osd_Index(streamId, "text")].value == NULL ? " " : osd_params[_get_osd_Index(streamId, "text")].value,
-            "FF0000",//osd_params[_get_osd_Index(streamId, "text_color")].value,
+    sprintf(pos, osdcontent, 
+            streamId,
+            streamId,
+            osd_params[_get_osd_Index(streamId, "text")].param_value,
+            streamId,
+            osd_params[_get_osd_Index(streamId, "text_color")].value,
+            streamId,
             osd_params[_get_osd_Index(streamId, "text_size")].value,
+            streamId,
             osd_params[_get_osd_Index(streamId, "text_startx")].value,
+            streamId,
             osd_params[_get_osd_Index(streamId, "text_starty")].value,
+            streamId,
             osd_params[_get_osd_Index(streamId, "text_boxw")].value,
+            streamId,
             osd_params[_get_osd_Index(streamId, "text_boxh")].value,
-            osd_params[_get_osd_Index(streamId, "time_enable")].value,
-            osd_params[_get_osd_Index(streamId, "bmp_enable")].value,
-           0,// pm_params[_get_osd_Index(streamId, "pm_enable")].value,
+            streamId,
+            osd_params[_get_osd_Index(streamId, "time_enable")].value == 1 ? 
+            "checked" : " ",
+            streamId,
+            osd_params[_get_osd_Index(streamId, "bmp_enable")].value == 1 ? 
+            "checked" : " ",
+            pm_params[_get_osd_Index(streamId, "pm_enable")].value == 1 ?
+            "checked" : " ",
             pm_params[PM_LEFT].value,
             pm_params[PM_TOP].value,
             pm_params[PM_W].value,
             pm_params[PM_H].value,
-            "FF0000"//pm_params[PM_COLOR].value
+            pm_params[PM_COLOR].value
             );
 #endif
     fprintf(cgiOut, "%s", text);
 
-    print_params(osd_params, num * OSD_PARAM_TYPE_NUM);
-    print_params(pm_params, PM_PARAM_NUM);
+    //print_params(osd_params, num * OSD_PARAM_TYPE_NUM);
+    //print_params(pm_params, PM_PARAM_NUM);
 
     PRT_DBG("\n.............................................\n"
               ".................html size[%dk]...............\n"

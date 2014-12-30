@@ -57,6 +57,8 @@ const char * const head_html =  "<!DOCTYPE HTML PUBLIC  \"-//W3C//DTD HTML 4.0 T
         <meta http-equiv=\"Content-Type\" content=\"text/html;charset=UTF-8\">\
         <title>%s</title>\
             <link href=\"../css/goke_1.css\" rel=\"stylesheet\" type=\"text/css\" />\
+            <!--[if IE]><script type=\"text/javascript\" src=\"../js/excanvas.js\"></script><![endif]-->\
+            <!--[if IE]><script type=\"text/javascript\" src=\"../js/excanvas.compiled.js\"></script><![endif]-->\
             <script type=\"text/javascript\" src=\"../js/AJAXInteraction.js\"></script>\
             <script type=\"text/javascript\" src=\"../js/page.js\"></script>\
             <script type=\"text/javascript\" src=\"../js/style.js\"></script>\
@@ -193,10 +195,10 @@ const char * const osdcontent= "\
 <div class=\"content\">\
         <div id=\"status\">&nbsp; </div>\
         <div class=\"stream_selector\">\
-            <a href=\"/cgi-bin/view.cgi?page=0\">stream 1</a>\
-            <a href=\"/cgi-bin/view.cgi?page=1\">stream 2</a>\
-            <a href=\"/cgi-bin/view.cgi?page=2\">stream 3</a>\
-            <a href=\"/cgi-bin/view.cgi?page=3\">stream 4</a>\
+            <a href=\"/cgi-bin/demo.cgi?page=3&stream=0\">stream 1</a>\
+            <a href=\"/cgi-bin/demo.cgi?page=3&stream=1\">stream 2</a>\
+            <a href=\"/cgi-bin/demo.cgi?page=3&stream=2\">stream 3</a>\
+            <a href=\"/cgi-bin/demo.cgi?page=3&stream=3\">stream 4</a>\
         </div>\
     	<div id=\"canvasDiv\"></div>	\n\
    <script type=\"text/javascript\"> $(document).ready(function() {\n\
@@ -204,43 +206,46 @@ const char * const osdcontent= "\
 });</script>	\n\
         <div class=\"viewright\">\
             <div class=\"action\">	\
-                <div id=\"s0_text\">\
-                    <label> Content (32 character):</label><input type=\"text\" class=\"textinput\" value=\"%s\" maxlength=31  /></div>\
-                <div id=\"s0_text_color\">\
-                    <label> RGB :0x</label><input type=\"text\" class=\"textinput\" value=\"%s\" maxlength=10  /></div>\
-                <div id=\"s0_text_size\">\
+                <div id=\"stream_id\" class=\"%d\"></div>\
+                <div id=\"s%d_text\">\
+                    <label> Content (32 character):</label><input type=\"text\" class=\"textinput\"  value=%s maxlength=31  /></div>\
+                <div id=\"s%d_text_color\">\
+                    <label> RGB :0x</label><input type=\"text\" class=\"textinput\" value=\"%d\" maxlength=10  /></div>\
+                <div id=\"s%d_text_size\">\
                     <label> 大小 :</label><input type=\"text\" class=\"textinput\" value=\"%d\" maxlength=5  /></div>\
-                <div id=\"s0_text_startx\">\
-                    <label>x :</label><input type=\"text\" class=\"textinput\" value=\"%d\" width=\"30\" maxlength=4  /></div>\
-                <div id=\"s0_text_starty\">\
-                    <label>y :</label> <input type=\"text\" class=\"textinput\" value=\"%d\" width=\"30\" maxlength=4  /></div>\
-                <div id=\"s0_text_boxw\">\
-                    <label><br />宽度 :</label><input type=\"text\" class=\"textinput\" value=\"%d\" width=\"30\" maxlength=4  /></div>\
-                <div id=\"s0_text_boxh\">\
-                    <label><br />高度 :</label><input type=\"text\" class=\"textinput\" value=\"%d\" width=\"30\" maxlength=4  /></div>	\
+                <div id=\"s%d_text_startx\">\
+                    <label>x(0-100) :</label><input type=\"text\" class=\"textinput\" value=\"%d\" width=\"30\" style=\"width:20px;height:20px;\" maxlength=4  /></div>\
+                <div id=\"s%d_text_starty\">\
+                    <label>y(0-100) :</label> <input type=\"text\" class=\"textinput\" value=\"%d\" width=\"30\" maxlength=4 style=\"width:20px;height:20px;\" /></div>\
+                <div id=\"s%d_text_boxw\">\
+                    <label><br />宽度 (0-100):</label><input type=\"text\" class=\"textinput\" value=\"%d\" width=\"10\" maxlength=4 style=\"width:20px;height:20px;\" /></div>\
+                <div id=\"s%d_text_boxh\">\
+                    <label><br />高度 (0-100):</label><input type=\"text\" class=\"textinput\" value=\"%d\" width=\"10\" maxlength=4  style=\"width:20px;height:20px;\" /></div>	\
                 \
-                <div id=\"s0_time_enable\">\
-                    <label>是否显示时间</label><input type=\"checkbox\" value=\"%d\" onchange=\"addOSD('time', 0)\" /></div>\
+                <div id=\"s%d_time_enable\">\
+                    <label>时间</label><input type=\"checkbox\" %s onchange=\"addOSD('time', 0)\" /></div>\
                 \
-                <div id=\"s0_bmp_enable\">\
-                    <label>是否显示图片</label><input type=\"checkbox\" value=\"%d\" onchange=\"addOSD('bmp', 0)\" /></div>\
+                <div id=\"s%d_bmp_enable\">\
+                    <label>图片</label><input type=\"checkbox\" %s onchange=\"addOSD('bmp', 0)\" /></div>\
                 \
                 <div id=\"pm_enable\">\
-                    <label>是否遮挡</label><input type=\"checkbox\" value=\"%d\" onchange=\"addOSD('pm', 0)\" /></div>	\
+                    <label>遮挡</label><input type=\"checkbox\" %s onchange=\"addOSD('pm', 0)\" /></div>	\
                 \
+                <div id=\"pm_display\">\
+                    <label>遮挡坐标设置</label></div>\
                 <div id=\"pm_x\">\
-                    <label>x :</label><input type=\"text\" class=\"textinput\" value=\"%d\" width=\"30\" maxlength=4  /></div>\
+                    <label>x :</label><input type=\"text\" class=\"textinput\" value=\"%d\" width=\"10\" maxlength=4  style=\"width:20px;height:20px;\" /></div>\
                 <div id=\"pm_y\">\
-                    <label>y :</label> <input type=\"text\" class=\"textinput\" value=\"%d\" width=\"30\" maxlength=4  /></div>\
+                    <label>y :</label> <input type=\"text\" class=\"textinput\" value=\"%d\" width=\"10\" maxlength=4  style=\"width:20px;height:20px;\" /></div>\
                 <div id=\"pm_w\">\
-                    <label><br />宽度 :</label><input type=\"text\" class=\"textinput\" value=\"%d\" width=\"30\" maxlength=4  /></div>\
+                    <label><br />宽度 :</label><input type=\"text\" class=\"textinput\" value=\"%d\" width=\"10\" maxlength=4 style=\"width:20px;height:20px;\" /></div>\
                 <div id=\"pm_h\">\
-                    <label><br />高度 :</label><input type=\"text\" class=\"textinput\" value=\"%d\" width=\"30\" maxlength=4  /></div>	\
+                    <label><br />高度 :</label><input type=\"text\" class=\"textinput\" value=\"%d\" width=\"10\" maxlength=4 style=\"width:20px;height:20px;\" /></div>	\
                                 \
                 <div id=\"pm_color\">\
-                    <label> RGB :0x</label><input type=\"text\" class=\"textinput\" value=\"%s\" maxlength=10  /></div>						\
+                    <label> RGB :0x</label><input type=\"text\" class=\"textinput\" value=\"%d\" maxlength=10  /></div>						\
                 <div></div>\
-                <div>\
+                <div id =\"osd_submit\">\
                     <p>&nbsp;</p>\
                     <input name=\"button\" type=\"button\" class=\"apply\" id=\"button\"  onclick=\"javascript:setOSD()\" value=\"确认\"/> 			&nbsp;\
                     <input name=\"button\" type=\"button\" class=\"cancel\" id=\"button\"  onclick=\"javascript:showPage('osd')\" value=\"取消\"/>\

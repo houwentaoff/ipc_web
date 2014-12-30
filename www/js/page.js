@@ -280,7 +280,31 @@ function browserInfo()
         sys.version = browserName.match(/chrome\/([\d.]+)/)[1];
     } else {
         sys.name = "IE";
-        sys.version = "11.0.0";
+        sys.version = "11.0";
+        var browser=navigator.appName 
+        var b_version=navigator.appVersion 
+        var version=b_version.split(";"); 
+        var trim_Version=version[1].replace(/[ ]/g,""); 
+        if(browser=="Microsoft Internet Explorer" && trim_Version=="MSIE6.0") 
+        { 
+            sys.version = "6.0"; 
+        } 
+        else if(browser=="Microsoft Internet Explorer" && trim_Version=="MSIE7.0") 
+        { 
+            sys.version = "7.0"; 
+        } 
+        else if(browser=="Microsoft Internet Explorer" && trim_Version=="MSIE8.0") 
+        { 
+            sys.version = "8.0"; 
+        } 
+        else if(browser=="Microsoft Internet Explorer" && trim_Version=="MSIE9.0") 
+        { 
+            sys.version = "9.0"; 
+        }
+        else
+        {
+            sys.version = "11.0"; 
+        }
     }
     return sys;
 }
@@ -300,6 +324,10 @@ function get_page_data(Param)
             }
             else{
                 var  obj = objtmp.lastChild;
+                if (obj == undefined)
+                {
+                    obj = objtmp;
+                }
                 if (obj != undefined) {
                     switch (obj.type) {
                         case "text" :
@@ -338,7 +366,8 @@ function set_page_data(Param)
         var objtmp = _$(Param.mem[i][0]);
         if (objtmp != undefined){
             var obj = objtmp.lastChild;
-            ;
+            if (obj == undefined)//ENC H264 SETTING 
+                obj = objtmp;
             if (obj != undefined) {
                 switch (obj.type) {
                     case "text" :
@@ -598,27 +627,30 @@ function addRemovePrivacyMask(add_or_remove)
             postData = "req_cnt=" + req_cnt + postData;
             ai.doPost(postData);
         }
-		//packed & added to 
-		for (var i=0; i < drawp.count; i++)
-		{
-			PMPack.mem = '';
-			add_to_pack(PMPack, "pm_x", Math.floor(drawp.x[i]));//float to int
-			add_to_pack(PMPack, "pm_y", Math.floor(drawp.y[i]));
-			add_to_pack(PMPack, "pm_w", Math.floor(drawp.w[i]));
-			add_to_pack(PMPack, "pm_h", Math.floor(drawp.h[i]));
-			
-        	var ai = new AJAXInteraction(url, display);
-        	var req_cnt = 0;
-        	var postData = '';
-        	if (PMPack.mem != '') {
-         	    postData += "&sec" + req_cnt + "=PRIMASK&data" + req_cnt + "=" + encodeURIComponent(PMPack.mem);
-           		req_cnt++;
-        	}
-        	if (req_cnt != 0) {
-            	postData = "req_cnt=" + req_cnt + postData;
-            	ai.doPost(postData);
-        	}
-		}
+		//packed & added to : not IE8
+        if (browser.version != "8.0")
+        {
+            for (var i=0; i < drawp.count; i++)
+            {
+                PMPack.mem = '';
+                add_to_pack(PMPack, "pm_x", Math.floor(drawp.x[i]));//float to int
+                add_to_pack(PMPack, "pm_y", Math.floor(drawp.y[i]));
+                add_to_pack(PMPack, "pm_w", Math.floor(drawp.w[i]));
+                add_to_pack(PMPack, "pm_h", Math.floor(drawp.h[i]));
+
+                var ai = new AJAXInteraction(url, display);
+                var req_cnt = 0;
+                var postData = '';
+                if (PMPack.mem != '') {
+                    postData += "&sec" + req_cnt + "=PRIMASK&data" + req_cnt + "=" + encodeURIComponent(PMPack.mem);
+                    req_cnt++;
+                }
+                if (req_cnt != 0) {
+                    postData = "req_cnt=" + req_cnt + postData;
+                    ai.doPost(postData);
+                }
+            }
+        }
     } catch (error) {
         alert(error);
     }
@@ -718,6 +750,8 @@ function clearPrivacyMask()
     }
 
     function display(response_text) {
+	    hideStatus();
+/*
         var ret = response_text.substring(0, 1);
         hideStatus();
         if ((ret == '0') || (ret == '1')) {
@@ -726,6 +760,7 @@ function clearPrivacyMask()
         } else {
             alert("unexpected error");
         }
+*/
     }
 }
 function enablePM()
@@ -740,21 +775,26 @@ function enablePM()
 	var color       = document.getElementById("pm_color").lastChild.value
 //	pen.fillStyle    = '#' + _$('pm_color').lastChild.value;
 //	pen.fillRect(x, y, width, height);
-    redraw();//keep pm :text over pm. 
+    var browser = browserInfo();	
+    if (browser.version != "8.0")
+    {
+        redraw();//keep pm :text over pm. 
+    }
     addRemovePrivacyMask(0);
 }
 function setOSD()
 {
     //display in canvas
+    var stream_id 	 = document.getElementById('stream_id').className;
     var paintContext = document.getElementById("canvas_test");
     var pen          = paintContext.getContext("2d");
-    var text         = document.getElementById("s0_text").lastChild.value;
-    var x            = document.getElementById("s0_text_startx").lastChild.value;
-    var y            = document.getElementById("s0_text_starty").lastChild.value;
-    var width        = document.getElementById("s0_text_boxw").lastChild.value;
-    var height       = document.getElementById("s0_text_boxh").lastChild.value;
+    var text         = document.getElementById("s"+stream_id+"_text").lastChild.value;
+    var x            = document.getElementById("s"+stream_id+"_text_startx").lastChild.value;
+    var y            = document.getElementById("s"+stream_id+"_text_starty").lastChild.value;
+    var width        = document.getElementById("s"+stream_id+"_text_boxw").lastChild.value;
+    var height       = document.getElementById("s"+stream_id+"_text_boxh").lastChild.value;
 	var pm_enable 	 = document.getElementById("pm_enable").lastChild;
-    pen.fillStyle    = '#' + document.getElementById("s0_text_color").lastChild.value;
+    pen.fillStyle    = '#' + document.getElementById("s"+stream_id+"_text_color").lastChild.value;
 //	pen.clearRect(0, 0, 800, 600);
     if (pm_enable.checked == true)
 	{
@@ -765,9 +805,12 @@ function setOSD()
 		clearPrivacyMask();
 	}
 //	pen.font = _$('s0_text_size').lastChild.value+"px Arial";
-    pen.font =  document.getElementById("s0_text_size").lastChild.value+"px Arial";
-           
-    pen.fillText(text, x, y);
+    pen.font =  document.getElementById("s"+stream_id+"_text_size").lastChild.value+"px Arial";
+    
+    if ( typeof  pen.fillText != "undefined")//use in IE8
+    {
+        pen.fillText(text, canvasWidth*x/100.0, canvasHeight*y/100.0);
+    }
 /*
 	if (document.getElementById("pm_enable").lastChild.value == 1)
 	{
@@ -796,7 +839,7 @@ function setOSD()
         }
 
         if (OSDPack.mem == '') {
-            alert("Nothing changed");
+            //alert("Nothing changed");
             return;
         }
 
@@ -876,6 +919,8 @@ function setStream(streamId)
         } else if (ret == '1') {
             alert(response_text.substring(2));
             set_page_data(g_StreamParam[streamId]);
+            //set M N IDR QUA 
+            
         } else {
             alert("unexpected error");
         }

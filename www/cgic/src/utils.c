@@ -3,7 +3,7 @@
  *
  ** \file      utils.c
  **
- ** \version   $Id: utils.c 2481 2014-12-04 07:41:31Z houwentao $
+ ** \version   $Id: utils.c 2523 2014-12-17 06:53:55Z houwentao $
  **
  ** \brief     
  **
@@ -205,6 +205,7 @@ int parse_sectionData (Message message, ParamData data[])
 int decode_Param (section_Param* section_param, char* recv)
 {
 	char param_value[PARAM_VALUE_LEN] = {0};
+    char param_name[PARAM_NAME_LEN] = {0};
 	int i = 0;
 	int index = 0;
 	int pageFlag = FALSE;
@@ -213,7 +214,13 @@ int decode_Param (section_Param* section_param, char* recv)
     FUN_IN("recv[%s]\n", recv);
 	for (i = 0; i < section_param->paramDataNum; i++ ) {
 		index = 0;
-		buf = strstr(recv,section_param->paramData[i].param_name);
+ /* :TODO:2014/12/15 18:33:54:Sean:  fixed can not find same prefix in recv eg:s0_text = "aasd" \n s0_text_tmp = 12  */
+        memset(param_name, 0, sizeof(param_name));
+        strcpy(param_name, section_param->paramData[i].param_name);
+        strcat(param_name, " ");//mark fixed.
+ /* :TODO:End---  */
+		//buf = strstr(recv,section_param->paramData[i].param_name);
+		buf = strstr(recv, param_name);
 		if (buf != NULL) {
 			pageFlag = FALSE;
 			memset(param_value,0,PARAM_VALUE_LEN);
@@ -229,14 +236,15 @@ int decode_Param (section_Param* section_param, char* recv)
 				buf++;
 
 			}
-//            PRT_DBG("param_value[%s]\n", param_value);
+
 			param_value[index] = '\0';
 			if (param_value[0] != '"') {
 				section_param->paramData[i].value = atoi(param_value);
 			} else {
 				section_param->paramData[i].value = -100;
-				memset(section_param->paramData[i].param_value, 0, 128);/*128 byte? ->0 ?*/
+				memset(section_param->paramData[i].param_value, 0, PARAM_VALUE_LEN);/*128 byte? ->0 ?*/
 				strcat(section_param->paramData[i].param_value, param_value);
+                PRT_DBG("str : param_value [%s]\n", param_value);
 			}
         }
     }
@@ -294,6 +302,10 @@ int close_connect (int sockfd)
 
 int Send_Msg (int sockfd, char* msg, int length)
 {
+    FUN_IN("\n---------------send buf--------------\n"
+            "[%s]\n"
+            "size[%d]\n"
+            "--------------------------------------\n", msg, length);
 	if (send(sockfd,msg, length,0) < 0) {
 			return -1;
 		}

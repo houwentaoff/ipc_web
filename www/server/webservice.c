@@ -3,7 +3,7 @@
 *
 ** \file      webservice.c
 **
-** \version   $Id: webservice.c 2482 2014-12-04 07:45:14Z houwentao $
+** \version   $Id: webservice.c 2555 2014-12-23 12:36:50Z houwentao $
 **
 ** \brief
 **
@@ -38,7 +38,16 @@
 #include "webservice.h"
 #include "video.h"
 #include "ctlserver.h"
+#include "adi_sys.h"
+#include "adi_pm.h"
+//#include "adi_venc.h"
 
+
+//*****************************************************************************
+//*****************************************************************************
+//** Local Defines
+//*****************************************************************************
+//*****************************************************************************
 #define INOUT_DEBUG           1  	/*1 is open , o is close */
 #define APP_DEBUG             1     /*1 is open , 0 is close */
 #define APP_ERR               1     /*1 is open , 0 is close */
@@ -70,13 +79,21 @@ do                                                                              
 #define PRT_ERR(fmt, args...)
 #endif
 
+#define CUR_STREAM_NUM          (2)
+
+//*****************************************************************************
+//*****************************************************************************
+//** Local Data
+//*****************************************************************************
+//*****************************************************************************
 static u8						g_buffer[BUFFER_SIZE];
 static gk_vin_mode			vin_map;
 static gk_vout_mode			vout_map;
 static gk_encode_stream     stream_map[ENCODE_STREAM_NUM];
 static osd_param_t				osd_map[ENCODE_STREAM_NUM];
+static live_view_param_t		live_map;
 static privacy_mask_t		pm_map;
-static u8						g_mw_pm_enable = 0;
+//static u8						g_mw_pm_enable = 0;
 static osd_param_t				g_mw_osd[ENCODE_STREAM_NUM];
 
 static int sockfd = -1;
@@ -88,9 +105,19 @@ extern IPC_XML_TYPE g_emIpcXmlType;
 extern GADI_SYS_HandleT vinHandle;
 extern GADI_SYS_HandleT voutHandle;
 extern GADI_SYS_HandleT vencHandle;
+
+extern GADI_ERR gadi_venc_get_h264_config(GADI_SYS_HandleT handle,
+                                               void* configPar);
+extern GADI_ERR gadi_venc_set_bitrate(GADI_SYS_HandleT handle, void* brPar);
+extern GADI_ERR gadi_venc_set_h264_config(GADI_SYS_HandleT handle,
+                                               void* configPar);
 static   GADI_SYS_HandleT osdHandle;
 static GADI_SYS_HandleT pmHandle;
-
+//*****************************************************************************
+//*****************************************************************************
+//** Local Functions Declaration
+//*****************************************************************************
+//*****************************************************************************
 static int set_vinvout_param(char * section_name);
 static int get_vinvout_param(char * section_name, u32 info);
 static int get_stream_param(char * section_name, u32 info);
@@ -99,16 +126,17 @@ static int get_encode_param(char * section_name, u32 info);
 static int set_encode_param(char * section_name);
 static int set_osd_param(char * section_name);
 static int set_pm_param(char * section_name);
+static int get_live_param(char * section_name, u32 info);
 
 static Mapping VinVoutMap[] = {
 	{"vin_enable",			&vin_map.enable,				MAP_TO_U32,	0.0,		0,		0.0,		0.0,	false},
-	{"vin_mode",			&vin_map.mode,				MAP_TO_U32,	AMBA_VIDEO_MODE_AUTO,		0,		0.0,		0.0,	false},
-	{"vin_framerate",		&vin_map.frame_rate,			MAP_TO_U32,	AMBA_VIDEO_FPS_29_97,		0,		0.0,		0.0,	false},
+	{"vin_mode",			&vin_map.mode,				MAP_TO_U32,	VIDEO_MODE_AUTO,		0,		0.0,		0.0,	false},
+	{"vin_framerate",		&vin_map.frame_rate,			MAP_TO_U32,	VIDEO_FPS_29_97,		0,		0.0,		0.0,	false},
 //	{"vin_mirror",			&vin_map.mirror_mode.mirror_pattern,	MAP_TO_U32,	0.0,		0,		0.0,		0.0,	},
 //	{"vin_bayer",			&vin_map.mirror_mode.bayer_pattern,	MAP_TO_U32,	0.0,		0,		0.0,		0.0,	},
 
-	{"vout_type",			&vout_map.type,			MAP_TO_U32,	AMBA_VOUT_SINK_TYPE_CVBS,		0,		0.0,		0.0,	false},
-	{"vout_mode",			&vout_map.mode,			MAP_TO_U32,	AMBA_VIDEO_MODE_480I,		0,		0.0,		0.0,	false},
+	{"vout_type",			&vout_map.type,			MAP_TO_U32,	VOUT_SINK_TYPE_CVBS,		0,		0.0,		0.0,	false},
+	{"vout_mode",			&vout_map.mode,			MAP_TO_U32,	VIDEO_MODE_480I,		0,		0.0,		0.0,	false},
 
 	{NULL,			NULL,						-1,	0.0,					0,	0.0,	0.0,		0},
 };
@@ -122,7 +150,7 @@ static Mapping Stream0[] = {
 //	{"s0_gop_model",		&stream_map[0].h264.gop_model,			MAP_TO_U8,	    0.0,		0,		0.0,		0.0,	},
 //	{"s0_profile",			&stream_map[0].h264.profile,			MAP_TO_U8,	    0.0,		0,		0.0,		0.0,	},
 //	{"s0_brc",				&stream_map[0].h264.brc_mode,	        MAP_TO_U8,	    0.0,		0,		0.0,		0.0,	},
-	{"s0_cbr_avg_bps",		&stream_map[0].h264Conf.cbrAvgBps,		MAP_TO_U32,	    0.0,		0,		0.0,		0.0,	false},
+	{"s0_cbr_avg_bps",		&stream_map[0].h264Conf.cbrAvgBps,		MAP_TO_U32,	    4000000.0,		0,		0.0,		0.0,	false},
 //	{"s0_vbr_min_bps",		&stream_map[0].h264.vbr_min_bps,		MAP_TO_U32,	    0.0,		0,		0.0,		0.0,	},
 //	{"s0_vbr_max_bps",		&stream_map[0].h264.vbr_max_bps,		MAP_TO_U32,	    0.0,		0,		0.0,		0.0,	},
 	{"s0_quality",			&stream_map[0].mjpegConf.quality,			MAP_TO_U8,	    88.0,	    0,		0.0,		0.0,	false},
@@ -137,7 +165,7 @@ static Mapping Stream1[] = {
 //	{"s1_gop_model",		&stream_map[1].h264.gop_model,			MAP_TO_U8,	    0.0,		0,		0.0,		0.0,	},
 //	{"s1_profile",			&stream_map[1].h264.profile,			MAP_TO_U8,	    0.0,		0,		0.0,		0.0,	},
 //	{"s1_brc",				&stream_map[1].h264.brc_mode,	        MAP_TO_U8,	    0.0,		0,		0.0,		0.0,	},
-	{"s1_cbr_avg_bps",		&stream_map[1].h264Conf.cbrAvgBps,		MAP_TO_U32,	    0.0,		0,		0.0,		0.0,	false},
+	{"s1_cbr_avg_bps",		&stream_map[1].h264Conf.cbrAvgBps,		MAP_TO_U32,	    4000000.0,		0,		0.0,		0.0,	false},
 //	{"s1_vbr_min_bps",		&stream_map[1].h264.vbr_min_bps,		MAP_TO_U32,	    0.0,		0,		0.0,		0.0,	},
 //	{"s1_vbr_max_bps",		&stream_map[1].h264.vbr_max_bps,		MAP_TO_U32,	    0.0,		0,		0.0,		0.0,	},
 	{"s1_quality",			&stream_map[1].mjpegConf.quality,			MAP_TO_U8,	    88.0,	    0,		0.0,		0.0,	},
@@ -152,7 +180,7 @@ static Mapping Stream2[] = {
 //	{"s2_gop_model",		&stream_map[2].h264.gop_model,			MAP_TO_U8,	    0.0,		0,		0.0,		0.0,	},
 //	{"s2_profile",			&stream_map[2].h264.profile,			MAP_TO_U8,	    0.0,		0,		0.0,		0.0,	},
 //	{"s2_brc",				&stream_map[2].h264.brc_mode,	        MAP_TO_U8,	    0.0,		0,		0.0,		0.0,	},
-	{"s2_cbr_avg_bps",		&stream_map[2].h264Conf.cbrAvgBps,		MAP_TO_U32,	    0.0,		0,		0.0,		0.0,	false},
+	{"s2_cbr_avg_bps",		&stream_map[2].h264Conf.cbrAvgBps,		MAP_TO_U32,	    4000000.0,		0,		0.0,		0.0,	false},
 //	{"s2_vbr_min_bps",		&stream_map[2].h264.vbr_min_bps,		MAP_TO_U32,	    0.0,		0,		0.0,		0.0,	},
 //	{"s2_vbr_max_bps",		&stream_map[2].h264.vbr_max_bps,		MAP_TO_U32,	    0.0,		0,		0.0,		0.0,	},
 	{"s2_quality",			&stream_map[2].mjpegConf.quality,			MAP_TO_U8,	    88.0,	    0,		0.0,		0.0,	false},
@@ -167,7 +195,7 @@ static Mapping Stream3[] = {
 //	{"s3_gop_model",		&stream_map[3].h264.gop_model,			MAP_TO_U8,	    0.0,		0,		0.0,		0.0,	},
 //	{"s3_profile",			&stream_map[3].h264.profile,			MAP_TO_U8,	    0.0,		0,		0.0,		0.0,	},
 //	{"s3_brc",				&stream_map[3].h264.brc_mode,	        MAP_TO_U8,	    0.0,		0,		0.0,		0.0,	},
-	{"s3_cbr_avg_bps",		&stream_map[3].h264Conf.cbrAvgBps,		MAP_TO_U32,	    0.0,		0,		0.0,		0.0,	false},
+	{"s3_cbr_avg_bps",		&stream_map[3].h264Conf.cbrAvgBps,		MAP_TO_U32,	    4000000.0,		0,		0.0,		0.0,	false},
 //	{"s3_vbr_min_bps",		&stream_map[3].h264.vbr_min_bps,		MAP_TO_U32,	    0.0,		0,		0.0,		0.0,	},
 //	{"s3_vbr_max_bps",		&stream_map[3].h264.vbr_max_bps,		MAP_TO_U32,	    0.0,		0,		0.0,		0.0,	},
 	{"s3_quality",			&stream_map[3].mjpegConf.quality,			MAP_TO_U8,	    88.0,	    0,		0.0,		0.0,	false},
@@ -178,28 +206,28 @@ static Mapping EncodeMap[] = {
 //	{"enc_mode",			&encode_mode,							MAP_TO_U32,	0.0,		0,		0.0,		0.0,	},
 
 	{"s0_dptz",			&stream_map[0].dptz,							MAP_TO_U8,	0.0,		0,		0.0,		0.0,	false},
-	{"s0_type",			&stream_map[0].streamFormat.encode_type,			MAP_TO_U8,	0.0,		0,		0.0,		0.0,	false},
+	{"s0_type",			&stream_map[0].streamFormat.encode_type,			MAP_TO_U8,	1.0,		0,		0.0,		0.0,	false},
 	{"s0_flip_rotate",		&stream_map[0].streamFormat.flip_rotate,			MAP_TO_U8,	0.0,		0,		0.0,		0.0,	false},
-	{"s0_width",			&stream_map[0].streamFormat.encode_width,		MAP_TO_U16,	0.0,		0,		0.0,		0.0,	false},
-	{"s0_height",			&stream_map[0].streamFormat.encode_height,		MAP_TO_U16,	0.0,		0,		0.0,		0.0,	false},
+	{"s0_width",			&stream_map[0].streamFormat.encode_width,		MAP_TO_U16,	1920.0,		0,		0.0,		0.0,	false},
+	{"s0_height",			&stream_map[0].streamFormat.encode_height,		MAP_TO_U16,	1080.0,		0,		0.0,		0.0,	false},
 	{"s0_enc_fps",		&stream_map[0].streamFormat.encode_fps,			MAP_TO_U32,	30.0,		0,		0.0,		0.0,	false},
 
 	{"s1_dptz",			&stream_map[1].dptz,							MAP_TO_U8,	0.0,		0,		0.0,		0.0,	false},
-	{"s1_type",			&stream_map[1].streamFormat.encode_type,			MAP_TO_U8,	0.0,		0,		0.0,		0.0,	false},
+	{"s1_type",			&stream_map[1].streamFormat.encode_type,			MAP_TO_U8,	1.0,		0,		0.0,		0.0,	false},
 	{"s1_flip_rotate",		&stream_map[1].streamFormat.flip_rotate,			MAP_TO_U8,	0.0,		0,		0.0,		0.0,	false},
-	{"s1_width",			&stream_map[1].streamFormat.encode_width,		MAP_TO_U16,	0.0,		0,		0.0,		0.0,	false},
-	{"s1_height",			&stream_map[1].streamFormat.encode_height,		MAP_TO_U16,	0.0,		0,		0.0,		0.0,	false},
+	{"s1_width",			&stream_map[1].streamFormat.encode_width,		MAP_TO_U16,	720.0,		0,		0.0,		0.0,	false},
+	{"s1_height",			&stream_map[1].streamFormat.encode_height,		MAP_TO_U16,	480.0,		0,		0.0,		0.0,	false},
 	{"s1_enc_fps",		&stream_map[1].streamFormat.encode_fps,			MAP_TO_U32,	30.0,		0,		0.0,		0.0,	false},
 
 	{"s2_dptz",			&stream_map[2].dptz,							MAP_TO_U8,	0.0,		0,		0.0,		0.0,	false},
-	{"s2_type",			&stream_map[2].streamFormat.encode_type,			MAP_TO_U8,	0.0,		0,		0.0,		0.0,	false},
+	{"s2_type",			&stream_map[2].streamFormat.encode_type,			MAP_TO_U8,	1.0,		0,		0.0,		0.0,	false},
 	{"s2_flip_rotate",		&stream_map[2].streamFormat.flip_rotate,			MAP_TO_U8,	0.0,		0,		0.0,		0.0,	false},
 	{"s2_width",			&stream_map[2].streamFormat.encode_width,		MAP_TO_U16,	0.0,		0,		0.0,		0.0,	false},
 	{"s2_height",			&stream_map[2].streamFormat.encode_height,		MAP_TO_U16,	0.0,		0,		0.0,		0.0,	false},
 	{"s2_enc_fps",		&stream_map[2].streamFormat.encode_fps,			MAP_TO_U32,	30.0,		0,		0.0,		0.0,	false},
 
 	{"s3_dptz",			&stream_map[3].dptz,							MAP_TO_U8,	0.0,		0,		0.0,		0.0,	false},
-	{"s3_type",			&stream_map[3].streamFormat.encode_type,			MAP_TO_U8,	0.0,		0,		0.0,		0.0,	false},
+	{"s3_type",			&stream_map[3].streamFormat.encode_type,			MAP_TO_U8,	1.0,		0,		0.0,		0.0,	false},
 	{"s3_flip_rotate",		&stream_map[3].streamFormat.flip_rotate,			MAP_TO_U8,	0.0,		0,		0.0,		0.0,	false},
 	{"s3_width",			&stream_map[3].streamFormat.encode_width,		MAP_TO_U16,	0.0,		0,		0.0,		0.0,	false},
 	{"s3_height",			&stream_map[3].streamFormat.encode_height,		MAP_TO_U16,	0.0,		0,		0.0,		0.0,	false},
@@ -213,7 +241,7 @@ static Mapping OSDMap[] = {
 	{"s0_text_enable",		&osd_map[0].text_enable,	MAP_TO_U8,	0.0,		MIN_MAX_LIMIT,		0.0,		2.0,	false},
 	{"s0_no_rotate",		&osd_map[0].no_rotate,	MAP_TO_U8,	0.0,		MIN_MAX_LIMIT,		0.0,		2.0,	false},
 	{"s0_text",				&osd_map[0].text.str,		MAP_TO_STRING,	0.0,		0,		0.0,		0.0,		OSD_TEXT_LENGTH,	false},
-	{"s0_text_type",		&osd_map[0].text.type,	MAP_TO_U8,	0.0,		MIN_MAX_LIMIT,		0.0,		5,	false},
+	//{"s0_text_type",		&osd_map[0].text.type,	MAP_TO_U8,	0.0,		MIN_MAX_LIMIT,		0.0,		5,	false},
 	{"s0_text_size",		&osd_map[0].text.size,	MAP_TO_U8,	32.0,		MIN_MAX_LIMIT,		0.0,		100,	false},
 	{"s0_text_outline",		&osd_map[0].text.outline,	MAP_TO_U8,	0.0,		MIN_MAX_LIMIT,		0.0,		10.0,	false},
 	{"s0_text_color",		&osd_map[0].text.color,	MAP_TO_U8,	0.0,		MIN_MAX_LIMIT,		0.0,		COLOR_TYPE_NUM,false},
@@ -229,7 +257,7 @@ static Mapping OSDMap[] = {
 	{"s1_text_enable",		&osd_map[1].text_enable,	MAP_TO_U8,	0.0,		MIN_MAX_LIMIT,		0.0,		2.0,	false},
 	{"s1_no_rotate",		&osd_map[1].no_rotate,	MAP_TO_U8,	0.0,		MIN_MAX_LIMIT,		0.0,		2.0,	false},
 	{"s1_text",				&osd_map[1].text.str,		MAP_TO_STRING,	0.0,		0,		0.0,		0.0,		OSD_TEXT_LENGTH,	false},
-	{"s1_text_type",		&osd_map[1].text.type,	MAP_TO_U8,	0.0,		MIN_MAX_LIMIT,		0.0,		5,	false},
+	//{"s1_text_type",		&osd_map[1].text.type,	MAP_TO_U8,	0.0,		MIN_MAX_LIMIT,		0.0,		5,	false},
 	{"s1_text_size",		&osd_map[1].text.size,	MAP_TO_U8,	32.0,		MIN_MAX_LIMIT,		0.0,		100,	false},
 	{"s1_text_outline",		&osd_map[1].text.outline,	MAP_TO_U8,	0.0,		MIN_MAX_LIMIT,		0.0,		10.0,	false},
 	{"s1_text_color",		&osd_map[1].text.color,	MAP_TO_U8,	0.0,		MIN_MAX_LIMIT,		0.0,		COLOR_TYPE_NUM,false},
@@ -245,7 +273,7 @@ static Mapping OSDMap[] = {
 	{"s2_text_enable",		&osd_map[2].text_enable,	MAP_TO_U8,	0.0,		MIN_MAX_LIMIT,		0.0,		2.0,	false},
 	{"s2_no_rotate",		&osd_map[2].no_rotate,	MAP_TO_U8,	0.0,		MIN_MAX_LIMIT,		0.0,		2.0,	false},
 	{"s2_text",				&osd_map[2].text.str,		MAP_TO_STRING,	0.0,		0,		0.0,		0.0,		OSD_TEXT_LENGTH,	false},
-	{"s2_text_type",		&osd_map[2].text.type,	MAP_TO_U8,	0.0,		MIN_MAX_LIMIT,		0.0,		5,	false},
+	//{"s2_text_type",		&osd_map[2].text.type,	MAP_TO_U8,	0.0,		MIN_MAX_LIMIT,		0.0,		5,	false},
 	{"s2_text_size",		&osd_map[2].text.size,	MAP_TO_U8,	32.0,		MIN_MAX_LIMIT,		0.0,		100,	false},
 	{"s2_text_outline",		&osd_map[2].text.outline,	MAP_TO_U8,	0.0,		MIN_MAX_LIMIT,		0.0,		10.0,	false},
 	{"s2_text_color",		&osd_map[2].text.color,	MAP_TO_U8,	0.0,		MIN_MAX_LIMIT,		0.0,		COLOR_TYPE_NUM,false},
@@ -261,7 +289,7 @@ static Mapping OSDMap[] = {
 	{"s3_text_enable",		&osd_map[3].text_enable,	MAP_TO_U8,	0.0,		MIN_MAX_LIMIT,		0.0,		2.0,	false},
 	{"s3_no_rotate",		&osd_map[3].no_rotate,	MAP_TO_U8,	0.0,		MIN_MAX_LIMIT,		0.0,		2.0,	false},
 	{"s3_text",				&osd_map[3].text.str,		MAP_TO_STRING,	0.0,		0,		0.0,		0.0,		OSD_TEXT_LENGTH,	false},
-	{"s3_text_type",		&osd_map[3].text.type,	MAP_TO_U8,	0.0,		MIN_MAX_LIMIT,		0.0,		5,	false},
+	//{"s3_text_type",		&osd_map[3].text.type,	MAP_TO_U8,	0.0,		MIN_MAX_LIMIT,		0.0,		5,	false},
 	{"s3_text_size",		&osd_map[3].text.size,	MAP_TO_U8,	32.0,		MIN_MAX_LIMIT,		0.0,		100,	false},
 	{"s3_text_outline",		&osd_map[3].text.outline,	MAP_TO_U8,	0.0,		MIN_MAX_LIMIT,		0.0,		10.0,	false},
 	{"s3_text_color",		&osd_map[3].text.color,	MAP_TO_U8,	0.0,		MIN_MAX_LIMIT,		0.0,		COLOR_TYPE_NUM,false},
@@ -287,6 +315,29 @@ COLOR_TYPE_NUM,	false},
 
 	{NULL,			NULL,						-1,	0.0,					0,	0.0,	0.0,		false},
 };
+
+static Mapping LIVEMap[] = {
+//	{"encode_type",		&live_map.encode_type,	MAP_TO_U32,	0.0,		0,		0.0,		0.0,	
+// false,},
+//	{"encode_fps",		&live_map.encode_fps,	MAP_TO_U32,	0.0,		0,		0.0,		0.0,	
+// false,},
+//	{"brc_mode",		&live_map.brc_mode,		MAP_TO_U32,	0.0,		0,		0.0,		0.0,	
+// false,},
+	{"cbr_avg_bps",		&live_map.cbr_avg_bps,	MAP_TO_U32,	0.0,		0,		0.0,		0.0,	
+	false,},
+//	{"encode_width",	&live_map.encode_width,	MAP_TO_U16,	0.0,		0,		0.0,		0.0,	
+// false,},
+//	{"encode_height",	&live_map.encode_height,MAP_TO_U16,	0.0,		0,		0.0,		0.0,	
+// false,},
+//	{"vbr_min_bps",		&live_map.vbr_min_bps,	MAP_TO_U32,	0.0,		0,		0.0,		0.0,	
+// false,},
+//	{"vbr_max_bps",		&live_map.vbr_max_bps,	MAP_TO_U32,	0.0,		0,		0.0,		0.0,	
+// false,},
+
+	{NULL,			NULL,						-1,	0.0,					0,	0.0,	0.0,		
+	false,},
+};
+
 static Section Params[] = {
 	{"VINVOUT",		VinVoutMap,		get_vinvout_param,		set_vinvout_param},
 	{"ENCODE",		EncodeMap,		get_encode_param,		set_encode_param},
@@ -297,7 +348,7 @@ static Section Params[] = {
 	{"PRIMASK",		PMMap,			get_func_null,		set_pm_param},
 	{"OSD",			OSDMap,			get_func_null,		set_osd_param},
 //	{"DPTZ",		DPTZMap,		get_dptz_param,		set_dptz_param},
-//	{"LIVE",		LIVEMap,		get_live_param,		set_func_null},
+	{"LIVE",		LIVEMap,		get_live_param,		set_func_null},
 	{NULL,			NULL,			NULL,				NULL}
 };
 
@@ -381,8 +432,6 @@ int send_fly_request(enum CAMCONTROL_CMDTYPE cmdtype, const unsigned char datale
 static int check_params(Mapping * Map)
 {
 	int i = 0;
-
-    FUN_IN();
 
 	while (Map[i].TokenName != NULL) {
 		switch (Map[i].Type) {
@@ -637,17 +686,13 @@ static int check_params(Mapping * Map)
 		++i;
 	}
 
-    FUN_OUT();
-
 	return 0;
 }
 
 static int update_params(Mapping * Map)
 {
-    FUN_IN();
 	check_params(Map);
 //	memcpy(pInp, &cfg, sizeof(InputParameters));
-	FUN_OUT();
 	return 0;
 }
 
@@ -738,16 +783,15 @@ static void parse_content(Mapping * Map, char * buf, int bufsize)
 	char		msg[256];
 	int i;
 
-    FUN_IN("buf[%s]bufsize[%d]vin_map.frame_rate[%d]\n", buf, bufsize, vin_map.frame_rate);
 	// Stage one: Generate an argc/argv-type list in items[], without comments and whitespace.
 	// This is context insensitive and could be done most easily with lex(1).
 	item = parse_items(items, buf, bufsize);
-
+#if 0
     for (i=0;i<=item;i++)
     {
         PRT_DBG("item[%d]items [%d][%s]\n", item, i, items[i]);
     }
-
+#endif
 	memset(msg, 0, sizeof(msg));
 	// Stage two: interpret the Value, context sensitive.
 	for (i = 0; i < item; i += 3) {
@@ -858,6 +902,7 @@ static void parse_content(Mapping * Map, char * buf, int bufsize)
 			memset((char *) Map[MapIndex].Address, 0, Map[MapIndex].StringLengthLimit);
 			if (NULL != items[i+2]) {
 				strncpy((char *) Map[MapIndex].Address, items[i+2], Map[MapIndex].StringLengthLimit - 1);
+                Map[MapIndex].Update = true;
 			} else {
 				memset((char *) Map[MapIndex].Address, 0, Map[MapIndex].StringLengthLimit);
 			}
@@ -869,8 +914,6 @@ static void parse_content(Mapping * Map, char * buf, int bufsize)
 			exit(0);
 		}
 	}
-	PRT_DBG("Parse parameters : msg[%s]\n", msg);
-    FUN_OUT("vin_map.frame_rate[%d]\n", vin_map.frame_rate);
 }
 static int load_default_params(Mapping * Map)
 {
@@ -914,7 +957,6 @@ static int load_default_params(Mapping * Map)
 
 static int input_params(Mapping *Map, const char * content)
 {
-    FUN_IN();
 	if (NULL == content) {
 		load_default_params(Map);
 	} else {
@@ -928,7 +970,6 @@ static int input_params(Mapping *Map, const char * content)
 		update_params(Map);
 		free(pContent);
 	}
-    FUN_OUT();
 	return 0;
 }
 
@@ -1008,7 +1049,7 @@ int receive_text(u8 *pBuffer, u32 size)
 	int retv = recv(sockfd2, pBuffer, size, MSG_WAITALL);
 	if (retv <= 0) {
 		if (retv == 0) {
-			PRT_DBG("Port [%d] closed\n\n", ENCODE_SERVER_PORT);
+			PRT_DBG("\n-----Port [%d] closed-----\n\n", WEBSERVICE_PORT);
 			return -2;
 		}
 		PRT_ERR("recv() returns %d.", retv);
@@ -1017,19 +1058,34 @@ int receive_text(u8 *pBuffer, u32 size)
 
     if (size == 8)
     {
-        FUN_OUT("ACK.result[%d]ACK.info[%d]\n", ((Ack *)pBuffer)->result, ((Ack *)pBuffer)->info);
+        FUN_OUT("\n-----ACK.result[%d]ACK.info[%d]-----\n", ((Ack *)pBuffer)->result, ((Ack *)pBuffer)->info);
     }
     else
     {
-        FUN_OUT("not ACK content[%s]size[%d]\n", pBuffer, size);
+        FUN_OUT("\n-----not ACK content[%s]size[%d]-----\n", pBuffer, size);
     }
 	return retv;
+}
+
+static int get_live_param(char * section_name, u32 info)
+{
+	PRT_DBG("\nGet View parameters of stream [%d].\n", info);
+
+	live_map.cbr_avg_bps = stream_map[info].h264Conf.cbrAvgBps = 
+	g_stEncodeInfo[info].bitrate*1000;//bps
+
+
+	PRT_DBG("\n---------- Get View params --- [%d] ------\n"
+            "         cbr_avg_bps   = %d\n"
+            "------------------------------------------\n",
+            info, live_map.cbr_avg_bps);
+
+	return 0;
 }
 static int get_encode_param(char * section_name, u32 info)
 {
 	int streamID = info, retv = 0;
 
-    PRT_DBG("Section [%s] setting:streamID[%d]\n", section_name, streamID);
     stream_map[streamID].dptz                       = 0;
     stream_map[streamID].streamFormat.flip_rotate   = 0;
     
@@ -1099,9 +1155,39 @@ static int get_vinvout_param(char * section_name, u32 info)
 	return retv;
 }
 
+static int show_bmp(void)
+{
+	int retVal = 0;
+    static GADI_OSD_BmpParamsT bmpPars =
+    {
+	    .planeId   = 0,
+	    .areaId    = 2,
+	    .enable    = 1,
+	    .startX    = 0,
+	    .startY    = 0,
+	    .bmpFile   = "/webSvr/www/img/goke.bmp",
+    };
+    if (!osdHandle)
+    {   
+        retVal = gadi_osd_init();
+	    osdHandle = gadi_osd_open(&retVal);
+    }
+	if(retVal != GADI_OK)
+	{
+		PRT_ERR("gadi_osd_open error\n");
+        return (-1);
+	}    
+    retVal = gadi_osd_show_bmp(osdHandle, &bmpPars);
+
+    return retVal;
+
+}
+
 static int show_date(int stream, int areaId, int enable)
 {
 	GADI_VENC_StreamFormatT formatPar;
+    int width,height=0;
+    int streamId=-1;
     static GADI_OSD_TextParamsT textPar =
     {
     	.planeId   = 0,
@@ -1124,7 +1210,7 @@ static int show_date(int stream, int areaId, int enable)
     textPar.areaId = areaId;
     textPar.enable = enable;
     
-    formatPar.streamId = textPar.planeId;
+    streamId = formatPar.streamId = textPar.planeId;
 
 //	retVal =  video_get_stream_format(&formatPar);
 //	if(retVal != GADI_OK)
@@ -1146,15 +1232,17 @@ static int show_date(int stream, int areaId, int enable)
 		PRT_ERR("gadi_osd_open error\n");
         return (-1);
 	}
-
-	retVal = gadi_osd_show_date(osdHandle, &textPar, 1920, 1080);
+    width = stream_map[streamId].streamFormat.encode_width;
+    height = stream_map[streamId].streamFormat.encode_height;
+	retVal = gadi_osd_show_date(osdHandle, &textPar, width, height);
 
 	return retVal;
 
 }
-static int osd_set_text(GADI_OSD_TextParamsT* textParam)
+static int osd_set_text(GADI_OSD_TextParamsT* textParam, int streamId)
 {
 	int retVal = 0;
+    int width,height=0;
 #if 0
 	GADI_VENC_StreamFormatT formatPar;
 
@@ -1170,7 +1258,12 @@ static int osd_set_text(GADI_OSD_TextParamsT* textParam)
 
 	//strcpy(textParam.textStr, string);
 	textParam->textLen = strlen(textParam->textStr);
+    width = stream_map[streamId].streamFormat.encode_width;
+    height = stream_map[streamId].streamFormat.encode_height;
+    
     PRT_DBG("\n"
+            "======resolution======\n"
+            "         %d X %d      \n"
             "======text param======\n"
             "planeId    :       %d\n"
             "areaId     :       %d\n"
@@ -1186,7 +1279,9 @@ static int osd_set_text(GADI_OSD_TextParamsT* textParam)
             "startX     :       %d\n"
             "startY     :       %d\n"
             "boxWidth   :       %d\n"
-            "boxHeight  :       %d\n",
+            "boxHeight  :       %d\n"
+            "=====================\n",
+            width, height,
             textParam->planeId, textParam->areaId,
             textParam->enable, textParam->textStr,
             textParam->textLen, textParam->type,
@@ -1196,8 +1291,7 @@ static int osd_set_text(GADI_OSD_TextParamsT* textParam)
             textParam->startY, textParam->boxWidth,
             textParam->boxHeight
             );
-
-	retVal = gadi_osd_show_text(osdHandle, textParam, 1920, 1080);
+	retVal = gadi_osd_show_text(osdHandle, textParam, width, height);
 
 	return retVal;
 
@@ -1220,7 +1314,7 @@ static int add_pm(const privacy_mask_t *pm_param)
             goto err;
         }
     }
-    retVal = gadi_pm_malloc(pmHandle, pm_param, &pmIndex);
+    retVal = gadi_pm_malloc(pmHandle, (void *)pm_param, &pmIndex);
     if(retVal != 0)
     {
         PRT_ERR("gadi_pm_malloc error:%d\n",retVal);
@@ -1241,13 +1335,12 @@ err:
 }
 static int set_pm_param(char * section_name)
 {
-	FUN_IN("Section [%s] setting:\n", section_name);
 	privacy_mask_t pm;
 	pm.unit = 1;
-	pm.width = pm_map.width;
-	pm.height = pm_map.height;
-	pm.x = pm_map.x;
-	pm.y = pm_map.y;
+	pm.width = (int)pm_map.width*(1920.0/800);//max width
+	pm.height = (int)pm_map.height*(1080.0/600);//max height
+	pm.x = (int)pm_map.x*(1920.0/800);//max width
+	pm.y = (int)pm_map.y*(1080.0/600);//max height
 	pm.action = pm_map.action;
 	pm.color = pm_map.color;
     PRT_DBG("\n---------pm-----------\n"
@@ -1293,8 +1386,7 @@ static int set_pm_param(char * section_name)
 }
 static int set_osd_param(char * section_name)
 {
-	PRT_DBG("Section osd[%s] setting:\n", section_name);
-	int i;
+	int i,j;
     GADI_OSD_TextParamsT textParam;
 
  
@@ -1304,99 +1396,125 @@ static int set_osd_param(char * section_name)
     if (!osdHandle)
     {   
         retVal = gadi_osd_init();
-	    osdHandle = gadi_osd_open(&retVal);
+        osdHandle = gadi_osd_open(&retVal);
     }
-	if(retVal != GADI_OK)
-	{
-		PRT_ERR("gadi_osd_open error\n");
+    if(retVal != GADI_OK)
+    {
+        PRT_ERR("gadi_osd_open error\n");
         return (-1);
-	}
+    }
 
-	for (i = 0; i < 1; ++i) {
+    for (i = 0; i < CUR_STREAM_NUM; ++i) 
+    {
 
         /*-----------------------------------------------------------------------------
-         *  bmp
+         *  check update
          *-----------------------------------------------------------------------------*/
+        for (j=0; j<14; j++)//15 var
+        {
+            if (OSDMap[i*14 + j].Update)
+            {
+                /*-----------------------------------------------------------------------------
+                 *  bmp
+                 *-----------------------------------------------------------------------------*/
+                if (osd_map[i].bmp_enable!= g_mw_osd[i].bmp_enable) {
+                    if (show_bmp() < 0) {
+                        PRT_ERR("Add osd bmp failed !\n");
+                        return -1;
+                    } else {
+                        g_mw_osd[i].bmp_enable = osd_map[i].bmp_enable;
+                    }
+                }
+                
 #if 0
-		if (osd_map[i].bmp_enable != g_mw_osd[i].bmp_enable) {
-			PRT_DBG("Enable bmp osd, add Ambarella log file.\n");
-			bmp.stream = i;
-			bmp.area = 0;
-			bmp.enable = osd_map[i].bmp_enable;
-			bmp.offset_x = 100;
-			bmp.offset_y = 100;
-			bmp.bmp_filename = "/usr/local/bin/Ambarella-256x128-8bit.bmp";
-			if (mw_osd_set_bmp(&bmp) < 0) {
-				PRT_DBG("Add osd bmp failed !\n");
-			} else {
-				g_mw_osd[i].bmp_enable = osd_map[i].bmp_enable;
-			}
-		}
+                if (osd_map[i].bmp_enable != g_mw_osd[i].bmp_enable) {
+                    PRT_DBG("Enable bmp osd, add Ambarella log file.\n");
+                    bmp.stream = i;
+                    bmp.area = 0;
+                    bmp.enable = osd_map[i].bmp_enable;
+                    bmp.offset_x = 100;
+                    bmp.offset_y = 100;
+                    bmp.bmp_filename = "/usr/local/bin/Ambarella-256x128-8bit.bmp";
+                    if (mw_osd_set_bmp(&bmp) < 0) {
+                        PRT_DBG("Add osd bmp failed !\n");
+                    } else {
+                        g_mw_osd[i].bmp_enable = osd_map[i].bmp_enable;
+                    }
+                }
 #endif
-        /*-----------------------------------------------------------------------------
-         *  time
-         *-----------------------------------------------------------------------------*/
-		if (osd_map[i].time_enable != g_mw_osd[i].time_enable) {
-			PRT_DBG("Enable time string osd, add black\n");
-			if (show_date(i, 1, osd_map[i].time_enable) < 0) {
-				PRT_ERR("Add osd current time failed !\n");
-				return -1;
-			} else {
-				g_mw_osd[i].time_enable = osd_map[i].time_enable;
-			}
-		}
+                /*-----------------------------------------------------------------------------
+                 *  time
+                 *-----------------------------------------------------------------------------*/
+                if (osd_map[i].time_enable != g_mw_osd[i].time_enable) {
+                    if (show_date(i, 1, osd_map[i].time_enable) < 0) {
+                        PRT_ERR("Add osd current time failed !\n");
+                        return -1;
+                    } else {
+                        g_mw_osd[i].time_enable = osd_map[i].time_enable;
+                    }
+                }
 
-        /*-----------------------------------------------------------------------------
-         *  text
-         *-----------------------------------------------------------------------------*/
-		if (1) {
-			osd_map[i].text.length = strlen(osd_map[i].text.str);
-			osd_map[i].text.stream = i;
-			PRT_DBG("Enable osd text string [%s], length [%d].\n",
-				osd_map[i].text.str, osd_map[i].text.length);
+                /*-----------------------------------------------------------------------------
+                 *  text
+                 *-----------------------------------------------------------------------------*/
+                osd_map[i].text.length = strlen(osd_map[i].text.str);
+                osd_map[i].text.stream = i;
+                PRT_DBG("\n-----Enable osd text string [%s], length [%d].-----\n",
+                        osd_map[i].text.str, osd_map[i].text.length);
 
-            textParam.planeId   = osd_map[i].text.stream;
-            textParam.areaId    = 2;//0:bmp 1:time 2:show text
-            textParam.enable    = 1;//osd_map[i].text_enable;
-            textParam.textLen   = osd_map[i].text.length;
-            strncpy(textParam.textStr, osd_map[i].text.str, textParam.textLen+1);
-            textParam.type      = osd_map[i].text.type;
-            textParam.size      = osd_map[i].text.size;
-            textParam.color     = osd_map[i].text.color;
-            textParam.outline   = osd_map[i].text.outline;
-            textParam.bold      = osd_map[i].text.bold;
-            textParam.italic    = osd_map[i].text.italic;
-            textParam.startX    = osd_map[i].text.start_x;
-            textParam.startY    = osd_map[i].text.start_y;
-            textParam.boxWidth  = osd_map[i].text.box_w;
-            textParam.boxHeight = osd_map[i].text.box_h;
+                textParam.planeId   = osd_map[i].text.stream;
+                textParam.areaId    = 2;//0:bmp 1:time 2:show text
+                textParam.enable    = 1;//osd_map[i].text_enable;
+                if (osd_map[i].text.length == 0)
+                {
+                    strncpy(osd_map[i].text.str, " ", 2);
+                    osd_map[i].text.length = 1;
+                /*-----------------------------------------------------------------------------
+                 *  clean text
+                 *-----------------------------------------------------------------------------*/
+                    textParam.enable = 0;
+                }
+                textParam.textLen   = osd_map[i].text.length;
+                    
+                strncpy(textParam.textStr, osd_map[i].text.str, textParam.textLen+1);
+                textParam.type      = 0;//osd_map[i].text.type;
+                textParam.size      = osd_map[i].text.size;
+                textParam.color     = osd_map[i].text.color;
+                textParam.outline   = osd_map[i].text.outline;
+                textParam.bold      = osd_map[i].text.bold;
+                textParam.italic    = osd_map[i].text.italic;
+                textParam.startX    = osd_map[i].text.start_x;
+                textParam.startY    = osd_map[i].text.start_y;
+                textParam.boxWidth  = osd_map[i].text.box_w;
+                textParam.boxHeight = osd_map[i].text.box_h;
 
-			if (osd_set_text(&textParam) < 0) {
-				PRT_ERR("Add osd text string [%s] failed !\n", osd_map[i].text.str);
-                return (-1);
-			} else {
-                PRT_DBG("Add osd text string [%s] successed!\n", osd_map[i].text.str);
-			}
-		}
-	}
+                if (osd_set_text(&textParam, i) < 0) {
+                    PRT_ERR("Add osd text string [%s] failed !\n", osd_map[i].text.str);
+                    return (-1);
+                } else {
+                    PRT_DBG("\n-----Add osd text string [%s] successed!-----\n", osd_map[i].text.str);
+                }
+                OSDMap[i*15 + j].Update = false;
+                break;
+            }
+        }
+    }
 
- //   retVal = gadi_osd_close(osdHandle);
- //   osdHandle = NULL;
- //   if(retVal != GADI_OK)
+//   retVal = gadi_osd_close(osdHandle);
+//   osdHandle = NULL;
+//   if(retVal != GADI_OK)
 //	{
 //		PRT_ERR("gadi_osd_close error\n");
 //        return (-1);
 //	}
-	return 0;
+return 0;
 }
 static int set_encode_param(char * section_name)
 {
-	int streamID = 0;
-    u16 width=0,height=0;
+    int streamID = 0;
     int retVal=0;
     int i=0;
 
-	PRT_DBG("Section [%s] setting:\n", section_name);
     PRT_DBG("\n"
             "s0_dptz             [%d]\n"
             "s0_type             [%d]\n"
@@ -1404,8 +1522,8 @@ static int set_encode_param(char * section_name)
             "s0_enc_fps          [%d]\n"
             "s0_resolution    [%d X %d]\n"
             ,  stream_map[streamID].dptz,  stream_map[streamID].streamFormat.encode_type,
-               stream_map[streamID].streamFormat.flip_rotate,  stream_map[streamID].streamFormat.encode_fps,
-               stream_map[streamID].streamFormat.encode_width, stream_map[streamID].streamFormat.encode_height);
+            stream_map[streamID].streamFormat.flip_rotate,  stream_map[streamID].streamFormat.encode_fps,
+            stream_map[streamID].streamFormat.encode_width, stream_map[streamID].streamFormat.encode_height);
 
 
     /*-----------------------------------------------------------------------------
@@ -1413,7 +1531,7 @@ static int set_encode_param(char * section_name)
      *-----------------------------------------------------------------------------*/
     for (i=5; i<sizeof(EncodeMap)/sizeof(Mapping); i+=6)
     {
-       streamID = (i+6)/6 - 1;
+        streamID = (i+6)/6 - 1;
         if (EncodeMap[i].Update)
         {
             retVal = gapp_video_set_framerate(streamID, 512000000/stream_map[streamID].streamFormat.encode_fps);
@@ -1454,6 +1572,8 @@ static int set_encode_param(char * section_name)
         if (EncodeMap[i].Update)
         {
             PRT_ERR("adi not implementationed\n");
+
+
 #if 0
             retVal = gapp_video_set_framerate(streamID, 512000000/stream_map[streamID].streamFormat.encode_fps);
             if(retVal != GADI_OK){
@@ -1463,6 +1583,7 @@ static int set_encode_param(char * section_name)
             g_emIpcXmlType = IPC_XML_ENCODE;
 #endif
             EncodeMap[i].Update = false;
+            return (-1);
         }
     }
     /* save xml single */
@@ -1515,13 +1636,23 @@ static int set_vinvout_param(char * section_name)
 
 static int get_stream_param(char *section_name, u32 info)
 {
-    int streamId = 0, retv = 0;
-    FUN_IN();
-    PRT_DBG("Section [%s] setting:\n", section_name);
+    int stream_id = 0, retv = 0;
 
-     streamId = atoi(&section_name[6]);
-    stream_map[streamId].h264Conf.cbrAvgBps =
-        g_stEncodeInfo[streamId].bitrate*1000;
+    stream_id = atoi(&section_name[6]);
+    stream_map[stream_id].h264Conf.cbrAvgBps =
+        g_stEncodeInfo[stream_id].bitrate*1000;
+    //h264
+    if (!vencHandle)
+    {
+        PRT_ERR("vencHandle is null\n");
+        return (-1);
+    }
+    if(gadi_venc_get_h264_config(vencHandle, &stream_map[stream_id].h264Conf)<0)
+    {
+        PRT_ERR("adi: get_h264: error!\n");
+        return (-2);
+    }
+    //mpeg
 #if 0
     //h264
     stream_map[streamID].h264Conf.gopM              = 
@@ -1533,31 +1664,32 @@ static int get_stream_param(char *section_name, u32 info)
     //mpeg 
     stream_map[streamID].mjpegConf.quality          = 
         g_stEncodeInfo[streamID].mpeg.quality;
-    FUN_OUT("\
-            dptz             [%d]\n\
-            flipRotate       [%d]\n\
-            fps              [%d]\n\
-            resolution     [%d X %d]\n\
-            h264 M           [%d]\n\
-            h264 N           [%d]\n\
-            h264 IDR         [%d]\n\
-            mjpeg qa         [%d]\n\
-            ", 
-            stream_map[streamID].dptz, stream_map[streamID].streamFormat.flip_rotate,   
-            stream_map[streamID].streamFormat.encode_fps,
-            stream_map[streamID].streamFormat.encode_width,
-            stream_map[streamID].streamFormat.encode_height,
-            stream_map[streamID].h264Conf.gopM,
-            stream_map[streamID].h264Conf.gopN,
-            stream_map[streamID].h264Conf.idrInterval,
-            stream_map[streamID].mjpegConf.quality
+#else
+    FUN_OUT("\n"
+            "dptz             [%d]\n"
+            "flipRotate       [%d]\n"
+            "fps              [%d]\n"
+            "resolution     [%d X %d]\n"
+            "h264 M           [%d]\n"
+            "h264 N           [%d]\n"
+            "h264 IDR         [%d]\n"
+            "mjpeg qa         [%d]\n"
+            , 
+            stream_map[stream_id].dptz, stream_map[stream_id].streamFormat.flip_rotate,   
+            stream_map[stream_id].streamFormat.encode_fps,
+            stream_map[stream_id].streamFormat.encode_width,
+            stream_map[stream_id].streamFormat.encode_height,
+            stream_map[stream_id].h264Conf.gopM,
+            stream_map[stream_id].h264Conf.gopN,
+            stream_map[stream_id].h264Conf.idrInterval,
+            stream_map[stream_id].mjpegConf.quality
     );
  #endif
     //stream_map[streamId].h264Conf.gopM = 
     //stream_map[streamId].h264Conf.gopN = 
     //stream_map[streamId].h264Conf.idrInterval = 
     //stream_map[streamId].mjpegConf.quality = 
-    FUN_OUT("cbrAvgBps [%d]\n", stream_map[streamId].h264Conf.cbrAvgBps);
+    FUN_OUT("cbrAvgBps [%d]\n", stream_map[stream_id].h264Conf.cbrAvgBps);
 
 	return retv;
 }
@@ -1568,20 +1700,34 @@ static int set_stream_param(char *section_name)
     int retVal = -1;
     int h264_update = false;
     int i=0;
-
-	FUN_IN("Section [%s] setting:\n", section_name);
-
+    GADI_VENC_BitRateRangeT stBitRate;
+    
     streamId = atoi(&section_name[6]);
     FUN_OUT("cbrAvgBps [%d]\n", stream_map[streamId].h264Conf.cbrAvgBps);
-
+    if (!vencHandle)
+    {
+       PRT_ERR("vencHandle is NULL\n");
+       return (-2);
+    }
     /*-----------------------------------------------------------------------------
      *  set bitrate
      *-----------------------------------------------------------------------------*/
-    retVal = gapp_video_set_bitrate(streamId, stream_map[streamId].h264Conf.cbrAvgBps);
-    if(retVal != GADI_OK){
-        PRT_ERR("send_bitrate: error!\n");
+    if (Params[streamId + 2].map[4].Update)
+    {
+	    stBitRate.streamId 	= streamId;
+
+        stBitRate.minBps	= stream_map[streamId].h264Conf.cbrAvgBps;
+	    stBitRate.maxBps	= stream_map[streamId].h264Conf.cbrAvgBps;//streams[streamId].h264Conf.vbrMaxbps;
+    
+
+        if(GADI_OK != gadi_venc_set_bitrate(vencHandle, &stBitRate))
+        {
+            PRT_ERR("adi:set bitrate failed\n");
+            return (-1);
+        }
+        g_stEncodeInfo[streamId].bitrate = stream_map[streamId].h264Conf.cbrAvgBps;
+        Params[streamId + 2].map[4].Update = false;
     }
-    g_stEncodeInfo[streamId].bitrate = stream_map[streamId].h264Conf.cbrAvgBps;
 
 #if 1
     /*-----------------------------------------------------------------------------
@@ -1592,20 +1738,41 @@ static int set_stream_param(char *section_name)
         if (Params[streamId + 2].map[i].Update)
         {
             h264_update = true;
+            Params[streamId + 2].map[i].Update = false;
         }
     }
     if (true == h264_update)
     {
-        if (!vencHandle)
-        {
-            PRT_ERR("vencHandle NULL\n");
-            return (-1);
+        if(gapp_video_stop_encode_stream() < 0)
+        {    
+            PRT_ERR("stop encode failed!\n");
+            return -1;
         }
-        if(gadi_venc_set_h264_config(vencHandle, &stream_map[streamId].h264Conf) < 0)
+
+        if(gadi_vin_enter_preview(vinHandle, 0) < 0)
+        {
+            PRT_ERR("gadi_vin_enter_preview enter error.\n");
+            return -1;
+        }
+        
+        if((retVal = gadi_venc_set_h264_config(vencHandle, 
+        &stream_map[streamId].h264Conf)) < 0)
         {
             PRT_ERR("gadi_venc_set_h264_config error, steamId=%d\n", streamId);
             return (-1);
         }
+        
+        if(gadi_vin_enter_preview(vinHandle, 1) < 0)
+        {
+            PRT_ERR("gadi_vin_enter_preview enter error.\n");
+            return -1;
+        }
+
+        if(gapp_video_start_encode_stream() < 0)
+        {    
+            PRT_ERR("start encode failed!\n");
+            return -1;
+        }        
     }
 #endif
     /* save xml single */
@@ -1644,13 +1811,13 @@ static int do_get_param(Request *req)
 	// Get section name
 	retv = receive_text(name, req->dataSize);
 	name[req->dataSize] = 0;
-	PRT_DBG("Section Name is : %s\n", (char *)name);
+	PRT_DBG("\n------Section Name is : %s------\n", (char *)name);
 
 	section = find_section((char *)name);
 	if (NULL == section) {
 		ack.result = -1;
 		ack.info = -1;
-		PRT_DBG("Section [%s] is not found!\n", (char *)name);
+		PRT_DBG("\n------Section [%s] is not found!------\n", (char *)name);
 		return send_text((u8 *)&ack, sizeof(ack));
 	} else {
         /*-----------------------------------------------------------------------------
@@ -1659,7 +1826,9 @@ static int do_get_param(Request *req)
          *-----------------------------------------------------------------------------*/
 		retv = (*section->get)(section->name, req->info);
 		retv = output_params(section->map, &content);
-		PRT_DBG("content[%s]\n", content);
+		PRT_DBG("\n------------content-----------\n"
+                "[%s]\n"
+                "-------------------------------\n", content);
 		ack.result = retv;
 		ack.info = strlen(content);
 		send_text((u8 *)&ack, sizeof(ack));
@@ -1678,12 +1847,12 @@ static int do_set_param(Request *req)
     memset(g_buffer, 0, BUFFER_SIZE);
 	retv = receive_text(name, req->dataSize);
 	name[req->dataSize] = 0;
-	PRT_DBG("Section Name is : %s\n", (char *)name);
+	PRT_DBG("\n------Section Name is : %s------\n", (char *)name);
 	section = find_section((char *)name);
 	ack.info = ack.result = (NULL == section) ? -1 : 0;
 	retv = send_text((u8 *)&ack, sizeof(ack));
 	if (ack.result == -1) {
-		PRT_DBG("Section [%s] is not found!\n", (char *)name);
+		PRT_DBG("\n------Section [%s] is not found!------\n", (char *)name);
 		return -1;
 	}
 
@@ -1691,7 +1860,9 @@ static int do_set_param(Request *req)
 	retv = receive_text((u8 *)content, req->info);
 	content[req->info] = 0;
 	if (0) {
-		PRT_DBG("CGI Setting is : content[%s]\n", content);
+		PRT_DBG("\n------CGI Setting : content-----\n"
+                "[%s]\n"
+                "---------------------------------\n", content);
 	} else {
 		PRT_DBG("CGI Parameter Setting is : content[%s]\n", content);
 
@@ -1701,7 +1872,7 @@ static int do_set_param(Request *req)
          *-----------------------------------------------------------------------------*/
 		retv = input_params(section->map, content);
 		retv = (*section->set)(section->name);
-        PRT_DBG("ACK.result[%d] ack.info[%d]\n", ack.result, ack.info);
+        PRT_DBG("\nACK.result[%d] ack.info[%d]\n", ack.result, ack.info);
 		ack.result = ack.info = retv;
 	}
 	retv = send_text((u8 *)&ack, sizeof(ack));
@@ -1711,48 +1882,48 @@ static int do_change_br(Request *req)
 {
 	int retv = 0, stream_id = 0;
 	Ack ack;
-    char buf[BUFFER_SIZE]="\0";
-
-    FUN_IN("req.id[%d]req.info[%d]req.dataSize[%d]\n", req->id, req->info, req->dataSize);
-
+    GADI_VENC_BitRateRangeT bitrate;
+    
     stream_id = (req->info >> STREAM_ID_OFFSET);
-    stream_map[stream_id].h264Conf.cbrAvgBps = (req->info & ~(0xf <<
-    STREAM_ID_OFFSET))/1000;
+    u32 cbr_avg_bps = (req->info & ~(0xf <<
+    STREAM_ID_OFFSET));
+    if (cbr_avg_bps != stream_map[stream_id].h264Conf.cbrAvgBps)
+    {
+        Params[stream_id + 2].map[4].Update      = true;
+        stream_map[stream_id].h264Conf.cbrAvgBps = cbr_avg_bps;
+    }
 
-    sprintf(buf, "STREAM%d", stream_id);
-    PRT_DBG("before set_stream_param\n");
-    set_stream_param(buf);
-    PRT_DBG("after set_stream_param\n");
+    /*-----------------------------------------------------------------------------
+     *  set bitrate
+     *-----------------------------------------------------------------------------*/
 
-#if 0
-	mw_bitrate_range br;
-	stream = (req->info >> STREAM_ID_OFFSET);
-	br.id = (1 << stream);
-	br.min_bps = req->info & ~(0x3 << STREAM_ID_OFFSET);
-	br.max_bps = req->dataSize;
-	retv = mw_change_br(&br);
-	APP_INFO("[do_change_br] stream %d, bitrate range [%d, %d].\n",
-		stream, br.min_bps, br.max_bps);
-	if (retv == 0) {
-		if (g_mw_stream[stream].h264.brc_mode & 0x1) {
-			g_mw_stream[stream].h264.vbr_min_bps = br.min_bps;
-			g_mw_stream[stream].h264.vbr_max_bps = br.max_bps;
-			stream_map[stream].h264.vbr_min_bps = br.min_bps;
-			stream_map[stream].h264.vbr_max_bps = br.max_bps;
-		} else {
-			g_mw_stream[stream].h264.cbr_avg_bps = br.min_bps;
-			stream_map[stream].h264.cbr_avg_bps = br.min_bps;
-		}
-	}
-#endif
+    if (true == Params[stream_id + 2].map[4].Update)
+    {
+	    bitrate.streamId 	= stream_id;
+
+        bitrate.minBps	= stream_map[stream_id].h264Conf.cbrAvgBps;
+	    bitrate.maxBps	= stream_map[stream_id].h264Conf.cbrAvgBps;//streams[streamId].h264Conf.vbrMaxbps;
+    
+
+        if(GADI_OK != gadi_venc_set_bitrate(vencHandle, &bitrate))
+        {
+            PRT_ERR("adi:set bitrate failed\n");
+            return (-1);
+        }
+        g_stEncodeInfo[stream_id].bitrate = 
+        stream_map[stream_id].h264Conf.cbrAvgBps/1000;//kbps
+        Params[stream_id + 2].map[4].Update = false;
+        PRT_DBG("STREAM[%d] bitrate[%d](bps)\n", stream_id, cbr_avg_bps);
+    }
 	ack.result = retv;
 	ack.info = 0;
+    raise(XMLSAVE);
 	return send_text((u8 *)&ack, sizeof(ack));
 }
 
 static int process_request(Request *req)
 {
-	PRT_DBG("Process Request ID [%d]\n", (int)req->id);
+	PRT_DBG("\n-----Process Request ID [%d]-----\n", (int)req->id);
 	switch (req->id) {
 	case REQ_SET_FORCEIDR:
 //		do_force_idr(req);
@@ -1795,12 +1966,13 @@ static int connect_server(void)
 	assert(sockfd2 <= 0);
 	socklen_t length = sizeof(client_addr);
 
-	PRT_DBG("Listen to %d\n", ENCODE_SERVER_PORT);
+	PRT_DBG("\n-----Listen to %d-----\n", WEBSERVICE_PORT);
 	if ((sockfd2 = accept(sockfd, (struct sockaddr *)&client_addr, &length)) < 0) {
 		PRT_ERR("accept failed %d\n", sockfd2);
 		return -1;
 	}
-	PRT_DBG("Port [%d] connected!\n", ENCODE_SERVER_PORT);
+	PRT_DBG("\n-----Port [%d] connected!client ip[%s]-----\n", WEBSERVICE_PORT, inet_ntoa((*((struct 
+	sockaddr_in*)&client_addr)).sin_addr));
 
 	return 0;
 }
@@ -1852,7 +2024,7 @@ static int start_server(void)
 
 	memset(&server_addr, 0, sizeof(server_addr));
 	server_addr.sin_family = AF_INET;
-	server_addr.sin_port = htons(ENCODE_SERVER_PORT);
+	server_addr.sin_port = htons(WEBSERVICE_PORT);
 	server_addr.sin_addr.s_addr = htons(INADDR_ANY);
 
 	if (bind(sockfd, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
@@ -1873,7 +2045,7 @@ static int create_server(void)
 		PRT_ERR("start_server");
 		return -1;
 	}
-	PRT_DBG(" [Done] Create web_service\n");
+	PRT_DBG("\n-----[Done] Create web_service-----\n");
 	return 0;
 }
 static int load_default_configs()

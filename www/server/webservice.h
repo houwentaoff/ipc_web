@@ -3,7 +3,7 @@
 *
 ** \file      webservice.h
 **
-** \version   $Id: webservice.h 2482 2014-12-04 07:45:14Z houwentao $
+** \version   $Id: webservice.h 2522 2014-12-17 06:47:37Z houwentao $
 **
 ** \brief
 **
@@ -22,7 +22,7 @@
 
 //#include "adi_venc.h"
 //#define SERVER_CONFIG_PATH		"/etc/ambaipcam/mediaserver"
-#define ENCODE_SERVER_PORT			(20000)
+#define WEBSERVICE_PORT			(20000)
 //#define IMAGE_SERVER_PORT			(20002)
 #define BUFFER_SIZE					(1024)
 #define ENCODE_STREAM_NUM           (4)
@@ -74,88 +74,90 @@ typedef unsigned short u16;
 #define AMBA_VIDEO_FPS_7_5			68266667	//(512000000 / 15 * 2)
 #define AMBA_VIDEO_FPS_3_75			136533333	//(512000000 / 15 * 4)
 #else
-#define AMBA_VIDEO_FPS(fps)			(fps)
-#define AMBA_VIDEO_FRAC_FPS(fps)		(0x10000 + fps)
-#define AMBA_VIDEO_FPS_AUTO			AMBA_VIDEO_FPS(0)
-#define AMBA_VIDEO_FPS_1			AMBA_VIDEO_FPS(1)
-#define AMBA_VIDEO_FPS_2			AMBA_VIDEO_FPS(2)
-#define AMBA_VIDEO_FPS_3			AMBA_VIDEO_FPS(3)
-#define AMBA_VIDEO_FPS_4			AMBA_VIDEO_FPS(4)
-#define AMBA_VIDEO_FPS_5			AMBA_VIDEO_FPS(5)
-#define AMBA_VIDEO_FPS_6			AMBA_VIDEO_FPS(6)
-#define AMBA_VIDEO_FPS_10			AMBA_VIDEO_FPS(10)
-#define AMBA_VIDEO_FPS_15			AMBA_VIDEO_FPS(15)
-#define AMBA_VIDEO_FPS_20			AMBA_VIDEO_FPS(20)
-#define AMBA_VIDEO_FPS_24			AMBA_VIDEO_FPS(24)
-#define AMBA_VIDEO_FPS_25			AMBA_VIDEO_FPS(25)
-#define AMBA_VIDEO_FPS_30			AMBA_VIDEO_FPS(30)
-#define AMBA_VIDEO_FPS_50			AMBA_VIDEO_FPS(50)
-#define AMBA_VIDEO_FPS_60			AMBA_VIDEO_FPS(60)
-#define AMBA_VIDEO_FPS_120			AMBA_VIDEO_FPS(120)
-#define AMBA_VIDEO_FPS_29_97			AMBA_VIDEO_FRAC_FPS(0)
-#define AMBA_VIDEO_FPS_59_94			AMBA_VIDEO_FRAC_FPS(1)
-#define AMBA_VIDEO_FPS_23_976			AMBA_VIDEO_FRAC_FPS(2)
-#define AMBA_VIDEO_FPS_12_5			AMBA_VIDEO_FRAC_FPS(3)
-#define AMBA_VIDEO_FPS_6_25			AMBA_VIDEO_FRAC_FPS(4)
-#define AMBA_VIDEO_FPS_3_125			AMBA_VIDEO_FRAC_FPS(5)
-#define AMBA_VIDEO_FPS_7_5			AMBA_VIDEO_FRAC_FPS(6)
-#define AMBA_VIDEO_FPS_3_75			AMBA_VIDEO_FRAC_FPS(7)
-#define AMBA_VOUT_SINK_TYPE_CVBS    (1)
+#define VIDEO_FPS(fps)			(fps)
+#define VIDEO_FRAC_FPS(fps)		(0x10000 + fps)
+#define VIDEO_FPS_AUTO			VIDEO_FPS(0)
+#define VIDEO_FPS_1			VIDEO_FPS(1)
+#define VIDEO_FPS_2			VIDEO_FPS(2)
+#define VIDEO_FPS_3			VIDEO_FPS(3)
+#define VIDEO_FPS_4			VIDEO_FPS(4)
+#define VIDEO_FPS_5			VIDEO_FPS(5)
+#define VIDEO_FPS_6			VIDEO_FPS(6)
+#define VIDEO_FPS_10			VIDEO_FPS(10)
+#define VIDEO_FPS_15			VIDEO_FPS(15)
+#define VIDEO_FPS_20			VIDEO_FPS(20)
+#define VIDEO_FPS_24			VIDEO_FPS(24)
+#define VIDEO_FPS_25			VIDEO_FPS(25)
+#define VIDEO_FPS_30			VIDEO_FPS(30)
+#define VIDEO_FPS_50			VIDEO_FPS(50)
+#define VIDEO_FPS_60			VIDEO_FPS(60)
+#define VIDEO_FPS_120			VIDEO_FPS(120)
+#define VIDEO_FPS_29_97			VIDEO_FRAC_FPS(0)
+#define VIDEO_FPS_59_94			VIDEO_FRAC_FPS(1)
+#define VIDEO_FPS_23_976			VIDEO_FRAC_FPS(2)
+#define VIDEO_FPS_12_5			VIDEO_FRAC_FPS(3)
+#define VIDEO_FPS_6_25			VIDEO_FRAC_FPS(4)
+#define VIDEO_FPS_3_125			VIDEO_FRAC_FPS(5)
+#define VIDEO_FPS_7_5			VIDEO_FRAC_FPS(6)
+#define VIDEO_FPS_3_75			VIDEO_FRAC_FPS(7)
+#define VOUT_SINK_TYPE_CVBS    (1)
 #endif
+#endif
+#if 1
 /* ======================= Standart format defines ========================== */
-enum amba_video_mode {
-	AMBA_VIDEO_MODE_AUTO		= 0,
+enum amba_video_mode_e {
+	VIDEO_MODE_AUTO		= 0,
 
-	AMBA_VIDEO_MODE_320_240		= 1,		//320x240
-	AMBA_VIDEO_MODE_320_288		= 2,		//320x288
-	AMBA_VIDEO_MODE_360_240		= 3,		//360x240
-	AMBA_VIDEO_MODE_360_288		= 4,		//360x288
-	AMBA_VIDEO_MODE_480_240		= 5,		//480x240
-	AMBA_VIDEO_MODE_720_240		= 6,		//720x240
-	AMBA_VIDEO_MODE_960_240		= 7,		//960x240
-	AMBA_VIDEO_MODE_VGA		= 8,		//640x480
-	AMBA_VIDEO_MODE_SVGA		= 9,		//800x600
-	AMBA_VIDEO_MODE_XGA		= 10,		//1024x768
-	AMBA_VIDEO_MODE_SXGA		= 11,		//1280x1024
-	AMBA_VIDEO_MODE_UXGA		= 12,		//1600x1200
-	AMBA_VIDEO_MODE_QXGA		= 13,		//2048x1536
-	AMBA_VIDEO_MODE_WVGA		= 14,		//800x480
-	AMBA_VIDEO_MODE_WSVGA		= 15,		//1024x600
-	AMBA_VIDEO_MODE_1280_960	= 16,		//1280x960
-	AMBA_VIDEO_MODE_WXGA		= 17,		//1280x800
-	AMBA_VIDEO_MODE_WSXGA		= 18,		//1440x900
-	AMBA_VIDEO_MODE_WSXGAP		= 19,		//1680x1050
-	AMBA_VIDEO_MODE_WUXGA		= 20,		//1920x1200
+	VIDEO_MODE_320_240		= 1,		//320x240
+	VIDEO_MODE_320_288		= 2,		//320x288
+	VIDEO_MODE_360_240		= 3,		//360x240
+	VIDEO_MODE_360_288		= 4,		//360x288
+	VIDEO_MODE_480_240		= 5,		//480x240
+	VIDEO_MODE_720_240		= 6,		//720x240
+	VIDEO_MODE_960_240		= 7,		//960x240
+	VIDEO_MODE_VGA		= 8,		//640x480
+	VIDEO_MODE_SVGA		= 9,		//800x600
+	VIDEO_MODE_XGA		= 10,		//1024x768
+	VIDEO_MODE_SXGA		= 11,		//1280x1024
+	VIDEO_MODE_UXGA		= 12,		//1600x1200
+	VIDEO_MODE_QXGA		= 13,		//2048x1536
+	VIDEO_MODE_WVGA		= 14,		//800x480
+	VIDEO_MODE_WSVGA		= 15,		//1024x600
+	VIDEO_MODE_1280_960	= 16,		//1280x960
+	VIDEO_MODE_WXGA		= 17,		//1280x800
+	VIDEO_MODE_WSXGA		= 18,		//1440x900
+	VIDEO_MODE_WSXGAP		= 19,		//1680x1050
+	VIDEO_MODE_WUXGA		= 20,		//1920x1200
 
 	/* Add new format below and update AMBA_VIDEO_MODE_NUM*/
-	AMBA_VIDEO_MODE_480_640		= 21,		//480x640
-	AMBA_VIDEO_MODE_SXGAP		= 22,		//1400x1050
-	AMBA_VIDEO_MODE_QSXGA		= 23,		//2592x1944
+	VIDEO_MODE_480_640		= 21,		//480x640
+	VIDEO_MODE_SXGAP		= 22,		//1400x1050
+	VIDEO_MODE_QSXGA		= 23,		//2592x1944
 
 	//Still Standard
-	AMBA_VIDEO_MODE_3M_4_3		= 0xFFE0,
-	AMBA_VIDEO_MODE_3M_16_9		= 0xFFE1,
-	AMBA_VIDEO_MODE_4M_4_3		= 0xFFE2,
-	AMBA_VIDEO_MODE_4M_16_9		= 0xFFE3,
-	AMBA_VIDEO_MODE_5M_4_3		= 0xFFE4,
-	AMBA_VIDEO_MODE_5M_16_9		= 0xFFE5,
+	VIDEO_MODE_3M_4_3		= 0xFFE0,
+	VIDEO_MODE_3M_16_9		= 0xFFE1,
+	VIDEO_MODE_4M_4_3		= 0xFFE2,
+	VIDEO_MODE_4M_16_9		= 0xFFE3,
+	VIDEO_MODE_5M_4_3		= 0xFFE4,
+	VIDEO_MODE_5M_16_9		= 0xFFE5,
 
 	//Video Standard
-	AMBA_VIDEO_MODE_480I		= 0xFFF0,
-	AMBA_VIDEO_MODE_576I		= 0xFFF1,
-	AMBA_VIDEO_MODE_D1_NTSC		= 0xFFF2,	//480p
-	AMBA_VIDEO_MODE_D1_PAL		= 0xFFF3,	//576p
-	AMBA_VIDEO_MODE_720P		= 0xFFF4,
-	AMBA_VIDEO_MODE_720P_PAL	= 0xFFF5,	//720p50
-	AMBA_VIDEO_MODE_1080I		= 0xFFF6,
-	AMBA_VIDEO_MODE_1080I_PAL	= 0xFFF7,	//1080i50
-	AMBA_VIDEO_MODE_1080P		= 0xFFF8,
-	AMBA_VIDEO_MODE_1080P_PAL	= 0xFFF9,	//1080i50
-	AMBA_VIDEO_MODE_1080I48		= 0xFFFA,	//1080i48
-	AMBA_VIDEO_MODE_1080P24		= 0xFFFB,	//1080p24
+	VIDEO_MODE_480I		= 0xFFF0,
+	VIDEO_MODE_576I		= 0xFFF1,
+	VIDEO_MODE_D1_NTSC		= 0xFFF2,	//480p
+	VIDEO_MODE_D1_PAL		= 0xFFF3,	//576p
+	VIDEO_MODE_720P		= 0xFFF4,
+	VIDEO_MODE_720P_PAL	= 0xFFF5,	//720p50
+	VIDEO_MODE_1080I		= 0xFFF6,
+	VIDEO_MODE_1080I_PAL	= 0xFFF7,	//1080i50
+	VIDEO_MODE_1080P		= 0xFFF8,
+	VIDEO_MODE_1080P_PAL	= 0xFFF9,	//1080i50
+	VIDEO_MODE_1080I48		= 0xFFFA,	//1080i48
+	VIDEO_MODE_1080P24		= 0xFFFB,	//1080p24
 
-	AMBA_VIDEO_MODE_TEST		= 0xFFFE,
-	AMBA_VIDEO_MODE_MAX	= 0xFFFF,
+	VIDEO_MODE_TEST		= 0xFFFE,
+	VIDEO_MODE_MAX	= 0xFFFF,
 };
 #endif
 typedef enum {
@@ -362,6 +364,16 @@ typedef struct privacy_mask_s{
 	u32				action;
 } privacy_mask_t;
 
+typedef struct live_view_param_s {
+	u32		encode_type;
+	u32		encode_fps;
+	u16		encode_width;
+	u16		encode_height;
+	u32		brc_mode;
+	u32		cbr_avg_bps;
+	u32		vbr_min_bps;
+	u32		vbr_max_bps;
+} live_view_param_t;
 /*!
 *******************************************************************************
 ** \brief one stream format struct.
@@ -388,6 +400,16 @@ typedef struct
     /*encode frame rate.*/
     GADI_U32            fps;
 }GADI_VENC_StreamFormatT;
+
+typedef struct
+{
+    /*stream index for setting the bitrate.*/
+    GADI_U32            streamId;
+    /*VBR mode: the min bitrate, CBR mode: the average bitrate.*/
+    GADI_U32            minBps;
+    /*VBR mode: the max bitrate.*/
+    GADI_U32            maxBps;
+}GADI_VENC_BitRateRangeT;
 
 static inline int get_func_null(char *section_name, u32 info)
 {
