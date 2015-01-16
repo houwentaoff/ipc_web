@@ -946,7 +946,7 @@ function setIQBasic()
         }
 
         showStatus("Setting image quality basic parameters ....");
-        var url = "/cgi-bin/iqb.py";
+        var url = "/cgi-bin/setroute.cgi";
         var ai = new AJAXInteraction(url, display);
         var req_cnt = 0;
         var postData = '';

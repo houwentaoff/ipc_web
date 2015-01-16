@@ -5,7 +5,7 @@
 ##
 ## (C) Copyright 2012-2014 by Goke Microelectronics Co.,Ltd
 ##
-## Version: $Id: Makefile 2417 2014-11-19 09:11:29Z houwentao $
+## Version: $Id: Makefile 2554 2014-12-23 12:35:06Z houwentao $
 ##
 ## Mandatory settings:
 ##
@@ -110,8 +110,12 @@ install-program:
 #	@$(ECHO) "### --> [$(ROOTFS_TOP)/webSvr/`basename $(PROGRAM)`]"
 	@mkdir -p  $(ROOTFS_TOP)/webSvr
 #	@cp -a  $(PROGRAM) $(ROOTFS_TOP)/webSvr/
-#	@mkdir -p $(ROOTFS_TOP)/usr/local/bin
+	@mkdir -p $(ROOTFS_TOP)/usr/local/bin
+ifneq ($(BOARD), GK7101_FPGA)
 	@cp -a  run_app.sh $(ROOTFS_TOP)/usr/local/bin/
+else
+	@cp -a  run_app-fpga.sh $(ROOTFS_TOP)/usr/local/bin/run_app.sh
+endif
 	@mkdir -p $(ROOTFS_TOP)/webSvr/www/
 #	@make -C cgic install
 
@@ -120,8 +124,9 @@ install-program:
 	@for f in `find js/ -name '*.js' |xargs tar czf /tmp/js.tgz && tar -zxvf /tmp/js.tgz -C $(ROOTFS_TOP)/webSvr/www/`; do echo "### --> [$$ROOTFS_TOP/webSvr/www/$$f]"; done;
 	@for f in `find html/ -name '*.html' |xargs tar czf /tmp/html.tgz && tar -zxvf /tmp/html.tgz -C $(ROOTFS_TOP)/webSvr/www/`; do echo "### --> [$$ROOTFS_TOP/webSvr/www/$$f]";done;
 	@for f in `find activeX/ -name '*.cab' |xargs tar czf /tmp/activeX.tgz && tar -zxvf /tmp/activeX.tgz -C $(ROOTFS_TOP)/webSvr/www/`; do echo "### --> [$$ROOTFS_TOP/webSvr/www/$$f]"; done;
-	@for f in `find img/ -name '*.png' |xargs tar czf /tmp/img.tgz && tar -zxvf /tmp/img.tgz -C $(ROOTFS_TOP)/webSvr/www/`; do echo "### --> [$$ROOTFS_TOP/webSvr/www/$$f]"; done;
+	@for f in `find img/ -name '*.png' -o -name '*.bmp' -o -name '*.jpeg'|xargs tar czf /tmp/img.tgz && tar -zxvf /tmp/img.tgz -C $(ROOTFS_TOP)/webSvr/www/`; do echo "### --> [$$ROOTFS_TOP/webSvr/www/$$f]"; done;
 	-@cp -a favicon.ico $(ROOTFS_TOP)/webSvr/www/ && echo "### --> [$(ROOTFS_TOP)/webSvr/www/favicon.ico]";
+	-@cp -a index.html $(ROOTFS_TOP)/webSvr/www/ && echo "### --> [$(ROOTFS_TOP)/webSvr/www/index.html]";
 
 install: install-program 
 #install-debug-program install-file

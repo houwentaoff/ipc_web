@@ -48,6 +48,7 @@ static ParamData stream_params[STREAM_NODE_LEN];
 static ParamData enc_params[ENC_NODE_LEN];
 static ParamData osd_params[OSD_PARAM_NUM];
 static ParamData pm_params[PM_PARAM_NUM];
+//static ParamData img_params[IMG_PARAMS_NUM];
 
 //static int bitrate=0;//码率
 
@@ -266,21 +267,32 @@ int   view_page_get_params()
 }
 int   _3a_page_get_params()
 {
+	section_Param section_param;    
     /*-----------------------------------------------------------------------------
      *  1. init map.
      *  2. send to server.
      *  3. set map.
      *-----------------------------------------------------------------------------*/
-    
+    _3a_page_create_params();
+    memset(&section_param, 0, sizeof(section_Param));
+    section_param.sectionName = "IMAGE";
+    section_param.sectionPort = IMAGE;
+    section_param.paramData = img_params;
+    section_param.extroInfo = "";
+    section_param.paramDataNum = IMG_PARAMS_NUM;    
+    if (Base_get_section_param(&section_param)==-1)
+    {
+        return (GK_CGI_ERROR);
+    }    
     return (GK_CGI_NO_ERROR);
 }
 
 static int enc_create_params ()
 {
-	int i = 0;
-	int j = 0;
-	int streamID=0;
-	char ret[NAME_LEN] = {0};
+    int i = 0;
+    int j = 0;
+    int streamID=0;
+    char ret[NAME_LEN] = {0};
 
     cgiFormInteger("stream", &streamID, 0);
 
@@ -540,122 +552,365 @@ int   osd_page_get_params()
 }
 int _3a_page(int (*callback)())
 {
-
-#if 0
+    /*-----------------------------------------------------------------------------
+     *  preference
+     *-----------------------------------------------------------------------------*/
     char *text=NULL;
-    FUN_IN();
+    char head_html_buf[MAX_HEAD]={0};
 
-    text = (char *)malloc(SMALLHTML);/*6k may much small*/
-    if (!text)
+    div_select_t wbc_select[WBC_NUM] =
+    {
+        {
+            .label      = "白平衡设置     :",    
+            .id    = "wbc",
+            .options    = NULL,
+            .option_num = 11,
+            .selected   = 2,
+            .action     = NULL,
+        },
+    };
+    div_select_t expo_select[EXPO_NUM] =
+    {
+        {
+            .label      = "曝光模式     :",    
+            .id    = "exposure_mode",
+            .options    = NULL,
+            .option_num = 4,
+            .selected   = 2,
+            .action     = NULL,
+        },        
+        {
+            .label      = "直流光圈模式     :",    
+            .id    = "dc_iris",
+            .options    = NULL,
+            .option_num = 2,
+            .selected   = 1,
+            .action     = NULL,
+        },
+        {
+            .label      = "最大增益     :",    
+            .id    = "max_gain",
+            .options    = NULL,
+            .option_num = 1,
+            .selected   = 2,
+            .action     = NULL,
+        },
+        {
+            .label      = "快门最小     :",    
+            .id    = "shutter_min",
+            .options    = NULL,
+            .option_num = 11,
+            .selected   = 2,
+            .action     = NULL,
+        },
+        {
+            .label      = "快门最大     :",    
+            .id    = "shutter_max",
+            .options    = NULL,
+            .option_num = 11,
+            .selected   = 1,
+            .action     = NULL,
+        },        
+
+    };
+   div_slider_t expo_sliders[] =
+    {
+        {
+            .label_display = "Exposure Target Factor (25% ~ 400%) : ",
+            .value         = 0,
+            .id            = "ae_target_ratio",
+            .min           = 25, 
+            .max           = 400, 
+            .action        = "change(this.id)",
+
+        },
+        {
+            .label_display = "Balance Duty (1 ~ 999) :",
+            .value         = 0,
+            .id            = "dc_iris_duty",
+            .min           = 1, 
+            .max           = 999,             
+        },
+    };
+    div_slider_t other_sliders[] =
+    {
+        {
+            .label_display = "     饱和度(0-255)",
+            .value         = 0,
+            .id            = "saturation",
+            .min           = 0, 
+            .max           = 255, 
+            .action        = "change(this.id)",
+
+        },
+        {
+            .label_display = "   3D降噪过滤(0-255)",
+            .value         = 0,
+            .id            = "mctf_strength",
+            .min           = 0, 
+            .max           = 255,             
+        },
+        {
+            .label_display = " 锐化(0-255)",
+            .value         = 0,
+            .id            = "sharpness",
+            .min           = 1, 
+            .max           = 100,             
+        },
+        {
+            .label_display = " 亮度(0-255)",
+            .value         = 0,
+            .id            = "brightness",
+            .min           = 1, 
+            .max           = 100,             
+        },
+        {
+            .label_display = " 对比度(0-128)",
+            .value         = 0,
+            .id            = "contrast",
+            .min           = 1, 
+            .max           = 100,             
+        },        
+    };
+    wbc_select[WBC].options = (option_t *)malloc(wbc_select[WBC].option_num * sizeof(option_t));
+    if (!wbc_select[WBC].options)PRT_ERR("wbc_select[WBC]\n");
+    wbc_select[WBC].options[0].value = 0;
+    wbc_select[WBC].options[0].label = "Auto";
+    wbc_select[WBC].options[1].value = 1;
+    wbc_select[WBC].options[1].label = "HOLD";
+    wbc_select[WBC].options[2].value = 2;
+    wbc_select[WBC].options[2].label = "INCANDESCENT";
+
+    wbc_select[WBC].options[3].value = 3;
+    wbc_select[WBC].options[3].label = "D4000";
+    wbc_select[WBC].options[4].value = 4;
+    wbc_select[WBC].options[4].label = "D5000";
+    wbc_select[WBC].options[5].value = 5;
+    wbc_select[WBC].options[5].label = "SUNNY";
+    wbc_select[WBC].options[6].value = 6;
+    wbc_select[WBC].options[6].label = "25";
+
+    wbc_select[WBC].options[7].value = 7;
+    wbc_select[WBC].options[7].label = "29.97";
+    wbc_select[WBC].options[8].value = 8;
+    wbc_select[WBC].options[8].label = "30";
+    wbc_select[WBC].options[9].value = 9;
+    wbc_select[WBC].options[9].label = "59.94";
+    wbc_select[WBC].options[10].value = 10;
+    wbc_select[WBC].options[10].label = "60";
+
+    expo_select[EXPOSURE_MODE].options = (option_t *)malloc(expo_select[EXPOSURE_MODE].option_num * sizeof(option_t));
+    if (!expo_select[EXPOSURE_MODE].options)PRT_ERR("select_label[EXPOSURE_MODE]\n");
+
+    expo_select[EXPOSURE_MODE].options[0].value = 0;
+    expo_select[EXPOSURE_MODE].options[0].label = "ANTI_FLICKER_50HZ";
+    expo_select[EXPOSURE_MODE].options[1].value = 1;
+    expo_select[EXPOSURE_MODE].options[1].label = "ANTI_FLICKER_60HZ";
+    expo_select[EXPOSURE_MODE].options[2].value = 2;
+    expo_select[EXPOSURE_MODE].options[2].label = "AUTO";
+    expo_select[EXPOSURE_MODE].options[3].value = 3;
+    expo_select[EXPOSURE_MODE].options[3].label = "HOLD";
+
+    expo_select[DC_IRIS].options = (option_t *)malloc(expo_select[DC_IRIS].option_num * sizeof(option_t));
+    if (!expo_select[DC_IRIS].options)PRT_ERR("select_label[DC_IRIS]\n");
+
+    expo_select[DC_IRIS].options[0].value = 0;
+    expo_select[DC_IRIS].options[0].label = "OFF";
+    expo_select[DC_IRIS].options[1].value = 1;
+    expo_select[DC_IRIS].options[1].label = "ON";
+  
+    expo_select[MAX_GAIN].options = (option_t *)malloc(expo_select[MAX_GAIN].option_num * sizeof(option_t));
+    if (!expo_select[MAX_GAIN].options)PRT_ERR("select_label[MAX_GAIN]\n");
+
+    expo_select[MAX_GAIN].options[0].value = 0;
+    expo_select[MAX_GAIN].options[0].label = "30db";
+
+    expo_select[SHUTTER_MIN].options = (option_t *)malloc(expo_select[SHUTTER_MIN].option_num * sizeof(option_t));
+    if (!expo_select[SHUTTER_MIN].options)PRT_ERR("select_label[SHUTTER_MIN]\n");
+
+    expo_select[SHUTTER_MIN].options[0].value = 0;
+    expo_select[SHUTTER_MIN].options[0].label = "1/8000";
+    expo_select[SHUTTER_MIN].options[1].value = 1;
+    expo_select[SHUTTER_MIN].options[1].label = "1/1024";
+    expo_select[SHUTTER_MIN].options[2].value = 2;
+    expo_select[SHUTTER_MIN].options[2].label = "1/960";
+    expo_select[SHUTTER_MIN].options[3].value = 3;
+    expo_select[SHUTTER_MIN].options[3].label = "1/480"; 
+    expo_select[SHUTTER_MIN].options[4].value = 4;
+    expo_select[SHUTTER_MIN].options[4].label = "1/240";
+    expo_select[SHUTTER_MIN].options[5].value = 5;
+    expo_select[SHUTTER_MIN].options[5].label = "1/120";
+    expo_select[SHUTTER_MIN].options[6].value = 6;
+    expo_select[SHUTTER_MIN].options[6].label = "1/100";
+    expo_select[SHUTTER_MIN].options[7].value = 7;
+    expo_select[SHUTTER_MIN].options[7].label = "1/60"; 
+    expo_select[SHUTTER_MIN].options[8].value = 8;
+    expo_select[SHUTTER_MIN].options[8].label = "1/50";
+    expo_select[SHUTTER_MIN].options[9].value = 9;
+    expo_select[SHUTTER_MIN].options[9].label = "1/30";
+    expo_select[SHUTTER_MIN].options[10].value = 10;
+    expo_select[SHUTTER_MIN].options[10].label = "1/25";
+
+    expo_select[SHUTTER_MAX].options = (option_t *)malloc(expo_select[SHUTTER_MAX].option_num * sizeof(option_t));
+    if (!expo_select[SHUTTER_MAX].options)PRT_ERR("select_label[SHUTTER_MIN]\n");
+
+    expo_select[SHUTTER_MAX].options[0].value = 0;
+    expo_select[SHUTTER_MAX].options[0].label = "1/8000";
+    expo_select[SHUTTER_MAX].options[1].value = 1;
+    expo_select[SHUTTER_MAX].options[1].label = "1/1024";
+    expo_select[SHUTTER_MAX].options[2].value = 2;
+    expo_select[SHUTTER_MAX].options[2].label = "1/960";
+    expo_select[SHUTTER_MAX].options[3].value = 3;
+    expo_select[SHUTTER_MAX].options[3].label = "1/480"; 
+    expo_select[SHUTTER_MAX].options[4].value = 4;
+    expo_select[SHUTTER_MAX].options[4].label = "1/240";
+    expo_select[SHUTTER_MAX].options[5].value = 5;
+    expo_select[SHUTTER_MAX].options[5].label = "1/120";
+    expo_select[SHUTTER_MAX].options[6].value = 6;
+    expo_select[SHUTTER_MAX].options[6].label = "1/100";
+    expo_select[SHUTTER_MAX].options[7].value = 7;
+    expo_select[SHUTTER_MAX].options[7].label = "1/60"; 
+    expo_select[SHUTTER_MAX].options[8].value = 8;
+    expo_select[SHUTTER_MAX].options[8].label = "1/50";
+    expo_select[SHUTTER_MAX].options[9].value = 9;
+    expo_select[SHUTTER_MAX].options[9].label = "1/30";
+    expo_select[SHUTTER_MAX].options[10].value = 10;
+    expo_select[SHUTTER_MAX].options[10].label = "1/25";    
+    
+    if (!(text = (char *)malloc(BIGHTML)))
     {
         PRT_ERR("text is null\n");
         return (GK_MEM_ERROR);
     }
-   div_select_t select_label[3] =
+    char div_other_text[DIV_SLIDER_BIGSIZE]={0};
+    char expo_slider_text[DIV_SLIDER_BIGSIZE]={0};
+    char div_expo_text[DIV_SELECT_SIZE]={0};    
+    char div_wbc_text[DIV_SELECT_SIZE]={0};
+    int i=0;
+
+    for (i=0;i<WBC_NUM;i++)//wbc
     {
-        {
-            .id         = "vin_mode",
-            .label      = "Resolution :",    
-            .options    = NULL,
-            .option_num = VIDEO_OPS_NUM,
-            .selected   = 2,
-            .action     = NULL,
-        },
-        {
-            .id         = "vin_framerate",
-            .label      = "Frame Rate (fps) :",    
-            .options    = NULL,
-            .option_num = FPS_OPS_NUM,
-            .selected   = 2,
-            .action     = NULL,
-        },
-    };
-    div_select_t select_label_vout[3] =
+        create_div_select(div_wbc_text, &wbc_select[i], DIV_SELECT_SIZE);
+        free (wbc_select[i].options);
+    }
+
+    for (i=0;i<EXPO_NUM;i++)//expo
     {
-        {
-            .id         = "vout_type",
-            .label      = "Type  :",    
-            .options    = NULL,
-            .option_num = VOUT_TYPE_NUM,
-            .selected   = 2,
-            .action     = NULL,
-        },
-        {
-            .id         = "vout_mode",
-            .label      = "Resolution :",    
-            .options    = NULL,
-            .option_num = VOUT_VIDEO_OPS_NUM,
-            .selected   = 2,
-            .action     = NULL,
-        },
-    };
+        create_div_select(div_expo_text, &expo_select[i], DIV_SELECT_SIZE);
+        free (expo_select[i].options);
+    }
+
+    for (i=IMAGE_SATURATION; i<IMAGE_PARAM_NUM; i++)
+    {
+        create_div_slider(div_other_text, &other_sliders[i], DIV_SLIDER_BIGSIZE);
+    }
+    PRT_DBG("div_other_text[\n%s\n]\n", div_other_text);
+
+    for (i=0; i<2; i++)
+    {
+        create_div_slider(expo_slider_text, &expo_sliders[i], DIV_SLIDER_BIGSIZE);
+    }        
+
+    sprintf(head_html_buf, head_html, "3a", "onload=\"javascript: getData('iqb')\"");
+    if (strlen(head_html_buf) >= MAX_HEAD)
+    {
+        PRT_ERR("size[%d] is too big!\n", strlen(head_html_buf));
+        return (GK_MEM_OVERFLOW);
+    }
+    sprintf(text, "%s", head_html_buf);
+    strncat(text, nav, strlen(nav));    
+
+    if (GK_CGI_NO_ERROR != callback())
+    {
+        PRT_ERR("get param fail\n");
+        return (GK_CGI_ERROR);
+    }
+//    PRT_DBG("STR[%s] value[%s]\n", osd_params[_get_osd_Index(streamId, 
+//    "text")].param_value, osd_params[TEXT].param_value);
+    //赋值给web上展示
+#if  1
+    char *pos=text;
+    pos += strlen(text);
+    sprintf(pos, image_content, div_wbc_text, div_expo_text, expo_slider_text, div_other_text);
 #endif
-    /*-----------------------------------------------------------------------------
-     *  preference
-     *-----------------------------------------------------------------------------*/
-//    select_label_Image Property[]
+    fprintf(cgiOut, "%s", text);
+
+    //print_params(osd_params, num * OSD_PARAM_TYPE_NUM);
+    //print_params(pm_params, PM_PARAM_NUM);
+
+    PRT_DBG("\n.............................................\n"
+              ".................html size[%dk]...............\n"
+              ".............................................\n",strlen(text)/1024);
+     if (strlen(text) >= BIGHTML)
+     {
+         PRT_ERR("size[%d] is too big!\n", strlen(text));
+         return (GK_MEM_OVERFLOW);
+     }
+
+    free(text);
+
+    FUN_OUT();
     return (GK_CGI_NO_ERROR);
-    
 }
-static int _3a_page_create_params()
+int _3a_page_create_params()
 {
 	memset(img_params,0,sizeof(ParamData)*IMG_PARAMS_NUM);
-	strcat(img_params[PREFERENCE].param_name, "preference");
-	img_params[PREFERENCE].value = 0;
+	strcat(img_params[_PREFERENCE].param_name, "preference");
+	img_params[_PREFERENCE].value = 0;
 
-	strcat(img_params[DN_MODE].param_name, "dn_mode");
-	img_params[DN_MODE].value = 0;
+	strcat(img_params[_DN_MODE].param_name, "dn_mode");
+	img_params[_DN_MODE].value = 0;
 
-	strcat(img_params[EXPOSURE_MODE].param_name, "exposure_mode");
-	img_params[EXPOSURE_MODE].value = 0;
+	strcat(img_params[_EXPOSURE_MODE].param_name, "exposure_mode");
+	img_params[_EXPOSURE_MODE].value = 0;
 
-	strcat(img_params[BACKLIGHT_COMP].param_name, "backlight_comp");
-	img_params[BACKLIGHT_COMP].value = 0;
+	strcat(img_params[_BACKLIGHT_COMP].param_name, "backlight_comp");
+	img_params[_BACKLIGHT_COMP].value = 0;
 
-	strcat(img_params[DC_IRIS].param_name, "dc_iris");
-	img_params[DC_IRIS].value = 0;
+	strcat(img_params[_DC_IRIS].param_name, "dc_iris");
+	img_params[_DC_IRIS].value = 0;
 
-	strcat(img_params[DC_IRIS_DUTY].param_name, "dc_iris_duty");
-	img_params[DC_IRIS_DUTY].value = 0;
+	strcat(img_params[_DC_IRIS_DUTY].param_name, "dc_iris_duty");
+	img_params[_DC_IRIS_DUTY].value = 0;
 
-	strcat(img_params[LOCAL_EXPOSURE].param_name, "local_exposure");
-	img_params[LOCAL_EXPOSURE].value = 0;
+	strcat(img_params[_LOCAL_EXPOSURE].param_name, "local_exposure");
+	img_params[_LOCAL_EXPOSURE].value = 0;
 
-	strcat(img_params[MCTF_STRENGTH].param_name, "mctf_strength");
-	img_params[MCTF_STRENGTH].value = 0;
+	strcat(img_params[_MCTF_STRENGTH].param_name, "mctf_strength");
+	img_params[_MCTF_STRENGTH].value = 0;
 
-	strcat(img_params[SHUTTER_MIN].param_name, "shutter_min");
-	img_params[SHUTTER_MIN].value = SHUTTER_8000;
+	strcat(img_params[_SHUTTER_MIN].param_name, "shutter_min");
+	img_params[_SHUTTER_MIN].value = SHUTTER_8000;
 
-	strcat(img_params[SHUTTER_MAX].param_name, "shutter_max");
-	img_params[SHUTTER_MAX].value = SHUTTER_30;
+	strcat(img_params[_SHUTTER_MAX].param_name, "shutter_max");
+	img_params[_SHUTTER_MAX].value = SHUTTER_30;
 
-	strcat(img_params[MAX_GAIN].param_name, "max_gain");
-	img_params[MAX_GAIN].value = GAIN_36db;
+	strcat(img_params[_MAX_GAIN].param_name, "max_gain");
+	img_params[_MAX_GAIN].value = GAIN_36db;
 
-	strcat(img_params[AE_TARGET_RATIO].param_name, "ae_target_ratio");
-	img_params[AE_TARGET_RATIO].value = 100;
+	strcat(img_params[_AE_TARGET_RATIO].param_name, "ae_target_ratio");
+	img_params[_AE_TARGET_RATIO].value = 100;
 
-	strcat(img_params[VIN_FPS].param_name, "vin_fps");
-	img_params[VIN_FPS].value = FPS_29;
+	strcat(img_params[_VIN_FPS].param_name, "vin_fps");
+	img_params[_VIN_FPS].value = FPS_29;
 
-	strcat(img_params[SATURATION].param_name, "saturation");
-	img_params[SATURATION].value = 20;
+	strcat(img_params[_SATURATION].param_name, "saturation");
+	img_params[_SATURATION].value = 20;
 
-	strcat(img_params[BRIGHTNESS].param_name, "brightness");
-	img_params[BRIGHTNESS].value = 40;
+	strcat(img_params[_BRIGHTNESS].param_name, "brightness");
+	img_params[_BRIGHTNESS].value = 40;
 
-	strcat(img_params[HUE].param_name, "hue");
-	img_params[HUE].value = 60;
+	strcat(img_params[_HUE].param_name, "hue");
+	img_params[_HUE].value = 60;
 
-	strcat(img_params[CONTRAST].param_name, "contrast");
-	img_params[CONTRAST].value = 80;
+	strcat(img_params[_CONTRAST].param_name, "contrast");
+	img_params[_CONTRAST].value = 80;
 
-	strcat(img_params[SHARPNESS].param_name, "sharpness");
-	img_params[SHARPNESS].value = 100;
+	strcat(img_params[_SHARPNESS].param_name, "sharpness");
+	img_params[_SHARPNESS].value = 100;
 
-	strcat(img_params[WBC].param_name, "wbc");
-	img_params[WBC].value = 0;
+	strcat(img_params[_WBC].param_name, "wbc");
+	img_params[_WBC].value = 0;
 
 	return (GK_CGI_NO_ERROR);    
     //_add_preference

@@ -3,7 +3,7 @@
  *
  ** \file      params.h
  **
- ** \version   $Id: params.h 2411 2014-11-18 13:43:30Z houwentao $
+ ** \version   $Id: params.h 2592 2015-01-16 08:54:57Z houwentao $
  **
  ** \brief     
  **
@@ -317,26 +317,28 @@ typedef enum{
     STREAM_ID_NUM,
 }STREAM_ID;
 //PAGE 3A
+#if 1
 typedef enum {
-	PREFERENCE = 0,
-	DN_MODE,
-	EXPOSURE_MODE,
-	BACKLIGHT_COMP,
-	DC_IRIS,
-	DC_IRIS_DUTY,
-	LOCAL_EXPOSURE,
-	MCTF_STRENGTH,
-	SHUTTER_MIN,
-	SHUTTER_MAX,
-	MAX_GAIN,
-	AE_TARGET_RATIO,
-	VIN_FPS,
-	SATURATION,
-	BRIGHTNESS,
-	HUE,
-	CONTRAST,
-	SHARPNESS,
-	WBC,
-	IMG_PARAMS_NUM
+	_PREFERENCE = 0,
+	_DN_MODE,
+	_EXPOSURE_MODE,
+	_BACKLIGHT_COMP,
+	_DC_IRIS,
+	_DC_IRIS_DUTY,
+	_LOCAL_EXPOSURE,
+	_MCTF_STRENGTH,
+	_SHUTTER_MIN,
+	_SHUTTER_MAX,
+	_MAX_GAIN,
+	_AE_TARGET_RATIO,
+	_VIN_FPS,
+	_SATURATION,
+	_BRIGHTNESS,
+	_HUE,
+	_CONTRAST,
+	_SHARPNESS,
+	_WBC,
+	_IMG_PARAMS_NUM
 }IMG_PARAMS;
+#endif
 #endif//__PARAM__H__

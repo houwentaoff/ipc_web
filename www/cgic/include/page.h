@@ -3,7 +3,7 @@
  *
  ** \file      page.h
  **
- ** \version   $Id: page.h 2523 2014-12-17 06:53:55Z houwentao $
+ ** \version   $Id: page.h 2592 2015-01-16 08:54:57Z houwentao $
  **
  ** \brief     
  **
@@ -275,6 +275,31 @@ typedef enum
 	PM_ACTION,
 	PM_PARAM_NUM
 }PM_PARAMS;
+//IMAGE
+typedef enum
+{
+    IMAGE_SATURATION,
+    IMAGE_MCTF,
+    IMAGE_SHARPNESS,
+    IMAGE_BRIGHTNESS,
+    IMAGE_CONTRAST,
+    IMAGE_PARAM_NUM
+}IMAGE_PARAMS;
+typedef enum
+{
+    WBC,
+    WBC_NUM
+}WBC_PARAMS;
+typedef enum
+{
+    EXPOSURE_MODE,
+    DC_IRIS,
+    MAX_GAIN,
+    SHUTTER_MIN,
+    SHUTTER_MAX,
+    EXPO_NUM,
+    IMG_PARAMS_NUM = 19
+}EXPO_PARAMS;
 extern int   view_page(int (*callback)());
 extern int   view_page_get_params();
 extern int   enc_page(int (*callback)());

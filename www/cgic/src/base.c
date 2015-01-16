@@ -94,6 +94,7 @@ const char * const nav="\
                 <a href=\"/cgi-bin/demo.cgi?page=0&stream=0\" title=\"liveview\" class=\"menu_item\">liveview</a>\
                 <a href=\"/cgi-bin/demo.cgi?page=1&stream=0\" title=\"enc\"  class=\"menu_item\">enc</a>\
                 <a href=\"/cgi-bin/demo.cgi?page=3&stream=0\" title=\"osd\"  class=\"menu_item\">osd</a>\
+                <a href=\"/cgi-bin/demo.cgi?page=2\" title=\"3a\"  class=\"menu_item\">3A</a>\
             </div>\
         </div>\
 </div>";
@@ -190,7 +191,48 @@ const char * const enccontent= "\
         </div>\
 </div>\
 ";
-
+const char * const image_content = "\
+<div class=\"content\">\
+    <div id=\"status\">&nbsp; </div>\
+        <div class=\"_3a_right1\">			\
+            <div class=\"title\"> 白平衡设置</div>            \
+            <div class=\"action\">\
+%s\
+            </div>        \
+        </div>\
+        <div class=\"_3a_right2\">			\
+            <div class=\"title\">曝光设置</div>            \
+            <div class=\"action\">\
+     %s\
+     %s\
+            </div>        \
+        </div>		\
+\
+        <div class=\"_3a_right3\">\
+<script type=\"text/javascript\">\
+function change(x)\
+{\
+    var value = document.getElementById(x).value;\
+    document.getElementById(\"_\"+x).innerHTML = value;\
+}\
+</script>\
+            <div class=\"title\">其它设置</div> \
+%s\
+        </div>\
+\
+        <div class=\"_3a_submit\">		    \
+            <input name=\"button\" type=\"button\" class=\"apply\" id=\"button\"  onclick=\"javascript:setIQBasic()\" value=\"确认\"/> 			   \
+            &nbsp;\
+            <input name=\"button2\" type=\"button\" class=\"cancel\" id=\"button2\"  onclick=\"javascript:showPage('iqb')\" value=\"取消\"/>\
+        </div>    \
+        <div class=\"_3a_right0\">\
+            <div class=\"title\">\
+                <p>对焦</p>\
+            </div>\
+            <div class=\"action\"></div>\
+        </div>\
+    </div> \
+";                                   
 const char * const osdcontent= "\
 <div class=\"content\">\
         <div id=\"status\">&nbsp; </div>\

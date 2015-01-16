@@ -28,7 +28,7 @@
 PageMapping pagemap[] = {
     {"view_page", view_page, view_page_get_params, NULL},
     {"enc_page", enc_page, enc_page_get_params, NULL},
-    {"pm_page",  _3a_page, _3a_page_get_params, NULL},
+    {"image_page",  _3a_page, _3a_page_get_params, NULL},
     {"osd_page", osd_page, osd_page_get_params, NULL},
     {"sys_page", sys_page, NULL, NULL},
     {"vivo_page", vivo_page, vivo_page_get_params, NULL},

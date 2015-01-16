@@ -1,153 +1,145 @@
-<!DOCTYPE HTML PUBLIC  "-//W3C//DTD HTML 4.0 Transitional//EN""-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"><html>    <head>        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">        <title>vinvout</title>            <link href="../css/goke_1.css" rel="stylesheet" type="text/css" />            <script language="JavaScript" src="../js/AJAXInteraction.js"></script>            <script language="JavaScript" src="../js/page.js"></script>            <script language="JavaScript" src="../js/style.js"></script>    
-
-
-
-
-
-</head>    <body >        <div class="container">            <div class="header">                <div class="logo">                    <img src="../img/goke.png" name="banner" width="181" height="78" id="banner" />                </div>                <div class="title">                    <h1 align="center">网 络 摄 像 机 产 品 演 示</h1>                    <p align="center">IPC Product demonstration</p>                </div>            </div><div class="leftnav">        <div class="menu_item" id="fl_menu">            <div class="menu" style="none">                <a href="/cgi-bin/demo.cgi?page=0&stream=0" title="liveview" class="menu_item">liveview</a>                <a href="/cgi-bin/demo.cgi?page=1" title="3A"  class="menu_item">3A</a>                <a href="/cgi-bin/demo.cgi?page=5" title="vinvout" class="menu_item">vinvout</a>                <a href="enc.html" title="enc"  class="menu_item">enc</a>                <a href="osd.html" title="osd"  class="menu_item">osd</a>            </div>        </div></div><div class="content">    <div id="status">&nbsp; </div>        <div class="_3a_right1">			
-  <div class="title">自动白平衡</div>            <div class="action">		
-    <div id="vin_mode"><label>"Resolution :"</label><select>>
-<option value=0 selected>Auto</option>
-<option value=65528 >1080P</option>
-<option value=65524 >720P</option>
-</select></div>
-<div id="wbc">
-  <label>White Balance Setting"</label><select>>
-<option value=0 selected>Auto</option>
-<option value=102400000 >HOLD</option>
-<option value=85333333 >INCANDESCENT</option>
-<option value=51200000 >D4000</option>
-<option value=39384615 >D5000</option>
-<option value=34133333 >SUNNY</option>
-<option value=20480000 >25</option>
-<option value=17083750 >29.97</option>
-<option value=17066666 >30</option>
-<option value=8541875 >59.94</option>
-<option value=8533333 >60</option>
-</select></div>
+<!DOCTYPE HTML PUBLIC  "-//W3C//DTD HTML 4.0 Transitional//EN""-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html>
+<head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8">        
+<title>3A</title>
+<link href="../css/goke_1.css" rel="stylesheet" type="text/css" />            
+<script language="JavaScript" src="../js/AJAXInteraction.js"></script>
+<script language="JavaScript" src="../js/page.js"></script>
+<script language="JavaScript" src="../js/style.js"></script>
+</head>    
+<body >        
+<div class="container">            <div class="header">                <div class="logo">                    <img src="../img/goke.png" name="banner" width="181" height="78" id="banner" />                </div>                <div class="title">                    <h1 align="center">网 络 摄 像 机 产 品 演 示</h1>                    <p align="center">IPC Product demonstration</p>                </div>            </div><div class="leftnav">        <div class="menu_item" id="fl_menu">            <div class="menu" style="none">                <a href="/cgi-bin/demo.cgi?page=0&stream=0" title="liveview" class="menu_item">liveview</a>                <a href="/cgi-bin/demo.cgi?page=1" title="3A"  class="menu_item">3A</a>                <a href="/cgi-bin/demo.cgi?page=5" title="vinvout" class="menu_item">vinvout</a>                <a href="enc.html" title="enc"  class="menu_item">enc</a>                <a href="osd.html" title="osd"  class="menu_item">osd</a>            </div>        </div></div>
+<div class="content">
+    <div id="status">&nbsp; </div>
+        <div class="_3a_right1">			
+            <div class="title"> 白平衡设置</div>            
+            <div class="action">
+                <div id="wbc">
+                    <label>White Balance Setting</label>
+                    <select>
+                        <option value=0 selected>Auto</option>
+                        <option value=102400000 >HOLD</option>
+                        <option value=85333333 >INCANDESCENT</option>
+                        <option value=51200000 >D4000</option>
+                        <option value=39384615 >D5000</option>
+                        <option value=34133333 >SUNNY</option>
+                        <option value=20480000 >25</option>
+                        <option value=17083750 >29.97</option>
+                        <option value=17066666 >30</option>
+                        <option value=8541875 >59.94</option>
+                        <option value=8533333 >60</option>
+                    </select>
+                </div>
             </div>        
-</div>        <div class="_3a_right2">			
-              <div class="title">自动曝光</div>            
-              <div class="action">
-			  <div id="max_gain">
-			  	<label>"max_gain :"</label>
-				<select>
-					<option>30db</option>
-				</select>
-
-			  </div>
-			  <div id="exposure_mode">
-			  	<label>"exposure_mode :"</label><select>
-			  	  <option>ANTI_FLICKER_50HZ</option>
-			  	  <option>ANTI_FLICKER_60HZ</option>
-			  	  <option>AUTO</option>
-			  	  <option>HOLD</option>
-			  	  >
-                </select></div>
-			  <div id="dc_iris_duty">
-			    <label>Balance Duty (1 ~ 999) :</label>
-                <input type="text" class="textinput" value="255" maxlength=3  />
+        </div>
+        <div class="_3a_right2">			
+            <div class="title">曝光设置</div>            
+            <div class="action">
+                <div id="max_gain">
+                    <label>max_gain :</label>
+                    <select>
+                        <option>30db</option>
+                    </select>
+                </div>
+                <div id="exposure_mode">
+                    <label>exposure_mode :</label>
+                    <select>
+                        <option>ANTI_FLICKER_50HZ</option>
+                        <option>ANTI_FLICKER_60HZ</option>
+                        <option>AUTO</option>
+                        <option>HOLD</option>
+                    </select>
+                </div>
+                <div id="__dc_iris_duty">
+                    <label>Balance Duty (1 ~ 999) :</label>
+                    <input id="dc_iris_duty" type="range"  min="0" max="255" value="100" onchange="change(this.id)"><label id="_dc_iris_duty">100</label>
               </div>
-			  		  <div id="ae_target_ratio">
-					  <label>"Exposure Target Factor (25% ~ 400%) :"</label>
-                <input type="text" class="textinput" value="100" maxlength=3  />
+                <div id="__ae_target_ratio">
+                    <label>Exposure Target Factor (25% ~ 400%) :</label>
+                    <input id="ae_target_ratio" type="range"  min="0" max="255" value="100" onchange="change(this.id)">
+                    <label id="_ae_target_ratio">100</label>
               </div>
-              <div id="shutter_min">
-              <label>"shutter_min  :"</label><select>
-                <option>1/8000</option>
-                <option>1/1024</option>
-                <option>1/960</option>
-                <option>1/480</option>
-                <option>1/240</option>
-                <option>1/120</option>
-                <option>1/100</option>
-                <option>1/60</option>
-                <option>1/50</option>
-                <option>1/30</option>
-                <option>1/25</option>
-                >
-              </select></div>
-              <div id="shutter_max">
-              <label>"shutter_max  :"</label><select>
-                <option>1/8000</option>
-                <option>1/1024</option>
-                <option>1/960</option>
-                <option>1/480</option>
-                <option>1/240</option>
-                <option>1/120</option>
-                <option>1/100</option>
-                <option>1/60</option>
-                <option>1/50</option>
-                <option>1/30</option>
-                <option>1/25</option>
-                >
-              </select></div>
-			  
-<div id="dc_iris">
-  <label>"DC Iris Mode : :"</label>
-  <select>
-    <option>OFF</option>
-    <option>ON</option>
-    >
-    </select></div>
+				
+                <div id="shutter_min">
+                    <label>shutter_min  :</label>
+                    <select>
+                        <option>1/8000</option>
+                        <option>1/1024</option>
+                        <option>1/960</option>
+                        <option>1/480</option>
+                        <option>1/240</option>
+                        <option>1/120</option>
+                        <option>1/100</option>
+                        <option>1/60</option>
+                        <option>1/50</option>
+                        <option>1/30</option>
+                        <option>1/25</option>
+                        
+                    </select>
+                </div>
+                <div id="shutter_max">
+                    <label>shutter_max  :</label>
+                    <select>
+                        <option>1/8000</option>
+                        <option>1/1024</option>
+                        <option>1/960</option>
+                        <option>1/480</option>
+                        <option>1/240</option>
+                        <option>1/120</option>
+                        <option>1/100</option>
+                        <option>1/60</option>
+                        <option>1/50</option>
+                        <option>1/30</option>
+                        <option>1/25</option>
+                    </select>
+                </div>
+                <div id="dc_iris">
+                    <label>DC Iris Mode : :</label>
+                    <select>
+                        <option>OFF</option>
+                        <option>ON</option>
+                    </select>
+                </div>
             </div>        
-</div>		
+        </div>		
 
-
-
-<div class="_3a_right3">
+        <div class="_3a_right3">
 <script type="text/javascript">
 function change(x)
 {
-	var value = document.getElementById(x).value;
-	document.getElementById("_"+x).innerHTML = value;
+    var value = document.getElementById(x).value;
+    document.getElementById("_"+x).innerHTML = value;
 }
 </script>
-<div id="__pointa">
-		  <label></label><label id="_pointa">1</label><input id="pointa" type="range"  min="0" max="255" value="100" onchange="change(this.id)">
-		  </div>
-		  <div id="__pointb">
-		  <label id="_pointb">2</label><input type="range" id="pointb" min="0" max="255" value="100" onchange="change(this.id)">
-  	  </div>
-	<div id="__pointc">
-		  <label id="_pointc">3</label><input type="range" id="pointc" min="0" max="255" value="100" onchange="change(this.id)">
-  	  </div>
-		  <div id="__pointd">
-		  <label id="_pointd">4</label><input type="range" id="pointd" min="0" max="255" value="100" onchange="change(this.id)">	
-  	  </div>
-		  <div id="__pointe">
-		  <label id="_pointe">5</label><input type="range" id="pointe" min="0" max="255" value="100" onchange="change(this.id)">
-  	  </div>
-	</div>
+            <div class="title">其它设置</div> 
+            <div id="__saturation">
+                <label>Saturation(0 ~ 255)  </label><input id="saturation" type="range"  min="0" max="255" value="100" onchange="change(this.id)"><label id="_saturation">1</label>
+            </div>
+            <div id="__brightness">
+                <label>Brightness(-255 ~ 255)</label><input type="range" id="brightness" min="-255" max="255" value="100" onchange="change(this.id)"><label id="_brightness">2</label>
+            </div>
+            <div id="__contrast">
+                <label>Contrast(0 ~ 128) </label><input type="range" id="contrast" min="0" max="128" value="100" onchange="change(this.id)"><label id="_contrast">3</label>
+            </div>
+            <div id="__sharpness">
+                <label>De-noise / Sharpness (0 ~ 255) </label><input type="range" id="sharpness" min="0" max="255" value="100" onchange="change(this.id)"><label id="_sharpness">4</label>	
+            </div>
+            <div id="__mctf_strength">
+                <label>3D De-noise Filter (0 ~ 255) : </label><input type="range" id="mctf_strength" min="0" max="255" value="100" onchange="change(this.id)">
+                <label id="_mctf_strength">5</label>
+            </div>
+        </div>
 
-<div class="_3a_submit">		    
-  <input name="button" type="button" class="apply" id="button"  onclick="javascript:setCamBasic()" value="确认"/> 			   
- 			&nbsp;
-  <input name="button2" type="button" class="cancel" id="button2"  onclick="javascript:showPage('csb')" value="取消"/>
-</div>    
-            <div class="_3a_right0">
-              <div class="title">自动对焦</div>
-              <div class="action">
-                <div id="vout_mode">
-                  <label>&quot;Type  :&quot;</label>
-                  <select name="select">
-                    >
-                    <option value="0" >480I</option>
-                    <option value="1" selected="selected">576I</option>
-                    <option value="4" >720P</option>
-                  </select>
-                </div>
-                <div id="layer2">
-                  <label>&quot;Resolution :&quot;</label>
-                  <select name="select">
-                    >
-                    <option value="65520" selected="selected">480I</option>
-                    <option value="65521" >576I</option>
-                    <option value="0" >(null)</option>
-                    <option value="0" >(null)</option>
-                    <option value="0" >(null)</option>
-                  </select>
-                </div>
-              </div>
-    </div>
-</div> <div class="footer">        <div >            <p>&nbsp;</p>            <p>公司地址：长沙市长星路389号 联系电话：0731-88218855 官方网站:www.gokemicro.com </p>            <p>国科微电子有限公司 版权所有</p>        </div>    </div></div></body></html>
+        <div class="_3a_submit">		    
+            <input name="button" type="button" class="apply" id="button"  onclick="javascript:setCamBasic()" value="确认"/> 			   
+            &nbsp;
+            <input name="button2" type="button" class="cancel" id="button2"  onclick="javascript:showPage('csb')" value="取消"/>
+        </div>    
+        <div class="_3a_right0">
+            <div class="title">
+                <p>对焦</p>
+            </div>
+            <div class="action"></div>
+        </div>
+    </div> 
+<div class="footer">        <div >            <p>&nbsp;</p>            <p>公司地址：长沙市长星路389号 联系电话：0731-88218855 官方网站:www.gokemicro.com </p>            <p>国科微电子有限公司 版权所有</p>        </div>    </div></div></body></html>
