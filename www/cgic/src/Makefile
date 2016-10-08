@@ -2,7 +2,7 @@ include ../lib.rules
 
 default:all
 
-all:demo.cgi setroute.cgi flysetroute.cgi
+all:demo.cgi setroute.cgi flysetroute.cgi cmd.cgi
 
 demo.cgi: base.o utils.o base_page.o page.o demo.o
 	$(CC) $^ -o $@ $(CFLAGS)
@@ -11,6 +11,9 @@ setroute.cgi: base.o utils.o base_page.o page.o setroute.o
 	$(CC) $^ -o $@ $(CFLAGS)
 
 flysetroute.cgi: base.o utils.o base_page.o page.o flysetroute.o
+	$(CC) $^ -o $@ $(CFLAGS)
+
+cmd.cgi:cmd.o
 	$(CC) $^ -o $@ $(CFLAGS)
 
 .PHONY:clean
